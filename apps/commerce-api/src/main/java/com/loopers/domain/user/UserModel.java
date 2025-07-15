@@ -32,7 +32,7 @@ public class UserModel {
     @Builder(builderMethodName = "saveBuilder")
     public UserModel(String userId, String email, String gender, String birth) {
         final String PATTERN_USER_ID = "^[a-zA-Z0-9]{1,10}$";
-        final String PATTERN_EMAIL = "^[a-z]+@[a-z]+\\.[a-z]{2,}$";
+        final String PATTERN_EMAIL = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         final String PATTERN_BIRTH = "^\\d{4}-\\d{2}-\\d{2}$";
 
         if (userId == null || !userId.matches(PATTERN_USER_ID)) {

@@ -13,4 +13,13 @@ public record UserInfo(Long id, String userId, String email, String gender, Stri
                 model.getBirth().toString()
         );
     }
+
+    public UserModel toModel() {
+        return new UserModel(
+                userId,
+                email,
+                gender,
+                birth
+        );
+    }
 }
