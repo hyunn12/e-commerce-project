@@ -21,7 +21,6 @@ public class UserService {
     }
 
     public UserModel findByUserId(String userId) {
-        return null;
+        return userRepository.getUserByUserId(userId);
     }
-
 }

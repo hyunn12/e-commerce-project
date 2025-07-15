@@ -14,8 +14,8 @@ public class UserFacade {
         return UserInfo.from(userService.save(info.toModel()));
     }
 
-    public UserInfo getUserInfo() {
-        return null;
+    public UserInfo getUserInfo(String userId) {
+        return UserInfo.from(userService.findByUserId(userId));
     }
 
 }

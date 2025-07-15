@@ -2,7 +2,6 @@ package com.loopers.infrastructure.user;
 
 import com.loopers.domain.user.UserModel;
 import com.loopers.domain.user.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +23,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public UserModel getUserByUserId(String userId) {
-        return userJpaRepository.findByUserId(userId).orElseThrow(EntityNotFoundException::new);
+        return userJpaRepository.findByUserId(userId).orElse(null);
     }
 }
