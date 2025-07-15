@@ -2,6 +2,7 @@ package com.loopers.interfaces.api.user;
 
 import com.loopers.application.user.UserFacade;
 import com.loopers.interfaces.api.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,16 +21,11 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ApiResponse<UserDto.UserResponse> getUserInfo() {
-        return ApiResponse.success(
-                new UserDto.UserResponse(
-                        1L,
-                        "test user",
-                        "test@test.com",
-                        "F",
-                        "2000-12-25"
-                )
-        );
+    public ApiResponse<UserDto.UserResponse> getUserInfo(HttpServletRequest request) {
+
+        String userId = (String) request.getAttribute("userId");
+
+        return ApiResponse.success(UserDto.UserResponse.from(userFacade.getUserInfo(userId)));
     }
 
 }
