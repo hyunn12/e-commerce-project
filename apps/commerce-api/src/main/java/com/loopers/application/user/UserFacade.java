@@ -1,6 +1,10 @@
 package com.loopers.application.user;
 
+import com.loopers.domain.user.UserModel;
 import com.loopers.domain.user.UserService;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +19,10 @@ public class UserFacade {
     }
 
     public UserInfo getUserInfo(String userId) {
-        return UserInfo.from(userService.findByUserId(userId));
+        UserModel user = userService.findByUserId(userId);
+        if (user == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 회원입니다.");
+        }
+        return UserInfo.from(user);
     }
-
 }

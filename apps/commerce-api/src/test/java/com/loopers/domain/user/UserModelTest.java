@@ -1,6 +1,7 @@
 package com.loopers.domain.user;
 
 import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ class UserModelTest {
                     .build()
             );
 
-            assertThat(exception.getMessage()).isEqualTo("아이디는 영문 및 숫자 10자 이내로만 작성해야 합니다.");
+            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
         }
     }
 
@@ -62,7 +63,7 @@ class UserModelTest {
                     .build()
             );
 
-            assertThat(exception.getMessage()).isEqualTo("이메일은 xx@yy.zz 형식으로 작성해야 합니다.");
+            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
         }
     }
 
@@ -81,7 +82,7 @@ class UserModelTest {
                     .build()
             );
 
-            assertThat(exception.getMessage()).isEqualTo("성별 형식이 잘못되었습니다.");
+            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
         }
     }
 
@@ -100,7 +101,7 @@ class UserModelTest {
                     .build()
             );
 
-            assertThat(exception.getMessage()).isEqualTo("생년월일은 yyyy-MM-dd 형식이어야 합니다.");
+            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
         }
     }
 

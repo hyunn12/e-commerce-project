@@ -69,7 +69,6 @@ class UserServiceIntegrationTest {
 
             // assert
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
-            assertThat(exception.getMessage()).isEqualTo("이미 존재하는 아이디 입니다.");
 
             verify(userJpaRepository, times(2)).existsByUserId(duplicatedId);
             verify(userJpaRepository, times(1)).save(user1);

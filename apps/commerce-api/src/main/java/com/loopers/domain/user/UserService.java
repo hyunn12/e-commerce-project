@@ -21,10 +21,6 @@ public class UserService {
     }
 
     public UserModel findByUserId(String userId) {
-        UserModel user = userRepository.getUserByUserId(userId);
-        if (user == null) {
-            throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 회원입니다.");
-        }
-        return user;
+        return userRepository.getUserByUserId(userId);
     }
 }
