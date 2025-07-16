@@ -27,7 +27,7 @@ class PointModelTest {
 
     @DisplayName("0 이하의 정수로 포인트를 충전 시 예외 발생")
     @Test
-    void addInvalidPoint() {
+    void addInvalidPoint_returnBadRequest() {
         // arrange
         int current = 10000;
 //        int amount = -10000;
