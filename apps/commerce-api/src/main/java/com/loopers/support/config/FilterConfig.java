@@ -15,6 +15,7 @@ public class FilterConfig {
         registrationBean.setFilter(new UserIdFilter());
         registrationBean.addUrlPatterns(
                 "/api/v1/users/me",
+                "/api/v1/points",
                 "/api/v1/points/**"
         );
         registrationBean.setOrder(1);
