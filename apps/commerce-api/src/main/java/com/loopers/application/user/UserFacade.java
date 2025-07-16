@@ -1,5 +1,7 @@
 package com.loopers.application.user;
 
+import com.loopers.domain.point.PointModel;
+import com.loopers.domain.point.PointService;
 import com.loopers.domain.user.UserModel;
 import com.loopers.domain.user.UserService;
 import com.loopers.support.error.CoreException;
@@ -13,9 +15,16 @@ import org.springframework.stereotype.Component;
 public class UserFacade {
 
     private final UserService userService;
+    private final PointService pointService;
 
+    @Transactional
     public UserInfo join(UserInfo info) {
-        return UserInfo.from(userService.save(info.toModel()));
+        UserInfo joinInfo = UserInfo.from(userService.save(info.toModel()));
+
+        // 포인트 초기화
+        pointService.save(new PointModel(joinInfo.userId(), 0));
+
+        return joinInfo;
     }
 
     public UserInfo getUserInfo(String userId) {
