@@ -1,0 +1,5 @@
+### 회원 가입
+POST {{commerce-api}}/api/v1/users
+
+### 회원 정보 조회
+GET {{commerce-api}}/api/v1/users/me
