@@ -13,7 +13,11 @@ public class FilterConfig {
         FilterRegistrationBean<UserIdFilter> registrationBean = new FilterRegistrationBean<>();
 
         registrationBean.setFilter(new UserIdFilter());
-        registrationBean.addUrlPatterns("/*");
+        registrationBean.addUrlPatterns(
+                "/api/v1/users/me",
+                "/api/v1/points",
+                "/api/v1/points/**"
+        );
         registrationBean.setOrder(1);
         registrationBean.setName("userIdFilter");
 

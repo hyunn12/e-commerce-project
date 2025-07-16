@@ -17,20 +17,15 @@ public class UserIdFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest= (HttpServletRequest) servletRequest;
-        String uri = httpServletRequest.getRequestURI();
 
-        if (uri.startsWith("/api/") && !uri.equals("/api/v1/users")) {
-
-            String userId = httpServletRequest.getHeader(USER_ID_HEADER);
-            if (userId == null || userId.isEmpty()) {
-                ((HttpServletResponse) servletResponse).sendError(HttpStatus.UNAUTHORIZED.value(), USER_ID_HEADER+" 헤더가 존재하지 않습니다.");
-                return;
-            }
-
-            httpServletRequest.setAttribute(USER_ID_ATTR, userId);
+        String userId = httpServletRequest.getHeader(USER_ID_HEADER);
+        if (userId == null || userId.isEmpty()) {
+            ((HttpServletResponse) servletResponse).sendError(HttpStatus.BAD_REQUEST.value(), USER_ID_HEADER+" 헤더가 존재하지 않습니다.");
+            return;
         }
+
+        httpServletRequest.setAttribute(USER_ID_ATTR, userId);
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
-
 }
