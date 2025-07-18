@@ -1,5 +1,13 @@
 ### 회원 가입
 POST {{commerce-api}}/api/v1/users
+Content-Type: application/json
+
+{
+  "userId": "test123",
+  "email": "email@test.com",
+  "gender": "F",
+  "birth": "2000-01-01"
+}
 
 ### 회원 정보 조회
 GET {{commerce-api}}/api/v1/users/me

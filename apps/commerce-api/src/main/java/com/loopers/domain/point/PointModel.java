@@ -5,6 +5,8 @@ import com.loopers.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static com.loopers.support.utils.Validation.Message.MESSAGE_POINT_CHARGE;
+
 @Entity
 @Table(name = "point")
 @Getter
@@ -27,7 +29,7 @@ public class PointModel {
 
     public void addPoint(int amount) {
         if (amount <= 0) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "충전할 포인트는 0보다 커야 합니다.");
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_POINT_CHARGE);
         }
         this.point += amount;
     }

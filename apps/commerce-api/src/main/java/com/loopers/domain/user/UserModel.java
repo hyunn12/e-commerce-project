@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+import static com.loopers.support.utils.Validation.Message.*;
+import static com.loopers.support.utils.Validation.Pattern.*;
+
 @Entity
 @Table(name = "user")
 @Getter
@@ -31,24 +34,20 @@ public class UserModel {
 
     @Builder(builderMethodName = "saveBuilder")
     public UserModel(String userId, String email, String gender, String birth) {
-        final String PATTERN_USER_ID = "^[a-zA-Z0-9]{1,10}$";
-        final String PATTERN_EMAIL = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-        final String PATTERN_BIRTH = "^\\d{4}-\\d{2}-\\d{2}$";
-
         if (userId == null || !userId.matches(PATTERN_USER_ID)) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "아이디는 영문 및 숫자 10자 이내로만 작성해야 합니다.");
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_USER_ID);
         }
 
         if (email == null || !email.matches(PATTERN_EMAIL)) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "이메일은 xx@yy.zz 형식으로 작성해야 합니다.");
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_EMAIL);
         }
 
-        if (gender == null || !(gender.equals("M") || gender.equals("F"))) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "성별 형식이 잘못되었습니다.");
+        if (gender == null || !gender.matches(PATTERN_GENDER)) {
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_GENDER);
         }
 
         if (birth == null || !birth.matches(PATTERN_BIRTH)) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "생년월일은 yyyy-MM-dd 형식이어야 합니다.");
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_BIRTH);
         }
 
         this.userId = userId;
@@ -56,5 +55,4 @@ public class UserModel {
         this.gender = gender;
         this.birth = LocalDate.parse(birth);
     }
-
 }
