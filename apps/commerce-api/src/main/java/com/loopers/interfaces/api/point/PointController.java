@@ -3,6 +3,7 @@ package com.loopers.interfaces.api.point;
 import com.loopers.application.point.PointFacade;
 import com.loopers.interfaces.api.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,7 @@ public class PointController {
     @PostMapping("/charge")
     public ApiResponse<PointDto.PointResponse> charge(
             @RequestHeader("X-USER-ID") String userId,
-            @RequestBody PointDto.ChargeRequest chargeRequest
+            @RequestBody @Valid PointDto.ChargeRequest chargeRequest
     ) {
         return ApiResponse.success(PointDto.PointResponse.from(pointFacade.charge(chargeRequest.toInfo(userId))));
     }

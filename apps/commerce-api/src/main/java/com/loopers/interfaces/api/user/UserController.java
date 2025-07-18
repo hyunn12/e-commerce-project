@@ -2,6 +2,7 @@ package com.loopers.interfaces.api.user;
 
 import com.loopers.application.user.UserFacade;
 import com.loopers.interfaces.api.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ public class UserController {
 
     @PostMapping
     public ApiResponse<UserDto.UserResponse> joinUser(
-            @RequestBody UserDto.JoinRequest request
+            @RequestBody @Valid UserDto.JoinRequest request
     ) {
         return ApiResponse.success(UserDto.UserResponse.from(userFacade.join(request.toInfo())));
     }
