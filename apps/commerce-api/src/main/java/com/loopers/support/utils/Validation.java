@@ -5,7 +5,7 @@ public class Validation {
 
     public static final class Pattern {
         public static final String PATTERN_USER_ID = "^[a-zA-Z0-9]{1,10}$";
-        public static final String PATTERN_EMAIL = "^[a-z]+@[a-z]+\\.[a-z]{2,}$";
+        public static final String PATTERN_EMAIL = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         public static final String PATTERN_GENDER = "^([MF])$";
         public static final String PATTERN_BIRTH = "^\\d{4}-\\d{2}-\\d{2}$";
     }
