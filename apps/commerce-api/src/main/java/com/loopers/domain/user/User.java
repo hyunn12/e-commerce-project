@@ -18,7 +18,7 @@ import static com.loopers.support.utils.Validation.Pattern.*;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserModel {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class UserModel {
     private LocalDate birth;
 
     @Builder(builderMethodName = "saveBuilder")
-    public UserModel(String userId, String email, String gender, String birth) {
+    public User(String userId, String email, String gender, String birth) {
         if (userId == null || !userId.matches(PATTERN_USER_ID)) {
             throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_USER_ID);
         }

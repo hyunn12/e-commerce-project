@@ -5,10 +5,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository {
 
-    UserModel save(UserModel userModel);
+    User save(User user);
 
     boolean existsByUserId(String userId);
 
-    UserModel getUserByUserId(String userId);
+    User getUserByUserId(String userId);
 
 }

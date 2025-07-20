@@ -11,16 +11,16 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserModel save(UserModel userModel) {
+    public User save(User user) {
         // 가입 확인
-        if (userRepository.existsByUserId(userModel.getUserId())) {
+        if (userRepository.existsByUserId(user.getUserId())) {
             throw new CoreException(ErrorType.BAD_REQUEST, "이미 존재하는 아이디 입니다.");
         }
 
-        return userRepository.save(userModel);
+        return userRepository.save(user);
     }
 
-    public UserModel findByUserId(String userId) {
+    public User findByUserId(String userId) {
         return userRepository.getUserByUserId(userId);
     }
 }

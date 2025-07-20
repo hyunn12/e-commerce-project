@@ -1,7 +1,7 @@
 package com.loopers.interfaces.api.point;
 
-import com.loopers.domain.point.PointModel;
-import com.loopers.domain.user.UserModel;
+import com.loopers.domain.point.Point;
+import com.loopers.domain.user.User;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.interfaces.api.ApiResponse;
@@ -58,9 +58,9 @@ class PointControllerE2ETest {
                 // arrange
                 final String userId = "test123";
                 final int amount = 1000;
-                UserModel user = new UserModel(userId, "test@test.com", "F", "2000-01-01");
+                User user = new User(userId, "test@test.com", "F", "2000-01-01");
                 userJpaRepository.save(user);
-                PointModel point = new PointModel(userId, 10000);
+                Point point = new Point(userId, 10000);
                 pointJpaRepository.save(point);
 
                 PointDto.ChargeRequest requestBody = new PointDto.ChargeRequest(amount);
@@ -75,7 +75,7 @@ class PointControllerE2ETest {
                 // assert
                 assertAll(
                         () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
-                        () -> assertThat(response.getBody().data().point()).isEqualTo(point.getPoint()+amount)
+                        () -> assertThat(response.getBody().data().amount()).isEqualTo(point.getPoint()+amount)
                 );
             }
         }
@@ -123,9 +123,9 @@ class PointControllerE2ETest {
                 // arrange
                 final String userId = "test123";
                 final int currentPoint = 10000;
-                UserModel user = new UserModel(userId, "test@test.com", "F", "2000-01-01");
+                User user = new User(userId, "test@test.com", "F", "2000-01-01");
                 userJpaRepository.save(user);
-                PointModel point = new PointModel(userId, currentPoint);
+                Point point = new Point(userId, currentPoint);
                 pointJpaRepository.save(point);
 
                 HttpHeaders headers = new HttpHeaders();
@@ -139,7 +139,7 @@ class PointControllerE2ETest {
                 // assert
                 assertAll(
                         () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
-                        () -> assertThat(response.getBody().data().point()).isEqualTo(currentPoint)
+                        () -> assertThat(response.getBody().data().amount()).isEqualTo(currentPoint)
                 );
             }
         }
@@ -148,7 +148,7 @@ class PointControllerE2ETest {
         @Nested
         class 조회에_실패한_후_404_Not_Found_응답을_받는다 {
 
-            @DisplayName("")
+            @DisplayName("X-USER-ID 헤더가 없을 경우")
             @Test
             void X_USER_ID_헤더가_없을_경우() {
                 // arrange, act

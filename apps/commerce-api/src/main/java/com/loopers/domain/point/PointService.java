@@ -11,21 +11,21 @@ public class PointService {
 
     private final PointRepository pointRepository;
 
-    public PointModel getPointByUserId(String userId) {
+    public Point getPointByUserId(String userId) {
         return pointRepository.getPointByUserId(userId);
     }
 
-    public PointModel charge(PointModel pointModel) {
-        PointModel currentPoint = pointRepository.getPointByUserId(pointModel.getUserId());
+    public Point charge(Point point) {
+        Point currentPoint = pointRepository.getPointByUserId(point.getUserId());
         if (currentPoint == null) {
             throw new CoreException(ErrorType.NOT_FOUND, "포인트 정보를 찾을 수 없습니다.");
         }
 
-        currentPoint.addPoint(pointModel.getPoint());
+        currentPoint.addPoint(point.getPoint());
         return pointRepository.save(currentPoint);
     }
 
-    public PointModel save(PointModel pointModel) {
-        return pointRepository.save(pointModel);
+    public Point save(Point point) {
+        return pointRepository.save(point);
     }
 }

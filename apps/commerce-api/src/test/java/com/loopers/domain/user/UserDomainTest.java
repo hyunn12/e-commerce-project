@@ -7,7 +7,7 @@ import org.junit.jupiter.api.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserModelTest {
+class UserDomainTest {
 
     static final String validId = "test123";
     static final String validEmail = "test@test.com";
@@ -25,7 +25,7 @@ class UserModelTest {
             @DisplayName("유효한 값이 주어진다면")
             @Test
             void 유효한_값이_주어진다면() {
-                assertDoesNotThrow(() -> UserModel.saveBuilder()
+                assertDoesNotThrow(() -> User.saveBuilder()
                         .userId(validId)
                         .email(validEmail)
                         .gender(validGender)
@@ -42,7 +42,7 @@ class UserModelTest {
             @DisplayName("형식에 맞지 않는 아이디라면")
             @Test
             void 형식에_맞지_않는_아이디라면() {
-                CoreException exception = assertThrows(CoreException.class, () -> UserModel.saveBuilder()
+                CoreException exception = assertThrows(CoreException.class, () -> User.saveBuilder()
                                 .userId("test1234567")
                                 .email(validEmail)
                                 .gender(validGender)
@@ -56,7 +56,7 @@ class UserModelTest {
             @DisplayName("형식에 맞지 않는 이메일이라면")
             @Test
             void 형식에_맞지_않는_이메일이라면() {
-                CoreException exception = assertThrows(CoreException.class, () -> UserModel.saveBuilder()
+                CoreException exception = assertThrows(CoreException.class, () -> User.saveBuilder()
                         .userId(validId)
                         .email("test")
                         .gender(validGender)
@@ -70,7 +70,7 @@ class UserModelTest {
             @DisplayName("유효하지 않은 성별이라면")
             @Test
             void 유효하지_않은_성별이라면() {
-                CoreException exception = assertThrows(CoreException.class, () -> UserModel.saveBuilder()
+                CoreException exception = assertThrows(CoreException.class, () -> User.saveBuilder()
                         .userId(validId)
                         .email(validEmail)
                         .gender("N")
@@ -84,7 +84,7 @@ class UserModelTest {
             @DisplayName("형식에 맞지 않는 생년월일이라면")
             @Test
             void 형식에_맞지_않는_생년월일이라면() {
-                CoreException exception = assertThrows(CoreException.class, () -> UserModel.saveBuilder()
+                CoreException exception = assertThrows(CoreException.class, () -> User.saveBuilder()
                         .userId(validId)
                         .email(validEmail)
                         .gender(validGender)

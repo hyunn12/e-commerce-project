@@ -1,21 +1,34 @@
 package com.loopers.application.user;
 
-import com.loopers.domain.user.UserModel;
+import com.loopers.domain.user.User;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record UserInfo(Long id, String userId, String email, String gender, String birth) {
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class UserInfo {
 
-    public static UserInfo from(UserModel model) {
+    private Long id;
+    private String userId;
+    private String email;
+    private String gender;
+    private String birth;
+
+    public static UserInfo from(User user) {
         return new UserInfo(
-                model.getId(),
-                model.getUserId(),
-                model.getEmail(),
-                model.getGender(),
-                model.getBirth().toString()
+                user.getId(),
+                user.getUserId(),
+                user.getEmail(),
+                user.getGender(),
+                user.getBirth().toString()
         );
     }
 
-    public UserModel toModel() {
-        return new UserModel(
+    public User toModel() {
+        return new User(
                 userId,
                 email,
                 gender,

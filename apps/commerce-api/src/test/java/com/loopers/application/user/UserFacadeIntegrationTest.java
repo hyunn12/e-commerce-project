@@ -1,8 +1,7 @@
 package com.loopers.application.user;
 
-import com.loopers.domain.point.PointModel;
+import com.loopers.domain.point.Point;
 import com.loopers.infrastructure.point.PointJpaRepository;
-import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.support.error.CoreException;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.*;
@@ -17,8 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 class UserFacadeIntegrationTest {
     // orm --
-    @Autowired
-    private UserJpaRepository userJpaRepository;
     @Autowired
     private PointJpaRepository pointJpaRepository;
     @Autowired
@@ -46,13 +43,13 @@ class UserFacadeIntegrationTest {
             void user_객체_저장에_성공한다면() {
                 // arrange
                 String userId = "test123";
-                UserInfo user = new UserInfo(null, userId, "test@test.com", "F", "2000-01-01");
+                UserCommand.Join command = new UserCommand.Join(userId, "test@test.com", "F", "2000-01-01");
 
                 // act
-                userFacade.join(user);
+                userFacade.join(command);
 
                 // assert
-                Optional<PointModel> point = pointJpaRepository.findByUserId(userId);
+                Optional<Point> point = pointJpaRepository.findByUserId(userId);
                 assertThat(point).isPresent();
                 assertThat(point.get().getPoint()).isEqualTo(0);
             }
@@ -67,11 +64,11 @@ class UserFacadeIntegrationTest {
             void user_객체_저장에_실패한다면() {
                 // arrange
                 String userId = "test123";
-                UserInfo user = new UserInfo(null, userId, "test@test.com", "F", "birth");
+                UserCommand.Join command = new UserCommand.Join(userId, "test@test.com", "F", "birth");
 
                 // act
                 assertThrows(CoreException.class, () -> {
-                    userFacade.join(user);
+                    userFacade.join(command);
                 });
 
                 // assert
