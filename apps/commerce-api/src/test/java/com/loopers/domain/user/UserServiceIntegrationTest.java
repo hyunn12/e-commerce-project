@@ -44,7 +44,7 @@ class UserServiceIntegrationTest {
             @Test
             void 유효한_값이_주어진다면() {
                 // arrange
-                UserModel user = new UserModel("test123", "test@test.com", "F", "2000-01-01");
+                User user = new User("test123", "test@test.com", "F", "2000-01-01");
 
                 // act
                 userService.save(user);
@@ -64,10 +64,10 @@ class UserServiceIntegrationTest {
                 // arrange
                 String duplicatedId = "test123";
 
-                UserModel user1 = new UserModel(duplicatedId, "test1@test.com", "F", "2000-01-01");
+                User user1 = new User(duplicatedId, "test1@test.com", "F", "2000-01-01");
                 userService.save(user1);
 
-                UserModel user2 = new UserModel(duplicatedId, "test2@test.com", "F", "2000-01-01");
+                User user2 = new User(duplicatedId, "test2@test.com", "F", "2000-01-01");
 
                 // act
                 assertThrows(CoreException.class, () -> userService.save(user2));
@@ -93,14 +93,14 @@ class UserServiceIntegrationTest {
             void 주어진_userId의_회원이_존재하는_회원이라면() {
                 // arrange
                 String userId = "test123";
-                UserModel user = new UserModel(userId, "test@test.com", "F", "2000-01-01");
+                User user = new User(userId, "test@test.com", "F", "2000-01-01");
                 userService.save(user);
 
                 // act
                 userService.findByUserId(userId);
 
                 // assert
-                Optional<UserModel> saved = userJpaRepository.findByUserId(userId);
+                Optional<User> saved = userJpaRepository.findByUserId(userId);
                 assertThat(saved.get().getEmail()).isEqualTo(user.getEmail());
             }
         }
@@ -117,7 +117,7 @@ class UserServiceIntegrationTest {
             String userId = "test123";
 
             // act
-            UserModel user = userService.findByUserId(userId);
+            User user = userService.findByUserId(userId);
 
             // assert
             assertThat(user).isNull();

@@ -12,7 +12,7 @@ import static com.loopers.support.utils.Validation.Message.MESSAGE_POINT_CHARGE;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PointModel {
+public class Point {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +22,7 @@ public class PointModel {
 
     private int point;
 
-    public PointModel(String userId, int point) {
+    public Point(String userId, int point) {
         this.userId = userId;
         this.point = point;
     }

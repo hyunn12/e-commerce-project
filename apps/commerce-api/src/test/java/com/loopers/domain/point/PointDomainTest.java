@@ -7,7 +7,7 @@ import org.junit.jupiter.api.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class PointModelTest {
+class PointDomainTest {
 
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
@@ -25,11 +25,11 @@ class PointModelTest {
                 int amount = 30000;
 
                 // act
-                PointModel pointModel = new PointModel("test123", current);
-                pointModel.addPoint(amount);
+                Point point = new Point("test123", current);
+                point.addPoint(amount);
 
                 // assert
-                assertThat(pointModel.getPoint()).isEqualTo(current+amount);
+                assertThat(point.getPoint()).isEqualTo(current+amount);
             }
         }
 
@@ -45,9 +45,9 @@ class PointModelTest {
                 int amount = -10000;
 
                 // act
-                PointModel pointModel = new PointModel("test123", current);
+                Point point = new Point("test123", current);
 
-                CoreException exception = assertThrows(CoreException.class, () -> pointModel.addPoint(amount));
+                CoreException exception = assertThrows(CoreException.class, () -> point.addPoint(amount));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -61,9 +61,9 @@ class PointModelTest {
                 int amount = 0;
 
                 // act
-                PointModel pointModel = new PointModel("test123", current);
+                Point point = new Point("test123", current);
 
-                CoreException exception = assertThrows(CoreException.class, () -> pointModel.addPoint(amount));
+                CoreException exception = assertThrows(CoreException.class, () -> point.addPoint(amount));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);

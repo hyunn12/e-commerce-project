@@ -1,5 +1,6 @@
 package com.loopers.interfaces.api.user;
 
+import com.loopers.application.user.UserCommand;
 import com.loopers.application.user.UserInfo;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -19,25 +20,24 @@ public class UserDto {
             @NotNull @Pattern(regexp = PATTERN_BIRTH, message = MESSAGE_BIRTH)
             String birth
     ) {
-        public UserInfo toInfo() {
-            return new UserInfo(
-                    null,
-                    userId,
-                    email,
-                    gender,
-                    birth
-            );
+        public UserCommand.Join toCommand() {
+            return UserCommand.Join.builder()
+                    .userId(userId)
+                    .email(email)
+                    .gender(gender)
+                    .birth(birth)
+                    .build();
         }
     }
 
     public record UserResponse(Long id, String userId, String email, String gender, String birth) {
         public static UserResponse from(UserInfo info) {
             return new UserResponse(
-                    info.id(),
-                    info.userId(),
-                    info.email(),
-                    info.gender(),
-                    info.birth()
+                    info.getId(),
+                    info.getUserId(),
+                    info.getEmail(),
+                    info.getGender(),
+                    info.getBirth()
             );
         }
     }

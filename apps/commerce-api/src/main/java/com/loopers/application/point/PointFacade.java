@@ -14,8 +14,8 @@ public class PointFacade {
         return PointInfo.from(pointService.getPointByUserId(userId));
     }
 
-    public PointInfo charge(PointInfo info) {
-        return PointInfo.from(pointService.charge(info.toModel()));
+    public PointInfo charge(PointCommand.Charge command) {
+        return PointInfo.from(pointService.charge(command.toDomain()));
     }
 
 }

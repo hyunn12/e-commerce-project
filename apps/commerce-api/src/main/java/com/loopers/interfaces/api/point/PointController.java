@@ -14,20 +14,19 @@ public class PointController {
 
     private final PointFacade pointFacade;
 
-    @PostMapping("/charge")
-    public ApiResponse<PointDto.PointResponse> charge(
-            @RequestHeader("X-USER-ID") String userId,
-            @RequestBody @Valid PointDto.ChargeRequest chargeRequest
-    ) {
-        return ApiResponse.success(PointDto.PointResponse.from(pointFacade.charge(chargeRequest.toInfo(userId))));
-    }
-
     @GetMapping
     public ApiResponse<PointDto.PointResponse> getPoint(
-            HttpServletRequest request
+            HttpServletRequest httpServletRequest
     ) {
-        String userId = (String) request.getAttribute("userId");
+        String userId = (String) httpServletRequest.getAttribute("userId");
         return ApiResponse.success(PointDto.PointResponse.from(pointFacade.getPointByUserId(userId)));
     }
 
+    @PostMapping("/charge")
+    public ApiResponse<PointDto.PointResponse> charge(
+            @RequestHeader("X-USER-ID") String userId,
+            @RequestBody @Valid PointDto.ChargeRequest request
+    ) {
+        return ApiResponse.success(PointDto.PointResponse.from(pointFacade.charge(request.toCommand(userId))));
+    }
 }

@@ -17,7 +17,7 @@ public class UserController {
     public ApiResponse<UserDto.UserResponse> joinUser(
             @RequestBody @Valid UserDto.JoinRequest request
     ) {
-        return ApiResponse.success(UserDto.UserResponse.from(userFacade.join(request.toInfo())));
+        return ApiResponse.success(UserDto.UserResponse.from(userFacade.join(request.toCommand())));
     }
 
     @GetMapping("/me")

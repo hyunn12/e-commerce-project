@@ -1,6 +1,6 @@
 package com.loopers.domain.point;
 
-import com.loopers.domain.user.UserModel;
+import com.loopers.domain.user.User;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.support.error.CoreException;
@@ -51,18 +51,18 @@ class PointServiceIntegrationTest {
                 int current = 10000;
                 int amount = 20000;
 
-                UserModel user = new UserModel("test123", "test1@test.com", "F", "2000-01-01");
+                User user = new User("test123", "test1@test.com", "F", "2000-01-01");
                 userJpaRepository.save(user);
-                PointModel point = new PointModel(user.getUserId(), current);
+                Point point = new Point(user.getUserId(), current);
                 pointJpaRepository.save(point);
 
-                PointModel added = new PointModel(user.getUserId(), amount);
+                Point added = new Point(user.getUserId(), amount);
 
                 // act
                 pointService.charge(added);
 
                 // assert
-                Optional<PointModel> saved = pointJpaRepository.findByUserId(user.getUserId());
+                Optional<Point> saved = pointJpaRepository.findByUserId(user.getUserId());
                 assertThat(saved.get().getPoint()).isEqualTo(current+amount);
             }
         }
@@ -75,7 +75,7 @@ class PointServiceIntegrationTest {
             @Test
             void 존재하지_않는_유저_아이디라면() {
                 // arrange
-                PointModel added = new PointModel("test", 10000);
+                Point added = new Point("test", 10000);
 
                 // act
                 CoreException exception = assertThrows(CoreException.class, () ->
@@ -102,10 +102,10 @@ class PointServiceIntegrationTest {
                 // arrange
                 String userId = "test123";
                 int point = 10000;
-                pointJpaRepository.save(new PointModel(userId, point));
+                pointJpaRepository.save(new Point(userId, point));
 
                 // act
-                PointModel result = pointService.getPointByUserId(userId);
+                Point result = pointService.getPointByUserId(userId);
 
                 // assert
                 assertThat(result.getPoint()).isEqualTo(point);
@@ -120,7 +120,7 @@ class PointServiceIntegrationTest {
             @Test
             void 주어진_userId의_회원이_존재하지_않는_회원이라면() {
                 // act
-                PointModel result = pointService.getPointByUserId("test123");
+                Point result = pointService.getPointByUserId("test123");
 
                 // assert
                 assertThat(result).isNull();
