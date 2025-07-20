@@ -2,12 +2,8 @@ package com.loopers.domain.user;
 
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.support.error.CoreException;
-import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -21,108 +17,102 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 class UserServiceIntegrationTest {
-
-    @Autowired
-    private UserService userService;
-
+    // orm --
     @MockitoSpyBean
     private UserJpaRepository userJpaRepository;
-
     @Autowired
     private DatabaseCleanUp databaseCleanUp;
+
+    // sut --
+    @Autowired
+    private UserService userService;
 
     @AfterEach
     void tearDown() {
         databaseCleanUp.truncateAllTables();
     }
 
-    @DisplayName("회원 가입 시")
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
-    class Join {
+    class 회원_가입_시 {
 
-        @DisplayName("정상 데이터로 회원가입 시 저장됨")
-        @Test
-        void joinWithValidData() {
-            // arrange
-            UserModel user = new UserModel("test123", "test@test.com", "F", "2000-01-01");
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 정상적으로_회원_가입이_수행된다 {
 
-            // act
-            userService.save(user);
+            @DisplayName("유효한 값이 주어진다면")
+            @Test
+            void 유효한_값이_주어진다면() {
+                // arrange
+                UserModel user = new UserModel("test123", "test@test.com", "F", "2000-01-01");
 
-            // assert
-            verify(userJpaRepository, times(1)).save(user);
+                // act
+                userService.save(user);
+
+                // assert
+                verify(userJpaRepository, times(1)).save(user);
+            }
         }
 
-        @DisplayName("가입된 ID 인 경우 예외 발생 spy")
-        @Test
-        void joinWithDuplicatedId_bySpy() {
-            // arrange
-            String duplicatedId = "test123";
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 회원_가입에_실패한_후_400_Bad_Request_예외가_발생한다 {
 
-            UserModel user1 = new UserModel(duplicatedId, "test1@test.com", "F", "2000-01-01");
-            userService.save(user1);
+            @DisplayName("가입된 아이디가 주어진다면")
+            @Test
+            void 가입된_아이디가_주어진다면() {
+                // arrange
+                String duplicatedId = "test123";
 
-            UserModel user2 = new UserModel(duplicatedId, "test2@test.com", "F", "2000-01-01");
+                UserModel user1 = new UserModel(duplicatedId, "test1@test.com", "F", "2000-01-01");
+                userService.save(user1);
 
-            // act
-            CoreException exception = assertThrows(CoreException.class, () -> userService.save(user2));
+                UserModel user2 = new UserModel(duplicatedId, "test2@test.com", "F", "2000-01-01");
 
-            // assert
-            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+                // act
+                assertThrows(CoreException.class, () -> userService.save(user2));
 
-            verify(userJpaRepository, times(2)).existsByUserId(duplicatedId);
-            verify(userJpaRepository, times(1)).save(user1);
-            verify(userJpaRepository, times(0)).save(user2);
+                // assert
+                verify(userJpaRepository, times(2)).existsByUserId(duplicatedId);
+                verify(userJpaRepository, times(1)).save(user1);
+                verify(userJpaRepository, times(0)).save(user2);
+            }
         }
-
-        @DisplayName("가입된 ID 인 경우 예외 발생")
-        @Test
-        void joinWithDuplicatedId() {
-            // arrange
-            String duplicatedId = "test123";
-            UserModel user1 = new UserModel(duplicatedId, "test1@test.com", "F", "2000-01-01");
-            userService.save(user1);
-
-            UserModel user2 = new UserModel(duplicatedId, "test2@test.com", "F", "2000-01-01");
-
-            // act
-            CoreException exception = assertThrows(CoreException.class, () -> userService.save(user2));
-
-            // assert
-            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
-            assertThat(exception.getMessage()).isEqualTo("이미 존재하는 아이디 입니다.");
-
-            Optional<UserModel> saved = userJpaRepository.findByUserId(duplicatedId);
-            assertThat(saved).isPresent();
-            assertThat(saved.get().getEmail()).isEqualTo("test1@test.com");
-        }
-
     }
 
-    @DisplayName("내 정보 조회 시")
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
-    class GetUser {
+    class 내_정보_조회_시 {
 
-        @DisplayName("해당 아이디의 회원이 존재할 경우, 회원 정보가 반환됨")
-        @Test
-        void getUserWithValidUserId() {
-            // arrange
-            String userId = "test123";
-            UserModel user = new UserModel(userId, "test1@test.com", "F", "2000-01-01");
-            userService.save(user);
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 회원정보를_반환한다 {
 
-            // act
-            userService.findByUserId(userId);
+            @DisplayName("주어진 userId의 회원이 존재하는 회원이라면")
+            @Test
+            void 주어진_userId의_회원이_존재하는_회원이라면() {
+                // arrange
+                String userId = "test123";
+                UserModel user = new UserModel(userId, "test@test.com", "F", "2000-01-01");
+                userService.save(user);
 
-            // assert
-            Optional<UserModel> saved = userJpaRepository.findByUserId(userId);
-            assertThat(saved).isPresent();
-            assertThat(saved.get().getEmail()).isEqualTo("test1@test.com");
+                // act
+                userService.findByUserId(userId);
+
+                // assert
+                Optional<UserModel> saved = userJpaRepository.findByUserId(userId);
+                assertThat(saved.get().getEmail()).isEqualTo(user.getEmail());
+            }
         }
+    }
 
-        @DisplayName("해당 아이디의 회원이 존재하지 않을 경우, null이 반환됨")
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class Null을_반환한다 {
+
+        @DisplayName("주어진 userId의 회원이 존재하지 않는 회원이라면")
         @Test
-        void getUserWithInvalidUserId_returnNull() {
+        void 주어진_userId의_회원이_존재하지_않는_회원이라면() {
             // arrange
             String userId = "test123";
 

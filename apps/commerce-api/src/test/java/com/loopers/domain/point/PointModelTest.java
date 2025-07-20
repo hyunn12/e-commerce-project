@@ -2,43 +2,72 @@ package com.loopers.domain.point;
 
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PointModelTest {
 
-    @DisplayName("유효한 포인트 충전 시 정상적으로 포인트가 충전됨")
-    @Test
-    void addValidPoint() {
-        // arrange
-        int current = 10000;
-        int amount = 30000;
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class 포인트_충전_시 {
 
-        // act
-        PointModel pointModel = new PointModel("test123", current);
-        pointModel.addPoint(amount);
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 포인트_금액_검증에_성공한다 {
 
-        // assert
-        assertThat(pointModel.getPoint()).isEqualTo(current+amount);
-    }
+            @DisplayName("유효한 포인트라면")
+            @Test
+            void validPoint() {
+                // arrange
+                int current = 10000;
+                int amount = 30000;
 
-    @DisplayName("0 이하의 정수로 포인트를 충전 시 예외 발생")
-    @Test
-    void addInvalidPoint_returnBadRequest() {
-        // arrange
-        int current = 10000;
-//        int amount = -10000;
-        int amount = 0;
+                // act
+                PointModel pointModel = new PointModel("test123", current);
+                pointModel.addPoint(amount);
 
-        // act
-        PointModel pointModel = new PointModel("test123", current);
+                // assert
+                assertThat(pointModel.getPoint()).isEqualTo(current+amount);
+            }
+        }
 
-        CoreException exception = assertThrows(CoreException.class, () -> pointModel.addPoint(amount));
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 포인트_검증에_실패한_후_404_Not_Found_예외가_발생한다 {
 
-        // assert
-        assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+            @DisplayName("포인트가 음수라면")
+            @Test
+            void 포인트가_음수라면() {
+                // arrange
+                int current = 10000;
+                int amount = -10000;
+
+                // act
+                PointModel pointModel = new PointModel("test123", current);
+
+                CoreException exception = assertThrows(CoreException.class, () -> pointModel.addPoint(amount));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+            }
+
+            @DisplayName("포인트가 0이라면")
+            @Test
+            void 포인트가_0이라면() {
+                // arrange
+                int current = 10000;
+                int amount = 0;
+
+                // act
+                PointModel pointModel = new PointModel("test123", current);
+
+                CoreException exception = assertThrows(CoreException.class, () -> pointModel.addPoint(amount));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+            }
+        }
     }
 }

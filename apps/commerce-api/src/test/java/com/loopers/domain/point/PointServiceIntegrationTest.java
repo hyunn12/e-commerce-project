@@ -6,10 +6,7 @@ import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -20,10 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class PointServiceIntegrationTest {
-
-    @Autowired
-    private PointService pointService;
-
+    // orm --
     @Autowired
     private PointJpaRepository pointJpaRepository;
 
@@ -33,84 +27,104 @@ class PointServiceIntegrationTest {
     @Autowired
     private DatabaseCleanUp databaseCleanUp;
 
+    // sut --
+    @Autowired
+    private PointService pointService;
+
     @AfterEach
     void tearDown() {
         databaseCleanUp.truncateAllTables();
     }
 
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
-    @DisplayName("포인트 충전")
-    class Charge {
+    class 포인트_충전_시 {
 
-        @DisplayName("유효한 포인트 충전 시 정상적으로 포인트가 충전됨")
-        @Test
-        void chargeWithValidPoint() {
-            // arrange
-            int current = 10000;
-            int amount = 20000;
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 정상적으로_포인트가_충전된다 {
 
-            UserModel user = new UserModel("test123", "test1@test.com", "F", "2000-01-01");
-            userJpaRepository.save(user);
-            PointModel point = new PointModel(user.getUserId(), current);
-            pointJpaRepository.save(point);
+            @DisplayName("유효한 포인트라면")
+            @Test
+            void 유효한_포인트라면() {
+                // arrange
+                int current = 10000;
+                int amount = 20000;
 
-            PointModel added = new PointModel(user.getUserId(), amount);
+                UserModel user = new UserModel("test123", "test1@test.com", "F", "2000-01-01");
+                userJpaRepository.save(user);
+                PointModel point = new PointModel(user.getUserId(), current);
+                pointJpaRepository.save(point);
 
-            // act
-            PointModel charged = pointService.charge(added);
+                PointModel added = new PointModel(user.getUserId(), amount);
 
-            // assert
-            Optional<PointModel> saved = pointJpaRepository.findByUserId(user.getUserId());
-            assertThat(saved).isPresent();
-            assertThat(saved.get().getPoint()).isEqualTo(current+amount);
-            assertThat(charged.getPoint()).isEqualTo(current+amount);
+                // act
+                pointService.charge(added);
+
+                // assert
+                Optional<PointModel> saved = pointJpaRepository.findByUserId(user.getUserId());
+                assertThat(saved.get().getPoint()).isEqualTo(current+amount);
+            }
         }
 
-        @DisplayName("존재하지 않는 유저 ID 로 충전을 시도한 경우 예외 발생")
-        @Test
-        void chargeWithInvalidUserId_returnNotFound() {
-            // arrange
-            PointModel added = new PointModel("test", 10000);
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 충전에_실패한_후_400_Bad_Request_예외가_발생한다 {
 
-            // act
-            CoreException exception = assertThrows(CoreException.class, () ->
-                    pointService.charge(added)
-            );
+            @DisplayName("존재하지 않는 유저 아이디라면")
+            @Test
+            void 존재하지_않는_유저_아이디라면() {
+                // arrange
+                PointModel added = new PointModel("test", 10000);
 
-            // assert
-            assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+                // act
+                CoreException exception = assertThrows(CoreException.class, () ->
+                        pointService.charge(added)
+                );
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+            }
         }
     }
 
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
-    @DisplayName("포인트 조회")
-    class GetPoint {
+    class 포인트_조회_시 {
 
-        @DisplayName("해당 ID 의 회원이 존재할 경우, 보유 포인트를 반환함")
-        @Test
-        void getPointWithValidId() {
-            // arrange
-            String userId = "test123";
-            int point = 10000;
-            pointJpaRepository.save(new PointModel(userId, point));
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 보유_포인트를_반환한다 {
 
-            // act
-            PointModel result = pointService.getPointByUserId(userId);
+            @DisplayName("주어진 userId의 회원이 존재하는 회원이라면")
+            @Test
+            void 주어진_userId의_회원이_존재하는_회원이라면() {
+                // arrange
+                String userId = "test123";
+                int point = 10000;
+                pointJpaRepository.save(new PointModel(userId, point));
 
-            // assert
-            assertThat(result).isNotNull();
-            assertThat(result.getPoint()).isEqualTo(point);
+                // act
+                PointModel result = pointService.getPointByUserId(userId);
+
+                // assert
+                assertThat(result.getPoint()).isEqualTo(point);
+            }
         }
 
-        @Test
-        @DisplayName("해당 ID 의 회원이 존재하지 않을 경우, null이 반환됨")
-        void getPointWithInvalidUserId_returnNull() {
-            // act
-            PointModel result = pointService.getPointByUserId("test123");
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class Null을_반환한다 {
 
-            // assert
-            assertThat(result).isNull();
+            @DisplayName("주어진 userId의 회원이 존재하지 않는 회원이라면")
+            @Test
+            void 주어진_userId의_회원이_존재하지_않는_회원이라면() {
+                // act
+                PointModel result = pointService.getPointByUserId("test123");
+
+                // assert
+                assertThat(result).isNull();
+            }
         }
-
     }
 }

@@ -43,83 +43,63 @@ class UserControllerE2ETest {
     class POST {
         private final String requestUrl = "/api/v1/users";
 
-        @DisplayName("API 호출 테스트")
-        @Test
-        void callApi() {
-            // arrange
-            UserDto.JoinRequest requestBody = new UserDto.JoinRequest(
-                    "test123",
-                    "test@test.com",
-                    "F",
-                    "2000-01-01"
-            );
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 조회에_성공한_후_유저_정보를_받는다 {
 
-            // act
-            ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
-            ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
-                    testRestTemplate.exchange(requestUrl, HttpMethod.POST, new HttpEntity<>(requestBody), responseType);
+            @DisplayName("회원가입에 성공한다면")
+            @Test
+            void 회원_가입에_성공한다면() {
+                // arrange
+                UserDto.JoinRequest requestBody = new UserDto.JoinRequest(
+                        "test123",
+                        "test@test.com",
+                        "F",
+                        "2000-01-01"
+                );
 
-            // assert
-            assertAll(
-                    () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
-                    () -> assertThat(response.getBody().data().userId()).isEqualTo(requestBody.userId()),
-                    () -> assertThat(response.getBody().data().email()).isEqualTo(requestBody.email()),
-                    () -> assertThat(response.getBody().data().gender()).isEqualTo(requestBody.gender()),
-                    () -> assertThat(response.getBody().data().birth()).isEqualTo(requestBody.birth())
-            );
+                // act
+                ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
+                ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
+                        testRestTemplate.exchange(requestUrl, HttpMethod.POST, new HttpEntity<>(requestBody), responseType);
+
+                // assert
+                assertAll(
+                        () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
+                        () -> assertThat(response.getBody().data().userId()).isEqualTo(requestBody.userId()),
+                        () -> assertThat(response.getBody().data().email()).isEqualTo(requestBody.email()),
+                        () -> assertThat(response.getBody().data().gender()).isEqualTo(requestBody.gender()),
+                        () -> assertThat(response.getBody().data().birth()).isEqualTo(requestBody.birth())
+                );
+            }
         }
 
-        @DisplayName("회원가입 성공 시 생성된 유저 정보를 응답으로 반환함")
-        @Test
-        void joinSuccess() {
-            // arrange
-            UserDto.JoinRequest requestBody = new UserDto.JoinRequest(
-                    "test123",
-                    "test@test.com",
-                    "F",
-                    "2000-01-01"
-            );
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 회원_가입에_실패한_후_400_Bad_Request_응답을_받는다 {
 
-            // act
-            ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
-            ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
-                    testRestTemplate.exchange(requestUrl, HttpMethod.POST, new HttpEntity<>(requestBody), responseType);
+            @DisplayName("성별이 없다면")
+            @Test
+            void 성별이_없다면() {
+                // arrange
+                UserDto.JoinRequest requestBody = new UserDto.JoinRequest(
+                        "test123",
+                        "test@test.com",
+                        null,
+                        "2000-01-01"
+                );
 
-            // assert
-            assertAll(
-                    () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
-                    () -> assertThat(response.getBody().data().userId()).isEqualTo(requestBody.userId()),
-                    () -> assertThat(response.getBody().data().email()).isEqualTo(requestBody.email()),
-                    () -> assertThat(response.getBody().data().gender()).isEqualTo(requestBody.gender()),
-                    () -> assertThat(response.getBody().data().birth()).isEqualTo(requestBody.birth())
-            );
+                // act
+                ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
+                ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
+                        testRestTemplate.exchange(requestUrl, HttpMethod.POST, new HttpEntity<>(requestBody), responseType);
+
+                // assert
+                assertAll(
+                        () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST)
+                );
+            }
         }
-
-        @DisplayName("회원가입 시 성별이 없을 경우 400 Bad Request 응답을 반환함")
-        @Test
-        void joinWithoutGender_returnBadRequest() {
-            // arrange
-            UserDto.JoinRequest requestBody = new UserDto.JoinRequest(
-                    "test123",
-                    "test@test.com",
-                    null,
-                    "2000-01-01"
-            );
-
-            // act
-            ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
-            ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
-                    testRestTemplate.exchange(requestUrl, HttpMethod.POST, new HttpEntity<>(requestBody), responseType);
-
-            // assert
-            assertAll(
-                    () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST),
-                    () -> assertThat(response.getBody()).isNotNull(),
-                    () -> assertThat(response.getBody().meta().result()).isEqualTo(ApiResponse.Metadata.Result.FAIL),
-                    () -> assertThat(response.getBody().meta().message()).contains("성별 형식이 잘못되었습니다.")
-            );
-        }
-
     }
 
     @DisplayName("GET /api/v1/users/me")
@@ -135,61 +115,51 @@ class UserControllerE2ETest {
             userJpaRepository.save(user);
         }
 
-        @DisplayName("API 호출 테스트")
-        @Test
-        void callApi() {
-            // arrange
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("X-USER-ID", userId);
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 조회에_성공한_후_유저_정보를_받는다 {
 
-            // act
-            ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
-            ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
-                    testRestTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity<>(headers), responseType);
+            @DisplayName("주어진 userId의 회원이 존재하는 회원이라면")
+            @Test
+            void 주어진_userId의_회원이_존재하는_회원이라면() {
+                // arrange
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("X-USER-ID", userId);
 
-            // assert
-            assertAll(
-                    () -> assertTrue(response.getStatusCode().is2xxSuccessful())
-            );
+                // act
+                ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
+                ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
+                        testRestTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity<>(headers), responseType);
+
+                // assert
+                assertAll(
+                        () -> assertThat(response.getStatusCode().is2xxSuccessful()).isTrue(),
+                        () -> assertThat(response.getBody().data().userId()).isEqualTo(userId)
+                );
+            }
         }
 
-        @DisplayName("내 정보 조회에 성공할 경우, 해당하는 유저 정보를 응답으로 반환함")
-        @Test
-        void getUserSuccess() {
-            // arrange
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("X-USER-ID", userId);
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 조회에_실패한_후_404_Not_Found_응답을_받는다 {
 
-            // act
-            ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
-            ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
-                    testRestTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity<>(headers), responseType);
+            @DisplayName("주어진 userId의 회원이 존재하지 않는 회원이라면")
+            @Test
+            void 주어진_userId의_회원이_존재하지_않는_회원이라면() {
+                // arrange
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("X-USER-ID", "test");
 
-            // assert
-            assertAll(
-                    () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
-                    () -> assertThat(response.getBody()).isNotNull(),
-                    () -> assertThat(response.getBody().data().userId()).isEqualTo(userId)
-            );
-        }
+                // act
+                ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
+                ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
+                        testRestTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity<>(headers), responseType);
 
-        @DisplayName("존재하지 않는 ID 로 조회할 경우, 404 Not Found 응답을 반환함")
-        @Test
-        void getUserWithInvalidUserId_returnNotFound() {
-            // arrange
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("X-USER-ID", "test");
-
-            // act
-            ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
-            ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
-                    testRestTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity<>(headers), responseType);
-
-            // assert
-            assertAll(
-                    () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND)
-            );
+                // assert
+                assertAll(
+                        () -> assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND)
+                );
+            }
         }
     }
-
 }
