@@ -49,7 +49,6 @@ erDiagram
         BIGINT ID PK "ID"
         BIGINT USER_ID FK "사용자 ID"  
         INT PRODUCT_ID FK "상품 ID"
-        BOOLEAN IS_LIKED "좋아요 여부"
         DATETIME CREATED_AT "생성일"  
         DATETIME UPDATED_AT "수정일"  
         DATETIME DELETED_AT "삭제일"  
