@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 import static com.loopers.support.utils.Validation.Message.MESSAGE_POINT_CHARGE;
 import static com.loopers.support.utils.Validation.Message.MESSAGE_POINT_CREATE;
 
+@Getter
 @Entity
 @Table(name = "point")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Point extends BaseEntity {
 

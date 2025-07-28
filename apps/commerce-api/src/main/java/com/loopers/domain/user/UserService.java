@@ -21,6 +21,6 @@ public class UserService {
     }
 
     public User findByLoginId(String loginId) {
-        return userRepository.getUserByLoginId(loginId);
+        return userRepository.getUserByLoginId(LoginId.of(loginId));
     }
 }

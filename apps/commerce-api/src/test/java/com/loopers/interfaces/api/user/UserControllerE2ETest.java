@@ -1,6 +1,6 @@
 package com.loopers.interfaces.api.user;
 
-import com.loopers.domain.user.User;
+import com.loopers.domain.user.*;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.utils.DatabaseCleanUp;
@@ -111,7 +111,12 @@ class UserControllerE2ETest {
 
         @BeforeEach
         void setData() {
-            User user = new User(loginId, "test@test.com", "F", "2000-01-01");
+            User user = User.saveBuilder()
+                    .loginId(LoginId.of(loginId))
+                    .email(Email.of("test1@test.com"))
+                    .gender(Gender.fromValue("F"))
+                    .birth(Birth.of("2000-01-01"))
+                    .build();
             userJpaRepository.save(user);
         }
 

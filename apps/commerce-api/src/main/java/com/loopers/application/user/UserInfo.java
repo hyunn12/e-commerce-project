@@ -20,19 +20,10 @@ public class UserInfo {
     public static UserInfo from(User user) {
         return new UserInfo(
                 user.getId(),
-                user.getLoginId(),
-                user.getEmail(),
-                user.getGender(),
-                user.getBirth().toString()
-        );
-    }
-
-    public User toModel() {
-        return new User(
-                loginId,
-                email,
-                gender,
-                birth
+                user.getLoginId().getValue(),
+                user.getEmail().getValue(),
+                user.getGender().getValue(),
+                user.getBirth().getValue()
         );
     }
 }

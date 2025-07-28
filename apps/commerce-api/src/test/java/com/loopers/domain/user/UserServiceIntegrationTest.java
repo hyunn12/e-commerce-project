@@ -44,7 +44,12 @@ class UserServiceIntegrationTest {
             @Test
             void 유효한_값이_주어진다면() {
                 // arrange
-                User user = new User("test123", "test@test.com", "F", "2000-01-01");
+                User user = User.saveBuilder()
+                        .loginId(LoginId.of("test123"))
+                        .email(Email.of("test@test.com"))
+                        .gender(Gender.fromValue("F"))
+                        .birth(Birth.of("2000-01-01"))
+                        .build();
 
                 // act
                 userService.save(user);
@@ -64,16 +69,26 @@ class UserServiceIntegrationTest {
                 // arrange
                 String duplicatedId = "test123";
 
-                User user1 = new User(duplicatedId, "test1@test.com", "F", "2000-01-01");
+                User user1 = User.saveBuilder()
+                        .loginId(LoginId.of(duplicatedId))
+                        .email(Email.of("test1@test.com"))
+                        .gender(Gender.fromValue("F"))
+                        .birth(Birth.of("2000-01-01"))
+                        .build();
                 userService.save(user1);
 
-                User user2 = new User(duplicatedId, "test2@test.com", "F", "2000-01-01");
+                User user2 = User.saveBuilder()
+                        .loginId(LoginId.of(duplicatedId))
+                        .email(Email.of("test2@test.com"))
+                        .gender(Gender.fromValue("F"))
+                        .birth(Birth.of("2000-01-01"))
+                        .build();
 
                 // act
                 assertThrows(CoreException.class, () -> userService.save(user2));
 
                 // assert
-                verify(userJpaRepository, times(2)).existsByLoginId(duplicatedId);
+                verify(userJpaRepository, times(2)).existsByLoginId_Value(duplicatedId);
                 verify(userJpaRepository, times(1)).save(user1);
                 verify(userJpaRepository, times(0)).save(user2);
             }
@@ -93,14 +108,20 @@ class UserServiceIntegrationTest {
             void 주어진_loginId의_회원이_존재하는_회원이라면() {
                 // arrange
                 String loginId = "test123";
-                User user = new User(loginId, "test@test.com", "F", "2000-01-01");
+
+                User user = User.saveBuilder()
+                        .loginId(LoginId.of(loginId))
+                        .email(Email.of("test@test.com"))
+                        .gender(Gender.fromValue("F"))
+                        .birth(Birth.of("2000-01-01"))
+                        .build();
                 userService.save(user);
 
                 // act
                 userService.findByLoginId(loginId);
 
                 // assert
-                Optional<User> saved = userJpaRepository.findByLoginId(loginId);
+                Optional<User> saved = userJpaRepository.findByLoginId_Value(loginId);
                 assertThat(saved.get().getEmail()).isEqualTo(user.getEmail());
             }
         }

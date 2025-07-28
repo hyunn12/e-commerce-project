@@ -1,6 +1,6 @@
 package com.loopers.domain.point;
 
-import com.loopers.domain.user.User;
+import com.loopers.domain.user.*;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.support.error.CoreException;
@@ -51,18 +51,23 @@ class PointServiceIntegrationTest {
                 int current = 10000;
                 int amount = 20000;
 
-                User user = new User("test123", "test1@test.com", "F", "2000-01-01");
+                User user = User.saveBuilder()
+                        .loginId(LoginId.of("test123"))
+                        .email(Email.of("test1@test.com"))
+                        .gender(Gender.fromValue("F"))
+                        .birth(Birth.of("2000-01-01"))
+                        .build();
                 userJpaRepository.save(user);
-                Point point = new Point(user.getLoginId(), current);
+                Point point = new Point(user.getLoginId().getValue(), current);
                 pointJpaRepository.save(point);
 
-                Point added = new Point(user.getLoginId(), amount);
+                Point added = new Point(user.getLoginId().getValue(), amount);
 
                 // act
                 pointService.charge(added);
 
                 // assert
-                Optional<Point> saved = pointJpaRepository.findByUserId(user.getLoginId());
+                Optional<Point> saved = pointJpaRepository.findByUserId(user.getLoginId().getValue());
                 assertThat(saved.get().getPoint()).isEqualTo(current+amount);
             }
         }
