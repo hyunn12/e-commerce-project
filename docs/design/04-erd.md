@@ -4,7 +4,7 @@
 - **USER**:  사용자
 - **POINT**: 포인트
 - **POINT_HISTORY**: 포인트 이력
-- **LIKE_HISTORY**: 좋아요 이력
+- **LIKE**: 좋아요
 - **BRAND**: 브랜드
 - **PRODUCT**: 상품
 - **PRODUCT_STOCK**: 재고
@@ -45,7 +45,7 @@ erDiagram
         DATETIME DELETED_AT "삭제일"  
     }
 
-    LIKE_HISTORY {  
+    LIKE {  
         BIGINT ID PK "ID"
         BIGINT USER_ID FK "사용자 ID"  
         INT PRODUCT_ID FK "상품 ID"
@@ -106,7 +106,6 @@ erDiagram
         
     PAYMENT {  
         BIGINT ID PK "ID"
-        BIGINT ORDER_ID FK "주문 ID"
         BIGINT USER_ID FK "사용자 ID"  
         INT PAYMENT_AMOUNT "결제금액"  
         VARCHAR STATUS "결제상태 (SUCCESS, FAIL, CANCEL)"  
@@ -120,11 +119,10 @@ erDiagram
     USER ||--o{ ORDER : "1:N"
     PRODUCT ||--o{ ORDER_ITEM : "1:N"
     ORDER ||--o{ ORDER_ITEM : "1:N"
-    ORDER ||--|| PAYMENT : "1:1"
-    PRODUCT ||--o{ LIKE_HISTORY : "1:N"
+    PRODUCT ||--o{ LIKE : "1:N"
     POINT ||--o{ POINT_HISTORY : "1:N"
     USER ||--|| POINT : "1:1"
-    USER ||--o{ LIKE_HISTORY : "1:N"
+    USER ||--o{ LIKE : "1:N"
     USER ||--o{ PAYMENT : "1:N"
   
 ```

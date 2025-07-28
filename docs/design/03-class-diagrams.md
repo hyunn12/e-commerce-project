@@ -26,7 +26,7 @@ classDiagram
         -String type
     }
     
-    class LikeHistory {
+    class Like {
         -Long id
         -User user
         -Product product
@@ -83,8 +83,8 @@ classDiagram
     %% 관계
     User "1" --> "1" Point : has
     Point "1" --> "*" PointHistory : contains
-    User "1" --> "*" LikeHistory : has
-    LikeHistory "*" --> "1" Product : refers_to
+    User "1" --> "*" Like : has
+    Like "*" --> "1" Product : refers_to
     Brand "1" --> "*" Product : has
     Product "1" --> "1" ProductStock : has
     User "1" --> "*" Order : has
