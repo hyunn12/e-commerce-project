@@ -53,16 +53,16 @@ class PointServiceIntegrationTest {
 
                 User user = new User("test123", "test1@test.com", "F", "2000-01-01");
                 userJpaRepository.save(user);
-                Point point = new Point(user.getUserId(), current);
+                Point point = new Point(user.getLoginId(), current);
                 pointJpaRepository.save(point);
 
-                Point added = new Point(user.getUserId(), amount);
+                Point added = new Point(user.getLoginId(), amount);
 
                 // act
                 pointService.charge(added);
 
                 // assert
-                Optional<Point> saved = pointJpaRepository.findByUserId(user.getUserId());
+                Optional<Point> saved = pointJpaRepository.findByUserId(user.getLoginId());
                 assertThat(saved.get().getPoint()).isEqualTo(current+amount);
             }
         }

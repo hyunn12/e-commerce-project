@@ -17,12 +17,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsByUserId(String userId) {
-        return userJpaRepository.existsByUserId(userId);
+    public boolean existsByLoginId(String loginId) {
+        return userJpaRepository.existsByLoginId(loginId);
     }
 
     @Override
-    public User getUserByUserId(String userId) {
-        return userJpaRepository.findByUserId(userId).orElse(null);
+    public User getUserByLoginId(String loginId) {
+        return userJpaRepository.findByLoginId(loginId).orElse(null);
     }
 }

@@ -22,13 +22,13 @@ public class UserFacade {
         UserInfo joinInfo = UserInfo.from(userService.save(command.toDomain()));
 
         // 포인트 초기화
-        pointService.save(new Point(joinInfo.getUserId(), 0));
+        pointService.save(new Point(joinInfo.getLoginId(), 0));
 
         return joinInfo;
     }
 
-    public UserInfo getUserInfo(String userId) {
-        User user = userService.findByUserId(userId);
+    public UserInfo getUserInfoByLoginId(String loginId) {
+        User user = userService.findByLoginId(loginId);
         if (user == null) {
             throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 회원입니다.");
         }

@@ -9,22 +9,22 @@ import org.springframework.http.HttpStatus;
 import java.io.IOException;
 
 @Slf4j
-public class UserIdFilter implements Filter {
+public class LoginIdFilter implements Filter {
 
-    public static final String USER_ID_HEADER = "X-USER-ID";
-    public static final String USER_ID_ATTR = "userId";
+    public static final String USER_LOGIN_ID_HEADER = "X-USER-ID";
+    public static final String USER_LOGIN_ID_ATTR = "loginId";
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest= (HttpServletRequest) servletRequest;
 
-        String userId = httpServletRequest.getHeader(USER_ID_HEADER);
-        if (userId == null || userId.isEmpty()) {
-            ((HttpServletResponse) servletResponse).sendError(HttpStatus.BAD_REQUEST.value(), USER_ID_HEADER+" 헤더가 존재하지 않습니다.");
+        String loginId = httpServletRequest.getHeader(USER_LOGIN_ID_HEADER);
+        if (loginId == null || loginId.isEmpty()) {
+            ((HttpServletResponse) servletResponse).sendError(HttpStatus.BAD_REQUEST.value(), USER_LOGIN_ID_HEADER +" 헤더가 존재하지 않습니다.");
             return;
         }
 
-        httpServletRequest.setAttribute(USER_ID_ATTR, userId);
+        httpServletRequest.setAttribute(USER_LOGIN_ID_ATTR, loginId);
 
         filterChain.doFilter(servletRequest, servletResponse);
     }

@@ -20,8 +20,8 @@ import static com.loopers.support.utils.Validation.Pattern.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @Column(name = "login_id", nullable = false)
+    private String loginId;
 
     @Column(name = "email", nullable = false)
     private String email;
@@ -33,9 +33,9 @@ public class User extends BaseEntity {
     private LocalDate birth;
 
     @Builder(builderMethodName = "saveBuilder")
-    public User(String userId, String email, String gender, String birth) {
-        if (userId == null || !userId.matches(PATTERN_USER_ID)) {
-            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_USER_ID);
+    public User(String loginId, String email, String gender, String birth) {
+        if (loginId == null || !loginId.matches(PATTERN_LOGIN_ID)) {
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_LOGIN_ID);
         }
 
         if (email == null || !email.matches(PATTERN_EMAIL)) {
@@ -50,7 +50,7 @@ public class User extends BaseEntity {
             throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_BIRTH);
         }
 
-        this.userId = userId;
+        this.loginId = loginId;
         this.email = email;
         this.gender = gender;
         this.birth = LocalDate.parse(birth);

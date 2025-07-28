@@ -73,7 +73,7 @@ class UserServiceIntegrationTest {
                 assertThrows(CoreException.class, () -> userService.save(user2));
 
                 // assert
-                verify(userJpaRepository, times(2)).existsByUserId(duplicatedId);
+                verify(userJpaRepository, times(2)).existsByLoginId(duplicatedId);
                 verify(userJpaRepository, times(1)).save(user1);
                 verify(userJpaRepository, times(0)).save(user2);
             }
@@ -88,19 +88,19 @@ class UserServiceIntegrationTest {
         @Nested
         class 회원정보를_반환한다 {
 
-            @DisplayName("주어진 userId의 회원이 존재하는 회원이라면")
+            @DisplayName("주어진 loginId의 회원이 존재하는 회원이라면")
             @Test
-            void 주어진_userId의_회원이_존재하는_회원이라면() {
+            void 주어진_loginId의_회원이_존재하는_회원이라면() {
                 // arrange
-                String userId = "test123";
-                User user = new User(userId, "test@test.com", "F", "2000-01-01");
+                String loginId = "test123";
+                User user = new User(loginId, "test@test.com", "F", "2000-01-01");
                 userService.save(user);
 
                 // act
-                userService.findByUserId(userId);
+                userService.findByLoginId(loginId);
 
                 // assert
-                Optional<User> saved = userJpaRepository.findByUserId(userId);
+                Optional<User> saved = userJpaRepository.findByLoginId(loginId);
                 assertThat(saved.get().getEmail()).isEqualTo(user.getEmail());
             }
         }
@@ -110,14 +110,14 @@ class UserServiceIntegrationTest {
     @Nested
     class Null을_반환한다 {
 
-        @DisplayName("주어진 userId의 회원이 존재하지 않는 회원이라면")
+        @DisplayName("주어진 loginId의 회원이 존재하지 않는 회원이라면")
         @Test
-        void 주어진_userId의_회원이_존재하지_않는_회원이라면() {
+        void 주어진_loginId의_회원이_존재하지_않는_회원이라면() {
             // arrange
-            String userId = "test123";
+            String loginId = "test123";
 
             // act
-            User user = userService.findByUserId(userId);
+            User user = userService.findByLoginId(loginId);
 
             // assert
             assertThat(user).isNull();

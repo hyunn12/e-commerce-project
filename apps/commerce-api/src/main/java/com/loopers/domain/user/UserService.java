@@ -13,14 +13,14 @@ public class UserService {
 
     public User save(User user) {
         // 가입 확인
-        if (userRepository.existsByUserId(user.getUserId())) {
+        if (userRepository.existsByLoginId(user.getLoginId())) {
             throw new CoreException(ErrorType.BAD_REQUEST, "이미 존재하는 아이디 입니다.");
         }
 
         return userRepository.save(user);
     }
 
-    public User findByUserId(String userId) {
-        return userRepository.getUserByUserId(userId);
+    public User findByLoginId(String loginId) {
+        return userRepository.getUserByLoginId(loginId);
     }
 }

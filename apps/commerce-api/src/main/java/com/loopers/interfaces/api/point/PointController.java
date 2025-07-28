@@ -18,8 +18,8 @@ public class PointController {
     public ApiResponse<PointDto.PointResponse> getPoint(
             HttpServletRequest httpServletRequest
     ) {
-        String userId = (String) httpServletRequest.getAttribute("userId");
-        return ApiResponse.success(PointDto.PointResponse.from(pointFacade.getPointByUserId(userId)));
+        String loginId = (String) httpServletRequest.getAttribute("loginId");
+        return ApiResponse.success(PointDto.PointResponse.from(pointFacade.getPointByUserId(loginId)));
     }
 
     @PostMapping("/charge")

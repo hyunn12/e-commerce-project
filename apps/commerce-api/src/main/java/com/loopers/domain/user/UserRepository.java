@@ -7,8 +7,8 @@ public interface UserRepository {
 
     User save(User user);
 
-    boolean existsByUserId(String userId);
+    boolean existsByLoginId(String loginId);
 
-    User getUserByUserId(String userId);
+    User getUserByLoginId(String loginId);
 
 }

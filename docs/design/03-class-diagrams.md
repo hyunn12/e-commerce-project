@@ -4,7 +4,7 @@
 classDiagram
     class User {
         -Long id
-        -String userId
+        -String loginId
         -String email
         -String gender
         -LocalDate birth

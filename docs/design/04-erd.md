@@ -17,7 +17,7 @@
 erDiagram  
     USER {  
         BIGINT ID PK "사용자 ID"  
-        VARCHAR USER_ID "아이디"
+        VARCHAR LOGIN_ID "아이디"
         VARCHAR EMAIL "이메일"
         VARCHAR GENDER "성별"
         DATETIME BIRTH "생년월일"

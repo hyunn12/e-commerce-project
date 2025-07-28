@@ -12,14 +12,14 @@ public class UserCommand {
     @Getter
     @Builder
     public static class Join {
-        private String userId;
+        private String loginId;
         private String email;
         private String gender;
         private String birth;
 
         public User toDomain() {
             return new User(
-                    userId,
+                    loginId,
                     email,
                     gender,
                     birth

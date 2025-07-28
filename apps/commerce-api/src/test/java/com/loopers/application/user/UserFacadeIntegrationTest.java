@@ -42,14 +42,14 @@ class UserFacadeIntegrationTest {
             @Test
             void user_객체_저장에_성공한다면() {
                 // arrange
-                String userId = "test123";
-                UserCommand.Join command = new UserCommand.Join(userId, "test@test.com", "F", "2000-01-01");
+                String loginId = "test123";
+                UserCommand.Join command = new UserCommand.Join(loginId, "test@test.com", "F", "2000-01-01");
 
                 // act
                 userFacade.join(command);
 
                 // assert
-                Optional<Point> point = pointJpaRepository.findByUserId(userId);
+                Optional<Point> point = pointJpaRepository.findByUserId(loginId);
                 assertThat(point).isPresent();
                 assertThat(point.get().getPoint()).isEqualTo(0);
             }
@@ -63,8 +63,8 @@ class UserFacadeIntegrationTest {
             @Test
             void user_객체_저장에_실패한다면() {
                 // arrange
-                String userId = "test123";
-                UserCommand.Join command = new UserCommand.Join(userId, "test@test.com", "F", "birth");
+                String loginId = "test123";
+                UserCommand.Join command = new UserCommand.Join(loginId, "test@test.com", "F", "birth");
 
                 // act
                 assertThrows(CoreException.class, () -> {
@@ -72,7 +72,7 @@ class UserFacadeIntegrationTest {
                 });
 
                 // assert
-                assertThat(pointJpaRepository.findByUserId(userId)).isEmpty();
+                assertThat(pointJpaRepository.findByUserId(loginId)).isEmpty();
             }
         }
     }
