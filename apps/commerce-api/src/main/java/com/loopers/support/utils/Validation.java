@@ -15,6 +15,7 @@ public class Validation {
         public static final String MESSAGE_EMAIL = "이메일은 xx@yy.zz 형식으로 작성해야 합니다.";
         public static final String MESSAGE_GENDER = "성별은 M 또는 F여야 합니다.";
         public static final String MESSAGE_BIRTH = "생년월일은 yyyy-MM-dd 형식이어야 합니다.";
-        public static final String MESSAGE_POINT_CHARGE = "충전할 포인트는 0보다 커야 합니다.";
+        public static final String MESSAGE_POINT_CREATE = "포인트는 0 이상이어야 합니다.";
+        public static final String MESSAGE_POINT_CHARGE = "충전할 포인트는 0 보다 커야 합니다.";
     }
 }

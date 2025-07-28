@@ -1,5 +1,6 @@
 package com.loopers.domain.user;
 
+import com.loopers.domain.BaseEntity;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import jakarta.persistence.*;
@@ -14,22 +15,22 @@ import static com.loopers.support.utils.Validation.Message.*;
 import static com.loopers.support.utils.Validation.Pattern.*;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class User extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @Column(name = "email", nullable = false)
     private String email;
 
+    @Column(name = "gender", nullable = false)
     private String gender;
 
+    @Column(name = "birth", nullable = false)
     private LocalDate birth;
 
     @Builder(builderMethodName = "saveBuilder")
