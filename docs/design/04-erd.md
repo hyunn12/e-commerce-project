@@ -57,7 +57,7 @@ erDiagram
     BRAND {  
         BIGINT ID PK "ID"  
         VARCHAR NAME "브랜드명"  
-        VARCHAR DESC "브랜드설명"  
+        VARCHAR DESCRIPTION "브랜드설명"  
         DATETIME CREATED_AT "생성일"  
         DATETIME UPDATED_AT "수정일"  
         DATETIME DELETED_AT "삭제일"  
