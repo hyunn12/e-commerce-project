@@ -36,6 +36,47 @@ class ProductServiceIntegrationTest {
 
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
+    class 상품_단건_조회_시 {
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 상품_단건_조회에_성공한다 {
+
+            @DisplayName("존재하는 상품의 ID가 주어진다면")
+            @Test
+            void whenValidProductId() {
+                // arrange
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+                Product product = productJpaRepository.save(Product.builder().brand(brand).name("상품1").price(10000).build());
+
+                // act
+                Product result = productService.getDetail(product.getId());
+
+                // assert
+                assertThat(result).isNotNull();
+                assertThat(result.getId()).isEqualTo(product.getId());
+                assertThat(result.getName()).isEqualTo(product.getName());
+            }
+        }
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class Null을_반환한다 {
+
+            @DisplayName("상품이 존재하지 않는다면")
+            @Test
+            void whenBrandNotExists() {
+                // act
+                Product result = productService.getDetail(1L);
+
+                // assert
+                assertThat(result).isNull();
+            }
+        }
+    }
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
     class 상품_목록_조회_시 {
 
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -44,7 +85,7 @@ class ProductServiceIntegrationTest {
 
             @DisplayName("정상적인 파라미터가 주어진 경우")
             @Test
-            void success() {
+            void whenValidParameter() {
                 // arrange
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
                 Product product1 = productJpaRepository.save(Product.builder().brand(brand).name("상품1").price(10000).build());
@@ -53,7 +94,7 @@ class ProductServiceIntegrationTest {
                 Pageable pageable = PageRequest.of(0, 10);
 
                 // act
-                Page<Product> result = productService.getProductsByBrand(brand, pageable);
+                Page<Product> result = productService.getList(pageable);
 
                 // assert
                 assertThat(result).hasSize(2);
@@ -68,13 +109,12 @@ class ProductServiceIntegrationTest {
                 // arrange
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
                 Product product1 = productJpaRepository.save(Product.builder().brand(brand).name("상품1").price(10000).build());
-                Thread.sleep(10);
                 Product product2 = productJpaRepository.save(Product.builder().brand(brand).name("상품2").price(50000).build());
 
                 ProductCommand.Search search = new ProductCommand.Search(brand.getId(), ProductSortType.LATEST, 0, 10);
 
                 // act
-                Page<Product> result = productService.getProductsByBrand(brand, search.toPageable());
+                Page<Product> result = productService.getList(search.toPageable());
 
                 // assert
                 assertThat(result.getContent())
@@ -94,7 +134,7 @@ class ProductServiceIntegrationTest {
                 ProductCommand.Search search = new ProductCommand.Search(brand.getId(), ProductSortType.PRICE_ASC, 0, 10);
 
                 // act
-                Page<Product> result = productService.getProductsByBrand(brand, search.toPageable());
+                Page<Product> result = productService.getList(search.toPageable());
 
                 // assert
                 assertThat(result.getContent())
@@ -120,22 +160,7 @@ class ProductServiceIntegrationTest {
                 Pageable pageable = PageRequest.of(1, 10);
 
                 // act
-                Page<Product> result = productService.getProductsByBrand(brand, pageable);
-
-                // assert
-                assertThat(result.getContent()).isEmpty();
-            }
-
-            @DisplayName("상품이 없는 브랜드인 경우")
-            @Test
-            void whenBrandHasNoProducts() {
-                // arrange
-                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
-
-                Pageable pageable = PageRequest.of(0, 10);
-
-                // act
-                Page<Product> result = productService.getProductsByBrand(brand, pageable);
+                Page<Product> result = productService.getList(pageable);
 
                 // assert
                 assertThat(result.getContent()).isEmpty();

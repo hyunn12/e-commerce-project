@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductJpaRepository extends JpaRepository<Product, Long> {
 
-    Page<Product> findAllByBrand(Brand brand, Pageable pageable);
+    Page<Product> findAll(Pageable pageable);
 
+    Page<Product> findAllByBrand(Brand brand, Pageable pageable);
 }

@@ -22,7 +22,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Page<Product> findAllByBrand(Brand brand, Pageable pageable) {
-        return productJpaRepository.findAllByBrand(brand, pageable);
+    public Page<Product> findAll(Pageable pageable) {
+        return productJpaRepository.findAll(pageable);
     }
 }

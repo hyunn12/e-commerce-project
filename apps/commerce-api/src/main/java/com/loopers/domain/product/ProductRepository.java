@@ -10,6 +10,5 @@ public interface ProductRepository {
 
     Product findById(Long id);
 
-    Page<Product> findAllByBrand(Brand brand, Pageable pageable);
-
+    Page<Product> findAll(Pageable pageable);
 }
