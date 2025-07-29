@@ -26,5 +26,4 @@ public class Brand extends BaseEntity {
         this.name = name;
         this.description = description;
     }
-
 }
