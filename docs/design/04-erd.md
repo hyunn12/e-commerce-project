@@ -7,7 +7,7 @@
 - **LIKE**: 좋아요
 - **BRAND**: 브랜드
 - **PRODUCT**: 상품
-- **PRODUCT_STOCK**: 재고
+- **STOCK**: 재고
 - **ORDER**: 주문
 - **ORDER_ITEM**: 주문 상세
 - **PAYMENT**: 결제
@@ -68,12 +68,13 @@ erDiagram
         BIGINT BRAND_ID FK "브랜드 ID"  
         VARCHAR NAME "상품명"  
         INT PRICE "가격"
+        INT LIKE_COUNT "좋아요 개수"
         DATETIME CREATED_AT "생성일"  
         DATETIME UPDATED_AT "수정일"  
         DATETIME DELETED_AT "삭제일"  
     }
 
-    PRODUCT_STOCK {
+    STOCK {
         BIGINT ID PK "ID"
         BIGINT PRODUCT_ID FK "상품 ID"
         INT QUANTITY "수량"
@@ -114,7 +115,7 @@ erDiagram
     }  
     
     BRAND ||--o{ PRODUCT : "1:N"
-    PRODUCT ||--|| PRODUCT_STOCK : "1:1"
+    PRODUCT ||--|| STOCK : "1:1"
     USER ||--o{ ORDER : "1:N"
     PRODUCT ||--o{ ORDER_ITEM : "1:N"
     ORDER ||--o{ ORDER_ITEM : "1:N"

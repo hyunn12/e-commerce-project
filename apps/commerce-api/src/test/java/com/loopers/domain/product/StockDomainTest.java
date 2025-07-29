@@ -8,7 +8,7 @@ import org.junit.jupiter.api.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ProductStockDomainTest {
+class StockDomainTest {
 
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
@@ -25,7 +25,7 @@ class ProductStockDomainTest {
                 int initQuantity = 100;
                 int decreaseQuantity = 5;
                 Product product = Instancio.create(Product.class);
-                ProductStock stock = new ProductStock(product, initQuantity);
+                Stock stock = new Stock(product, initQuantity);
 
                 // act
                 stock.decrease(decreaseQuantity);
@@ -46,7 +46,7 @@ class ProductStockDomainTest {
                 int initQuantity = 10;
                 int decreaseQuantity = 500;
                 Product product = Instancio.create(Product.class);
-                ProductStock stock = new ProductStock(product, initQuantity);
+                Stock stock = new Stock(product, initQuantity);
 
                 // act
                 CoreException exception = assertThrows(CoreException.class, () -> stock.decrease(decreaseQuantity));
@@ -67,7 +67,7 @@ class ProductStockDomainTest {
                 int initQuantity = 100;
                 int decreaseQuantity = 0;
                 Product product = Instancio.create(Product.class);
-                ProductStock stock = new ProductStock(product, initQuantity);
+                Stock stock = new Stock(product, initQuantity);
 
                 // act
                 CoreException exception = assertThrows(CoreException.class, () -> stock.decrease(decreaseQuantity));

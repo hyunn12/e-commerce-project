@@ -12,10 +12,10 @@ import static com.loopers.support.utils.Validation.Message.MESSAGE_STOCK_NOT_ENO
 @Getter
 @Builder
 @Entity
-@Table(name = "product_stock")
+@Table(name = "stock")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class ProductStock extends BaseEntity {
+public class Stock extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)

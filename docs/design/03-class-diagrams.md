@@ -49,7 +49,7 @@ classDiagram
         -int price
     }
     
-    class ProductStock {
+    class Stock {
         -Long id
         -Product product
         -int quantity
@@ -86,7 +86,7 @@ classDiagram
     User "1" --> "*" Like : has
     Like "*" --> "1" Product : refers_to
     Brand "1" --> "*" Product : has
-    Product "1" --> "1" ProductStock : has
+    Product "1" --> "1" Stock : has
     User "1" --> "*" Order : has
     Order "1" --> "*" OrderItem : contains
     OrderItem "*" --> "1" Product : refers_to
