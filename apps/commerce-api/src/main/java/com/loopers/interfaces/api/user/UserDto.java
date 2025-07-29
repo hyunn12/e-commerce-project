@@ -11,13 +11,13 @@ import static com.loopers.support.utils.Validation.Message.*;
 public class UserDto {
 
     public record JoinRequest(
-            @NotNull @Pattern(regexp = PATTERN_LOGIN_ID, message = MESSAGE_LOGIN_ID)
+            @NotNull @Pattern(regexp = PATTERN_LOGIN_ID, message = MESSAGE_USER_LOGIN_ID)
             String loginId,
-            @NotNull @Pattern(regexp = PATTERN_EMAIL, message = MESSAGE_EMAIL)
+            @NotNull @Pattern(regexp = PATTERN_EMAIL, message = MESSAGE_USER_EMAIL)
             String email,
-            @NotNull @Pattern(regexp = PATTERN_GENDER, message = MESSAGE_GENDER)
+            @NotNull @Pattern(regexp = PATTERN_GENDER, message = MESSAGE_USER_GENDER)
             String gender,
-            @NotNull @Pattern(regexp = PATTERN_BIRTH, message = MESSAGE_BIRTH)
+            @NotNull @Pattern(regexp = PATTERN_BIRTH, message = MESSAGE_USER_BIRTH)
             String birth
     ) {
         public UserCommand.Join toCommand() {

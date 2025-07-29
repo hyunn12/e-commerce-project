@@ -11,11 +11,15 @@ public class Validation {
     }
 
     public static final class Message {
-        public static final String MESSAGE_LOGIN_ID = "아이디는 영문 및 숫자 10자 이내로만 작성해야 합니다.";
-        public static final String MESSAGE_EMAIL = "이메일은 xx@yy.zz 형식으로 작성해야 합니다.";
-        public static final String MESSAGE_GENDER = "성별은 M 또는 F여야 합니다.";
-        public static final String MESSAGE_BIRTH = "생년월일은 yyyy-MM-dd 형식이어야 합니다.";
+        public static final String MESSAGE_USER_LOGIN_ID = "아이디는 영문 및 숫자 10자 이내로만 작성해야 합니다.";
+        public static final String MESSAGE_USER_EMAIL = "이메일은 xx@yy.zz 형식으로 작성해야 합니다.";
+        public static final String MESSAGE_USER_GENDER = "성별은 M 또는 F여야 합니다.";
+        public static final String MESSAGE_USER_BIRTH = "생년월일은 yyyy-MM-dd 형식이어야 합니다.";
+
         public static final String MESSAGE_POINT_CREATE = "포인트는 0 이상이어야 합니다.";
         public static final String MESSAGE_POINT_CHARGE = "충전할 포인트는 0 보다 커야 합니다.";
+
+        public static final String MESSAGE_STOCK_INVALID_AMOUNT = "차감 수량은 0보다 커야 합니다.";
+        public static final String MESSAGE_STOCK_NOT_ENOUGH = "재고가 부족합니다.";
     }
 }

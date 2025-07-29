@@ -6,6 +6,9 @@ import com.loopers.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static com.loopers.support.utils.Validation.Message.MESSAGE_STOCK_INVALID_AMOUNT;
+import static com.loopers.support.utils.Validation.Message.MESSAGE_STOCK_NOT_ENOUGH;
+
 @Getter
 @Builder
 @Entity
@@ -23,11 +26,11 @@ public class ProductStock extends BaseEntity {
 
     public void decrease(int amount) {
         if (amount <= 0) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "차감 수량은 0보다 커야 합니다.");
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_STOCK_INVALID_AMOUNT);
         }
 
         if (quantity < amount) {
-            throw new CoreException(ErrorType.CONFLICT, "재고가 부족합니다.");
+            throw new CoreException(ErrorType.CONFLICT, MESSAGE_STOCK_NOT_ENOUGH);
         }
 
         this.quantity -= amount;

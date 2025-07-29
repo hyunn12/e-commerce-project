@@ -6,7 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
-import static com.loopers.support.utils.Validation.Message.MESSAGE_BIRTH;
+import static com.loopers.support.utils.Validation.Message.MESSAGE_USER_BIRTH;
 import static com.loopers.support.utils.Validation.Pattern.PATTERN_BIRTH;
 
 @Getter
@@ -21,7 +21,7 @@ public class Birth {
 
     public static Birth of(String value) {
         if (value == null || !value.matches(PATTERN_BIRTH)) {
-            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_BIRTH);
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_USER_BIRTH);
         }
         return new Birth(value);
     }

@@ -6,7 +6,7 @@ import lombok.Getter;
 
 import java.util.Arrays;
 
-import static com.loopers.support.utils.Validation.Message.MESSAGE_GENDER;
+import static com.loopers.support.utils.Validation.Message.MESSAGE_USER_GENDER;
 
 @Getter
 public enum Gender {
@@ -23,6 +23,6 @@ public enum Gender {
         return Arrays.stream(Gender.values())
                 .filter(gender -> gender.value.equalsIgnoreCase(value))
                 .findFirst()
-                .orElseThrow(() -> new CoreException(ErrorType.BAD_REQUEST, MESSAGE_GENDER));
+                .orElseThrow(() -> new CoreException(ErrorType.BAD_REQUEST, MESSAGE_USER_GENDER));
     }
 }

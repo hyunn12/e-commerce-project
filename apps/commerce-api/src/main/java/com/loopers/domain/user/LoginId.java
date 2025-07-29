@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import static com.loopers.support.utils.Validation.Message.MESSAGE_LOGIN_ID;
+import static com.loopers.support.utils.Validation.Message.MESSAGE_USER_LOGIN_ID;
 import static com.loopers.support.utils.Validation.Pattern.PATTERN_LOGIN_ID;
 
 @Embeddable
@@ -23,7 +23,7 @@ public class LoginId {
 
     public static LoginId of(String value) {
         if (value == null || !value.matches(PATTERN_LOGIN_ID)) {
-            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_LOGIN_ID);
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_USER_LOGIN_ID);
         }
         return new LoginId(value);
     }

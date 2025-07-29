@@ -6,7 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
-import static com.loopers.support.utils.Validation.Message.MESSAGE_EMAIL;
+import static com.loopers.support.utils.Validation.Message.MESSAGE_USER_EMAIL;
 import static com.loopers.support.utils.Validation.Pattern.PATTERN_EMAIL;
 
 @Getter
@@ -21,7 +21,7 @@ public class Email {
 
     public static Email of(String value) {
         if (value == null || !value.matches(PATTERN_EMAIL)) {
-            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_EMAIL);
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_USER_EMAIL);
         }
         return new Email(value);
     }
