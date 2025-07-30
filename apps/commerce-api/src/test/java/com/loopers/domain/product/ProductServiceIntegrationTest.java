@@ -5,6 +5,8 @@ import com.loopers.application.product.ProductSortType;
 import com.loopers.domain.brand.Brand;
 import com.loopers.infrastructure.brand.BrandJpaRepository;
 import com.loopers.infrastructure.product.ProductJpaRepository;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class ProductServiceIntegrationTest {
@@ -164,6 +167,88 @@ class ProductServiceIntegrationTest {
 
                 // assert
                 assertThat(result.getContent()).isEmpty();
+            }
+        }
+    }
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class 좋아요_추가_시 {
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 좋아요_개수가_증가한다 {
+
+            @DisplayName("존재하는 상품의 ID가 주어진다면")
+            @Test
+            void whenProductExists() {
+                // arrange
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+                Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+
+                // act
+                productService.increaseLike(product.getId());
+
+                // assert
+                Product result = productJpaRepository.findById(product.getId()).get();
+                assertThat(result.getLikeCount()).isEqualTo(1);
+            }
+        }
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 좋아요_개수_증가에_실패한_뒤_404_Not_Fount_예외가_발생한다 {
+
+            @DisplayName("상품이 존재하지 않는다면")
+            @Test
+            void whenProductNotExists() {
+                // act
+                CoreException exception = assertThrows(CoreException.class, () -> productService.increaseLike(1L));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+            }
+        }
+    }
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class 좋아요_취소_시 {
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 좋아요_개수가_감소한다 {
+
+            @DisplayName("존재하는 상품의 ID가 주어진다면")
+            @Test
+            void whenProductExists() {
+                // arrange
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+                Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+                productService.increaseLike(product.getId());
+                productService.increaseLike(product.getId());
+
+                // act
+                productService.decreaseLike(product.getId());
+
+                // assert
+                Product result = productJpaRepository.findById(product.getId()).get();
+                assertThat(result.getLikeCount()).isEqualTo(1);
+            }
+        }
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 좋아요_개수_감소에_실패한_뒤_404_Not_Fount_예외가_발생한다 {
+
+            @DisplayName("상품이 존재하지 않는다면")
+            @Test
+            void whenProductNotExists() {
+                // act
+                CoreException exception = assertThrows(CoreException.class, () -> productService.decreaseLike(1L));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
             }
         }
     }
