@@ -19,6 +19,9 @@ public class Validation {
         public static final String MESSAGE_POINT_CREATE = "포인트는 0 이상이어야 합니다.";
         public static final String MESSAGE_POINT_CHARGE = "충전할 포인트는 0 보다 커야 합니다.";
 
+        public static final String MESSAGE_BRAND_NOT_FOUND = "브랜드 정보를 찾을 수 없습니다.";
+        public static final String MESSAGE_PRODUCT_NOT_FOUND = "상품 정보를 찾을 수 없습니다.";
+        public static final String MESSAGE_STOCK_NOT_FOUND = "재고 정보를 찾을 수 없습니다.";
         public static final String MESSAGE_STOCK_INVALID_AMOUNT = "차감 수량은 0보다 커야 합니다.";
         public static final String MESSAGE_STOCK_NOT_ENOUGH = "재고가 부족합니다.";
     }

@@ -47,7 +47,7 @@ class LikeServiceIntegrationTest {
         void saveSuccess_whenLikeIsNew() {
             // arrange
             Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
-            Product product = productJpaRepository.save(Product.builder().brand(brand).name("상품").price(10000).build());
+            Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품").price(10000).build());
             Like like = Like.of(userId, product.getId());
 
             // act
@@ -64,7 +64,7 @@ class LikeServiceIntegrationTest {
         void restoreSuccess_whenDeletedLikeExists() {
             // arrange
             Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
-            Product product = productJpaRepository.save(Product.builder().brand(brand).name("상품").price(10000).build());
+            Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품").price(10000).build());
             Like like = likeJpaRepository.save(Like.of(userId, product.getId()));
             like.delete();
             likeJpaRepository.save(like);
@@ -82,7 +82,7 @@ class LikeServiceIntegrationTest {
         void doNothing_whenLikeExists() {
             // arrange
             Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
-            Product product = productJpaRepository.save(Product.builder().brand(brand).name("상품").price(10000).build());
+            Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품").price(10000).build());
             Like like = likeJpaRepository.save(Like.of(userId, product.getId()));
 
             // act
@@ -103,7 +103,7 @@ class LikeServiceIntegrationTest {
         void setDeletedAt_whenLikeIsCancelled() {
             // arrange
             Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
-            Product product = productJpaRepository.save(Product.builder().brand(brand).name("상품").price(10000).build());
+            Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품").price(10000).build());
             Like like = likeJpaRepository.save(Like.of(userId, product.getId()));
 
             // act

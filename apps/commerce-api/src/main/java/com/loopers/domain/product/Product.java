@@ -24,11 +24,12 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private int likeCount;
 
-    @Builder
+    @Builder(builderMethodName = "createBuilder")
     public Product(Brand brand, String name, int price) {
         this.brand = brand;
         this.name = name;
         this.price = price;
+        this.likeCount = 0;
     }
 
     public void increaseLike() {

@@ -18,7 +18,7 @@ class ProductDomainTest {
         @Test
         void likeCountIsIncremented_whenIncreaseLike() {
             // arrange
-            Product product = Product.builder().brand(brand).name("상품").price(10000).build();
+            Product product = Product.createBuilder().brand(brand).name("상품").price(10000).build();
 
             // act
             product.increaseLike();
@@ -36,7 +36,7 @@ class ProductDomainTest {
         @Test
         void likeCountIsDecremented_whenDecreaseLike() {
             // arrange
-            Product product = Product.builder().brand(brand).name("상품").price(10000).build();
+            Product product = Product.createBuilder().brand(brand).name("상품").price(10000).build();
             product.increaseLike();
 
             // act
@@ -50,7 +50,7 @@ class ProductDomainTest {
         @Test
         void likeCountIsNotDecremented_whenLikeCountIsZero() {
             // arrange
-            Product product = Product.builder().brand(brand).name("상품").price(10000).build();
+            Product product = Product.createBuilder().brand(brand).name("상품").price(10000).build();
 
             // act
             product.decreaseLike();

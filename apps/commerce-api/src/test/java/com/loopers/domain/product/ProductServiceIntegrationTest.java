@@ -47,7 +47,7 @@ class ProductServiceIntegrationTest {
             void whenValidProductId() {
                 // arrange
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
-                Product product = productJpaRepository.save(Product.builder().brand(brand).name("상품1").price(10000).build());
+                Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
 
                 // act
                 Product result = productService.getDetail(product.getId());
@@ -88,8 +88,8 @@ class ProductServiceIntegrationTest {
             void whenValidParameter() {
                 // arrange
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
-                Product product1 = productJpaRepository.save(Product.builder().brand(brand).name("상품1").price(10000).build());
-                Product product2 = productJpaRepository.save(Product.builder().brand(brand).name("상품2").price(50000).build());
+                Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+                Product product2 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품2").price(50000).build());
 
                 Pageable pageable = PageRequest.of(0, 10);
 
@@ -108,8 +108,8 @@ class ProductServiceIntegrationTest {
             void whenSortIsLatest() throws InterruptedException {
                 // arrange
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
-                Product product1 = productJpaRepository.save(Product.builder().brand(brand).name("상품1").price(10000).build());
-                Product product2 = productJpaRepository.save(Product.builder().brand(brand).name("상품2").price(50000).build());
+                Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+                Product product2 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품2").price(50000).build());
 
                 ProductCommand.Search search = new ProductCommand.Search(brand.getId(), ProductSortType.LATEST, 0, 10);
 
@@ -127,9 +127,9 @@ class ProductServiceIntegrationTest {
             void whenSortIsPriceAsc() {
                 // arrange
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("설명").build());
-                Product product1 = productJpaRepository.save(Product.builder().brand(brand).name("상품1").price(50000).build());
-                Product product2 = productJpaRepository.save(Product.builder().brand(brand).name("상품2").price(10000).build());
-                Product product3 = productJpaRepository.save(Product.builder().brand(brand).name("상품3").price(30000).build());
+                Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(50000).build());
+                Product product2 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품2").price(10000).build());
+                Product product3 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품3").price(30000).build());
 
                 ProductCommand.Search search = new ProductCommand.Search(brand.getId(), ProductSortType.PRICE_ASC, 0, 10);
 
@@ -155,7 +155,7 @@ class ProductServiceIntegrationTest {
             void whenPageIsOutOfBounds() {
                 // arrange
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
-                productJpaRepository.save(Product.builder().brand(brand).name("상품1").price(10000).build());
+                productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
 
                 Pageable pageable = PageRequest.of(1, 10);
 

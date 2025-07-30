@@ -47,7 +47,7 @@ class StockServiceIntegrationTest {
             void whenValidProductId() {
                 // arrange
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
-                Product product = productJpaRepository.save(Product.builder().brand(brand).name("상품").price(10000).build());
+                Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품").price(10000).build());
                 Stock stock = stockJpaRepository.save(Stock.builder().product(product).quantity(50).build());
 
                 // act
@@ -69,8 +69,8 @@ class StockServiceIntegrationTest {
             void whenValidProductIds() {
                 // arrange
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
-                Product product1 = productJpaRepository.save(Product.builder().brand(brand).name("상품1").price(10000).build());
-                Product product2 = productJpaRepository.save(Product.builder().brand(brand).name("상품2").price(20000).build());
+                Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+                Product product2 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품2").price(20000).build());
                 List<Long> productIds = List.of(product1.getId(), product2.getId());
 
                 Stock stock1 = stockJpaRepository.save(Stock.builder().product(product1).quantity(10).build());
