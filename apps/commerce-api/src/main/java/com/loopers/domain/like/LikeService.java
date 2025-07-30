@@ -11,22 +11,26 @@ public class LikeService {
     private final LikeRepository likeRepository;
 
     @Transactional
-    public void add(Like like) {
+    public boolean add(Like like) {
         Like exist = likeRepository.findLike(like);
         if (exist == null) {
             likeRepository.save(like);
-            return;
+            return true;
         }
         if (exist.isDeleted()) {
             exist.restore();
+            return true;
         }
+        return false;
     }
 
     @Transactional
-    public void delete(Like like) {
+    public boolean delete(Like like) {
         Like exist = likeRepository.findLike(like);
         if (exist != null && !exist.isDeleted()) {
             exist.delete();
+            return true;
         }
+        return false;
     }
 }
