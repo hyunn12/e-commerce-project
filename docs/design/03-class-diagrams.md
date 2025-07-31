@@ -4,42 +4,40 @@
 classDiagram
     class User {
         -Long id
-        -String loginId
-        -String email
-        -String gender
-        -LocalDate birth
+        -LoginId loginId
+        -Email email
+        -Gender gender
+        -Birth birth
     }
     
     class Point {
         -Long id
-        -User user
-        -int amount
+        -Long userId
+        -int point
         
-        +charge()
-        +use()
+        +addPoint()
+        +usePoint()
     }
     
     class PointHistory {
         -Long id
-        -User user
+        -Long userId
         -int amount
-        -String type
+        -PointType type
     }
     
     class Like {
         -Long id
-        -User user
-        -Product product
-        -boolean isLiked
+        -Long userId
+        -Long productId
         
-        +add()
-        +delete()
+        +isDeleted()
     }
     
     class Brand {
         -Long id
         -String name
-        -String desc
+        -String description
     }
     
     class Product {
@@ -47,6 +45,10 @@ classDiagram
         -Brand brand
         -String name
         -int price
+        -int likeCount
+        
+        + increaseLike()
+        + decreaseLike()
     }
     
     class Stock {
@@ -54,30 +56,40 @@ classDiagram
         -Product product
         -int quantity
         
-        +minus()
+        +decrease()
     }
     
     class Order {
         -Long id
-        -User user
+        -Long user
         -int totalAmount
-        -String status
+        -OrderStatus status
+        
+        +create()
+        +addItem()
+        +markSuccess()
+        +markCancel()
     }
     
     class OrderItem {
         -Long id
         -Order order
-        -Product product
+        -Long productId
         -int quantity
+        -int amount
         -int subtotal
+        
+        +setOrder()
     }
     
     class Payment {
         -Long id
-        -Order order
-        -User user
-        -int amount
-        -String status
+        -Long userId
+        -int paymentAmount
+        -PaymentStatus status
+        
+        +markFail()
+        +markCancel()
     }
     
     %% 관계
