@@ -38,4 +38,14 @@ public class Point extends BaseEntity {
         }
         this.point += amount;
     }
+
+    public void usePoint(int amount) {
+        if (amount <= 0) {
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_POINT_USE);
+        }
+        if (amount > this.point) {
+            throw new CoreException(ErrorType.CONFLICT, MESSAGE_POINT_NOT_ENOUGH);
+        }
+        this.point -= amount;
+    }
 }
