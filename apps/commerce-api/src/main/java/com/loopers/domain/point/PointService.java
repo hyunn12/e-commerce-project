@@ -26,6 +26,10 @@ public class PointService {
         }
 
         currentPoint.addPoint(point.getPoint());
+
+        PointHistory history = PointHistory.of(point.getUserId(), point.getPoint(), PointType.CHARGE);
+        pointRepository.saveHistory(history);
+
         return pointRepository.save(currentPoint);
     }
 
@@ -40,6 +44,10 @@ public class PointService {
             throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_POINT_NOT_FOUND);
         }
         currentPoint.usePoint(amount);
+
+        PointHistory history = PointHistory.of(currentPoint.getUserId(), amount, PointType.USE);
+        pointRepository.saveHistory(history);
+
         return pointRepository.save(currentPoint);
     }
 }

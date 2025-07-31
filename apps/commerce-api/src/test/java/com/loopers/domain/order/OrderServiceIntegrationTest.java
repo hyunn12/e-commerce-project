@@ -159,7 +159,7 @@ class OrderServiceIntegrationTest {
             assertThat(result.getId()).isEqualTo(order.getId());
         }
 
-        @DisplayName("존재하지 않는 orderId 라면 404 Not Fount 예외가 발생한다.")
+        @DisplayName("존재하지 않는 orderId 라면 404 Not Found 예외가 발생한다.")
         @Test
         void throwNotFound_whenValidOrderId() {
             // act

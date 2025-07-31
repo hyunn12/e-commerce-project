@@ -200,7 +200,7 @@ class ProductServiceIntegrationTest {
 
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
         @Nested
-        class 좋아요_개수_증가에_실패한_뒤_404_Not_Fount_예외가_발생한다 {
+        class 좋아요_개수_증가에_실패한_뒤_404_Not_Found_예외가_발생한다 {
 
             @DisplayName("상품이 존재하지 않는다면")
             @Test
@@ -242,7 +242,7 @@ class ProductServiceIntegrationTest {
 
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
         @Nested
-        class 좋아요_개수_감소에_실패한_뒤_404_Not_Fount_예외가_발생한다 {
+        class 좋아요_개수_감소에_실패한_뒤_404_Not_Found_예외가_발생한다 {
 
             @DisplayName("상품이 존재하지 않는다면")
             @Test

@@ -6,11 +6,14 @@ import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderStatus;
 import com.loopers.domain.payment.Payment;
 import com.loopers.domain.point.Point;
+import com.loopers.domain.point.PointHistory;
+import com.loopers.domain.point.PointType;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.Stock;
 import com.loopers.infrastructure.brand.BrandJpaRepository;
 import com.loopers.infrastructure.order.OrderJpaRepository;
 import com.loopers.infrastructure.payment.PaymentJpaRepository;
+import com.loopers.infrastructure.point.PointHistoryJpaRepository;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.infrastructure.product.ProductJpaRepository;
 import com.loopers.infrastructure.product.StockJpaRepository;
@@ -44,6 +47,8 @@ class OrderFacadeIntegrationTest {
     private StockJpaRepository stockJpaRepository;
     @Autowired
     private PointJpaRepository pointJpaRepository;
+    @Autowired
+    private PointHistoryJpaRepository pointHistoryJpaRepository;
     @Autowired
     private PaymentJpaRepository paymentJpaRepository;
     @Autowired
@@ -108,6 +113,10 @@ class OrderFacadeIntegrationTest {
 
                 Point point = pointJpaRepository.findByUserId(userId).get();
                 assertThat(point.getPoint()).isEqualTo(initPoint-(decreaseQuantity*price));
+
+                List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(userId);
+                assertThat(histories).hasSize(1);
+                assertThat(histories.get(0).getType()).isEqualTo(PointType.USE);
 
                 List<Payment> payments = paymentJpaRepository.findAll();
                 assertThat(payments).hasSize(1);
@@ -243,7 +252,7 @@ class OrderFacadeIntegrationTest {
             assertThat(result.getItems()).hasSize(1);
         }
 
-        @DisplayName("존재하지 않는 orderId 가 주어진다면 404 Not Fount 예외를 반환한다.")
+        @DisplayName("존재하지 않는 orderId 가 주어진다면 404 Not Found 예외가 발생한다.")
         @Test
         void throwNotFoundException_whenInvalidOrderId() {
             // act

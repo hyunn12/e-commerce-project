@@ -129,7 +129,7 @@ class ProductFacadeIntegrationTest {
                     .containsExactlyInAnyOrder(brand.getName(), stock.getQuantity());
         }
 
-        @DisplayName("상품이 존재하지 않는다면 404 Not Fount 예외가 발생한다.")
+        @DisplayName("상품이 존재하지 않는다면 404 Not Found 예외가 발생한다.")
         @Test
         void throwNotFoundException_whenProductNotExist() {
             // act

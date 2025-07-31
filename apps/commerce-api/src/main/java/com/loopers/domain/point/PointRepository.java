@@ -9,4 +9,6 @@ public interface PointRepository {
 
     Point save(Point point);
 
+    void saveHistory(PointHistory pointHistory);
+
 }
