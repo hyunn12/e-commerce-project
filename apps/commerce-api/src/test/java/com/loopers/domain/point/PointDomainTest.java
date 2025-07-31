@@ -25,7 +25,7 @@ class PointDomainTest {
                 int amount = 30000;
 
                 // act
-                Point point = new Point("test123", current);
+                Point point = new Point(1L, current);
                 point.addPoint(amount);
 
                 // assert
@@ -45,7 +45,7 @@ class PointDomainTest {
                 int amount = -10000;
 
                 // act
-                Point point = new Point("test123", current);
+                Point point = new Point(1L, current);
 
                 CoreException exception = assertThrows(CoreException.class, () -> point.addPoint(amount));
 
@@ -61,7 +61,7 @@ class PointDomainTest {
                 int amount = 0;
 
                 // act
-                Point point = new Point("test123", current);
+                Point point = new Point(1L, current);
 
                 CoreException exception = assertThrows(CoreException.class, () -> point.addPoint(amount));
 

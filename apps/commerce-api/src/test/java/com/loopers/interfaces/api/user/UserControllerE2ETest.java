@@ -107,17 +107,18 @@ class UserControllerE2ETest {
     class GET {
 
         private final String requestUrl = "/api/v1/users/me";
-        private final String loginId = "test123";
+        private Long userId;
 
         @BeforeEach
         void setData() {
             User user = User.saveBuilder()
-                    .loginId(LoginId.of(loginId))
+                    .loginId(LoginId.of("test123"))
                     .email(Email.of("test1@test.com"))
                     .gender(Gender.fromValue("F"))
                     .birth(Birth.of("2000-01-01"))
                     .build();
             userJpaRepository.save(user);
+            userId = user.getId();
         }
 
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -129,7 +130,7 @@ class UserControllerE2ETest {
             void 주어진_loginId의_회원이_존재하는_회원이라면() {
                 // arrange
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", loginId);
+                headers.add("X-USER-ID", userId.toString());
 
                 // act
                 ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
@@ -139,7 +140,7 @@ class UserControllerE2ETest {
                 // assert
                 assertAll(
                         () -> assertThat(response.getStatusCode().is2xxSuccessful()).isTrue(),
-                        () -> assertThat(response.getBody().data().loginId()).isEqualTo(loginId)
+                        () -> assertThat(response.getBody().data().id()).isEqualTo(userId)
                 );
             }
         }
@@ -153,7 +154,7 @@ class UserControllerE2ETest {
             void 주어진_loginId의_회원이_존재하지_않는_회원이라면() {
                 // arrange
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", "test");
+                headers.add("X-USER-ID", Long.toString(Long.MAX_VALUE)); // 절대 존재하지 않을 userId
 
                 // act
                 ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};

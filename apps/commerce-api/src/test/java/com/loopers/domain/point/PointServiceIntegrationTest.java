@@ -58,16 +58,16 @@ class PointServiceIntegrationTest {
                         .birth(Birth.of("2000-01-01"))
                         .build();
                 userJpaRepository.save(user);
-                Point point = new Point(user.getLoginId().getValue(), current);
+                Point point = new Point(user.getId(), current);
                 pointJpaRepository.save(point);
 
-                Point added = new Point(user.getLoginId().getValue(), amount);
+                Point added = new Point(user.getId(), amount);
 
                 // act
                 pointService.charge(added);
 
                 // assert
-                Optional<Point> saved = pointJpaRepository.findByUserId(user.getLoginId().getValue());
+                Optional<Point> saved = pointJpaRepository.findByUserId(user.getId());
                 assertThat(saved.get().getPoint()).isEqualTo(current+amount);
             }
         }
@@ -80,7 +80,7 @@ class PointServiceIntegrationTest {
             @Test
             void 존재하지_않는_유저_아이디라면() {
                 // arrange
-                Point added = new Point("test", 10000);
+                Point added = new Point(1L, 10000);
 
                 // act
                 CoreException exception = assertThrows(CoreException.class, () ->
@@ -105,7 +105,7 @@ class PointServiceIntegrationTest {
             @Test
             void 주어진_userId의_회원이_존재하는_회원이라면() {
                 // arrange
-                String userId = "test123";
+                Long userId = 1L;
                 int point = 10000;
                 pointJpaRepository.save(new Point(userId, point));
 
@@ -125,7 +125,7 @@ class PointServiceIntegrationTest {
             @Test
             void 주어진_userId의_회원이_존재하지_않는_회원이라면() {
                 // act
-                Point result = pointService.getPointByUserId("test123");
+                Point result = pointService.getPointByUserId(1L);
 
                 // assert
                 assertThat(result).isNull();

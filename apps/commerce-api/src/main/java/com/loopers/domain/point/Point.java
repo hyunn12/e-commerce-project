@@ -10,8 +10,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static com.loopers.support.utils.Validation.Message.MESSAGE_POINT_CHARGE;
-import static com.loopers.support.utils.Validation.Message.MESSAGE_POINT_CREATE;
+import static com.loopers.support.utils.Validation.Message.*;
 
 @Getter
 @Entity
@@ -20,12 +19,12 @@ import static com.loopers.support.utils.Validation.Message.MESSAGE_POINT_CREATE;
 public class Point extends BaseEntity {
 
     @Column(name = "user_id", nullable = false)
-    private String userId;
+    private Long userId;
 
     @Column(name = "point", nullable = false)
     private int point;
 
-    public Point(String userId, int point) {
+    public Point(Long userId, int point) {
         if (point < 0) {
             throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_POINT_CREATE);
         }

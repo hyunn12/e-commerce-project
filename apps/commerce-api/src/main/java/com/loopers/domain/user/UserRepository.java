@@ -9,6 +9,5 @@ public interface UserRepository {
 
     boolean existsByLoginId(LoginId loginId);
 
-    User getUserByLoginId(LoginId loginId);
-
+    User getUserById(Long userId);
 }

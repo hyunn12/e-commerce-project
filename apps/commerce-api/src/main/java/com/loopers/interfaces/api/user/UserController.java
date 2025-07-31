@@ -22,9 +22,9 @@ public class UserController {
 
     @GetMapping("/me")
     public ApiResponse<UserDto.UserResponse> getUserInfo(
-            @RequestHeader("X-USER-ID") String loginId
+            @RequestHeader("X-USER-ID") Long userId
     ) {
-        return ApiResponse.success(UserDto.UserResponse.from(userFacade.getUserInfoByLoginId(loginId)));
+        return ApiResponse.success(UserDto.UserResponse.from(userFacade.getDetail(userId)));
     }
 
 }

@@ -107,10 +107,8 @@ class UserServiceIntegrationTest {
             @Test
             void 주어진_loginId의_회원이_존재하는_회원이라면() {
                 // arrange
-                String loginId = "test123";
-
                 User user = User.saveBuilder()
-                        .loginId(LoginId.of(loginId))
+                        .loginId(LoginId.of("test123"))
                         .email(Email.of("test@test.com"))
                         .gender(Gender.fromValue("F"))
                         .birth(Birth.of("2000-01-01"))
@@ -118,10 +116,10 @@ class UserServiceIntegrationTest {
                 userService.save(user);
 
                 // act
-                userService.findByLoginId(loginId);
+                userService.getDetail(user.getId());
 
                 // assert
-                Optional<User> saved = userJpaRepository.findByLoginId_Value(loginId);
+                Optional<User> saved = userJpaRepository.findById(user.getId());
                 assertThat(saved.get().getEmail()).isEqualTo(user.getEmail());
             }
         }
@@ -135,10 +133,10 @@ class UserServiceIntegrationTest {
         @Test
         void 주어진_loginId의_회원이_존재하지_않는_회원이라면() {
             // arrange
-            String loginId = "test123";
+            Long userId = 1L;
 
             // act
-            User user = userService.findByLoginId(loginId);
+            User user = userService.getDetail(userId);
 
             // assert
             assertThat(user).isNull();

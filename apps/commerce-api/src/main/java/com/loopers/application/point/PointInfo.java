@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PointInfo {
 
-    private String userId;
+    private Long userId;
     private int point;
 
     public static PointInfo from(Point point) {

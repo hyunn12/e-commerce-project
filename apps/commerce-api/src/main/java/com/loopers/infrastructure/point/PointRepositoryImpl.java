@@ -12,7 +12,7 @@ public class PointRepositoryImpl implements PointRepository {
     private final PointJpaRepository pointJpaRepository;
 
     @Override
-    public Point getPointByUserId(String userId) {
+    public Point getPointByUserId(Long userId) {
         return pointJpaRepository.findByUserId(userId).orElse(null);
     }
 

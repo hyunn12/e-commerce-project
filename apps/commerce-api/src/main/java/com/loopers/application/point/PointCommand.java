@@ -12,7 +12,7 @@ public class PointCommand {
     @Getter
     @Builder
     public static class Charge {
-        private String userId;
+        private Long userId;
         private int amount;
 
         public Point toDomain() {

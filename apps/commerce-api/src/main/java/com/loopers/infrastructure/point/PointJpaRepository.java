@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface PointJpaRepository extends JpaRepository<Point, Long> {
 
-    Optional<Point> findByUserId(String userId);
+    Optional<Point> findByUserId(Long userId);
 
 }

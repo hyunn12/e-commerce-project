@@ -56,21 +56,20 @@ class PointControllerE2ETest {
             @Test
             void 존재하는_userId로_1000원을_충전한다면() {
                 // arrange
-                final String loginId = "test123";
                 final int amount = 1000;
                 User user = User.saveBuilder()
-                        .loginId(LoginId.of(loginId))
+                        .loginId(LoginId.of("test123"))
                         .email(Email.of("test1@test.com"))
                         .gender(Gender.fromValue("F"))
                         .birth(Birth.of("2000-01-01"))
                         .build();
                 userJpaRepository.save(user);
-                Point point = new Point(loginId, 10000);
+                Point point = new Point(user.getId(), 10000);
                 pointJpaRepository.save(point);
 
                 PointDto.ChargeRequest requestBody = new PointDto.ChargeRequest(amount);
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", loginId);
+                headers.add("X-USER-ID", user.getId().toString());
 
                 // act
                 ParameterizedTypeReference<ApiResponse<PointDto.PointResponse>> responseType = new ParameterizedTypeReference<>() {};
@@ -95,7 +94,7 @@ class PointControllerE2ETest {
                 // arrange
                 PointDto.ChargeRequest requestBody = new PointDto.ChargeRequest(1000);
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", "test123");
+                headers.add("X-USER-ID", String.valueOf(1L));
 
                 // act
                 ParameterizedTypeReference<ApiResponse<PointDto.PointResponse>> responseType = new ParameterizedTypeReference<>() {};
@@ -126,22 +125,21 @@ class PointControllerE2ETest {
             @Test
             void 포인트_조회에_성공한다면() {
                 // arrange
-                final String loginId = "test123";
                 final int currentPoint = 10000;
                 User user = User.saveBuilder()
-                        .loginId(LoginId.of(loginId))
+                        .loginId(LoginId.of("test123"))
                         .email(Email.of("test1@test.com"))
                         .gender(Gender.fromValue("F"))
                         .birth(Birth.of("2000-01-01"))
                         .build();
                 userJpaRepository.save(user);
                 System.out.println("user.getLoginId().getValue() = " + user.getLoginId().getValue());
-                Point point = new Point(user.getLoginId().getValue(), currentPoint);
+                Point point = new Point(user.getId(), currentPoint);
                 pointJpaRepository.save(point);
                 System.out.println(pointJpaRepository.findById(point.getId()).get());
 
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", loginId);
+                headers.add("X-USER-ID", user.getId().toString());
 
                 // act
                 ParameterizedTypeReference<ApiResponse<PointDto.PointResponse>> responseType = new ParameterizedTypeReference<>() {};

@@ -1,6 +1,6 @@
 package com.loopers.support.config;
 
-import com.loopers.support.api.filter.LoginIdFilter;
+import com.loopers.support.api.filter.UserIdFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,17 +9,17 @@ import org.springframework.context.annotation.Configuration;
 public class FilterConfig {
 
     @Bean
-    FilterRegistrationBean<LoginIdFilter> tokenFilter() {
-        FilterRegistrationBean<LoginIdFilter> registrationBean = new FilterRegistrationBean<>();
+    FilterRegistrationBean<UserIdFilter> tokenFilter() {
+        FilterRegistrationBean<UserIdFilter> registrationBean = new FilterRegistrationBean<>();
 
-        registrationBean.setFilter(new LoginIdFilter());
+        registrationBean.setFilter(new UserIdFilter());
         registrationBean.addUrlPatterns(
                 "/api/v1/users/me",
                 "/api/v1/points",
                 "/api/v1/points/**"
         );
         registrationBean.setOrder(1);
-        registrationBean.setName("loginIdFilter");
+        registrationBean.setName("userIdLFilter");
 
         return registrationBean;
     }

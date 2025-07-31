@@ -20,7 +20,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User findByLoginId(String loginId) {
-        return userRepository.getUserByLoginId(LoginId.of(loginId));
+    public User getDetail(Long userId) {
+        return userRepository.getUserById(userId);
     }
 }

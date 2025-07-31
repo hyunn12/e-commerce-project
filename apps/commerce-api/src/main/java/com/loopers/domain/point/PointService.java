@@ -11,7 +11,7 @@ public class PointService {
 
     private final PointRepository pointRepository;
 
-    public Point getPointByUserId(String userId) {
+    public Point getPointByUserId(Long userId) {
         return pointRepository.getPointByUserId(userId);
     }
 

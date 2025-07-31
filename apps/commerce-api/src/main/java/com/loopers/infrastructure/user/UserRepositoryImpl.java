@@ -23,7 +23,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User getUserByLoginId(LoginId loginId) {
-        return userJpaRepository.findByLoginId_Value(loginId.getValue()).orElse(null);
+    public User getUserById(Long userId) {
+        return userJpaRepository.findById(userId).orElse(null);
     }
 }
