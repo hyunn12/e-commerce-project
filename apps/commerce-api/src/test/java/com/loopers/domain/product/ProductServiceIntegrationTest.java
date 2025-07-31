@@ -5,6 +5,7 @@ import com.loopers.application.product.ProductSortType;
 import com.loopers.domain.brand.Brand;
 import com.loopers.infrastructure.brand.BrandJpaRepository;
 import com.loopers.infrastructure.product.ProductJpaRepository;
+import com.loopers.infrastructure.product.StockJpaRepository;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
@@ -25,6 +26,8 @@ class ProductServiceIntegrationTest {
     private ProductJpaRepository productJpaRepository;
     @Autowired
     private BrandJpaRepository brandJpaRepository;
+    @Autowired
+    private StockJpaRepository stockJpaRepository;
     @Autowired
     private DatabaseCleanUp databaseCleanUp;
 
@@ -246,6 +249,88 @@ class ProductServiceIntegrationTest {
             void whenProductNotExists() {
                 // act
                 CoreException exception = assertThrows(CoreException.class, () -> productService.decreaseLike(1L));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+            }
+        }
+    }
+
+    @Nested
+    class 재고_감소_시 {
+
+        private Long productId;
+        private Product product;
+
+        @BeforeEach
+        void setUp() {
+            Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+            product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+            productId = product.getId();
+        }
+
+        @Nested
+        class 재고가_정상적으로_차감된다 {
+
+            @DisplayName("재고 수량이 충분하다면")
+            @Test
+            void whenStockEnough() {
+                // arrange
+                int initQuantity = 10;
+                int decreaseQuantity = 1;
+                stockJpaRepository.save(Stock.builder().product(product).quantity(initQuantity).build());
+
+                // act
+                productService.decreaseStock(productId, decreaseQuantity);
+
+                // assert
+                Stock result = stockJpaRepository.findByProductId(productId).get();
+                assertThat(result.getQuantity()).isEqualTo(initQuantity - decreaseQuantity);
+            }
+        }
+
+        @Nested
+        class 재고가_차감되지_않고_409_Conflict_예외가_발생한다 {
+
+            @DisplayName("재고가 부족하다면")
+            @Test
+            void whenStockIsNotEnough() {
+                // arrange
+                int initQuantity = 1;
+                int decreaseQuantity = 10;
+                stockJpaRepository.save(Stock.builder().product(product).quantity(initQuantity).build());
+
+                // act
+                CoreException exception = assertThrows(CoreException.class, () -> productService.decreaseStock(productId, decreaseQuantity));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);
+            }
+
+            @DisplayName("재고가 0 이라면")
+            @Test
+            void whenStockIsZero() {
+                // arrange
+                int initQuantity = 0;
+                int decreaseQuantity = 10;
+                stockJpaRepository.save(Stock.builder().product(product).quantity(initQuantity).build());
+
+                // act
+                CoreException exception = assertThrows(CoreException.class, () -> productService.decreaseStock(productId, decreaseQuantity));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);
+            }
+        }
+
+        @Nested
+        class 재고가_차감되지_않고_404_Not_Found_예외가_발생한다 {
+
+            @DisplayName("재고가 존재하지 않는다면")
+            @Test
+            void whenStockIsNotExist() {
+                // act
+                CoreException exception = assertThrows(CoreException.class, () -> productService.decreaseStock(productId, 1));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
