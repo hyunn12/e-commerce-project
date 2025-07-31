@@ -10,6 +10,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import static com.loopers.support.utils.Validation.Message.MESSAGE_USER_NOT_FOUND;
+
 @Component
 @RequiredArgsConstructor
 public class UserFacade {
@@ -30,7 +32,7 @@ public class UserFacade {
     public UserInfo getDetail(Long userId) {
         User user = userService.getDetail(userId);
         if (user == null) {
-            throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 회원입니다.");
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_USER_NOT_FOUND);
         }
         return UserInfo.from(user);
     }

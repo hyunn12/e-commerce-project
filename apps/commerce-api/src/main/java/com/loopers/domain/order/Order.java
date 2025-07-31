@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.loopers.support.utils.Validation.Message.MESSAGE_ORDER_ITEM_EMPTY;
+import static com.loopers.support.utils.Validation.Message.MESSAGE_ORDER_TOTAL_AMOUNT;
+
 @Getter
 @Entity
 @Table(name = "orders")
@@ -34,7 +37,7 @@ public class Order extends BaseEntity {
     @Builder(builderMethodName = "createBuilder")
     public Order(Long userId, int totalAmount) {
         if (totalAmount < 0) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "총금액은 0 보다 커야합니다.");
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_ORDER_TOTAL_AMOUNT);
         }
 
         this.userId = userId;
@@ -44,7 +47,7 @@ public class Order extends BaseEntity {
 
     public static Order create(Long userId, List<OrderItem> items) {
         if (items.isEmpty()) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "주문 항목이 누락되었습니다.");
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_ORDER_ITEM_EMPTY);
         }
 
         int totalAmount = items.stream().mapToInt(OrderItem::getSubtotal).sum();

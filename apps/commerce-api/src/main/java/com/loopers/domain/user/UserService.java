@@ -5,6 +5,8 @@ import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import static com.loopers.support.utils.Validation.Message.MESSAGE_USER_LOGIN_ID_EXIST;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -14,7 +16,7 @@ public class UserService {
     public User save(User user) {
         // 가입 확인
         if (userRepository.existsByLoginId(user.getLoginId())) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "이미 존재하는 아이디 입니다.");
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_USER_LOGIN_ID_EXIST);
         }
 
         return userRepository.save(user);

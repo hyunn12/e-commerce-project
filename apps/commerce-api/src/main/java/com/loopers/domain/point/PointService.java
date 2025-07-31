@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.loopers.support.utils.Validation.Message.MESSAGE_POINT_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class PointService {
@@ -20,7 +22,7 @@ public class PointService {
     public Point charge(Point point) {
         Point currentPoint = pointRepository.getPointByUserId(point.getUserId());
         if (currentPoint == null) {
-            throw new CoreException(ErrorType.NOT_FOUND, "포인트 정보를 찾을 수 없습니다.");
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_POINT_NOT_FOUND);
         }
 
         currentPoint.addPoint(point.getPoint());
@@ -35,7 +37,7 @@ public class PointService {
     public Point use(Long userId, int amount) {
         Point currentPoint = pointRepository.getPointByUserId(userId);
         if (currentPoint == null) {
-            throw new CoreException(ErrorType.NOT_FOUND, "포인트 정보를 찾을 수 없습니다.");
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_POINT_NOT_FOUND);
         }
         currentPoint.usePoint(amount);
         return pointRepository.save(currentPoint);

@@ -6,6 +6,9 @@ import com.loopers.support.error.ErrorType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static com.loopers.support.utils.Validation.Message.MESSAGE_ORDER_ITEM_AMOUNT;
+import static com.loopers.support.utils.Validation.Message.MESSAGE_ORDER_ITEM_QUANTITY;
+
 @Getter
 @Entity
 @Table(name = "order_item")
@@ -35,10 +38,10 @@ public class OrderItem extends BaseEntity {
     @Builder(builderMethodName = "createBuilder")
     public OrderItem(Long productId, int quantity, int amount) {
         if (quantity <= 0) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "수량은 0 보다 커야합니다.");
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_ORDER_ITEM_QUANTITY);
         }
         if (amount < 0) {
-            throw new CoreException(ErrorType.BAD_REQUEST, "금액은 0 보다 커야합니다.");
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_ORDER_ITEM_AMOUNT);
         }
 
         this.productId = productId;
