@@ -74,7 +74,7 @@ class PointServiceIntegrationTest {
 
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
         @Nested
-        class 충전에_실패한_후_400_Bad_Request_예외가_발생한다 {
+        class 충전에_실패한_후_404_Not_Found_예외가_발생한다 {
 
             @DisplayName("존재하지 않는 유저 아이디라면")
             @Test
@@ -132,4 +132,57 @@ class PointServiceIntegrationTest {
             }
         }
     }
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class 포인트_사용_시 {
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 정상적으로_포인트가_사용된다 {
+
+            @DisplayName("유효한 포인트라면")
+            @Test
+            void 유효한_포인트라면() {
+                // arrange
+                int current = 30000;
+                int amount = 20000;
+
+                User user = User.saveBuilder()
+                        .loginId(LoginId.of("test123"))
+                        .email(Email.of("test1@test.com"))
+                        .gender(Gender.fromValue("F"))
+                        .birth(Birth.of("2000-01-01"))
+                        .build();
+                userJpaRepository.save(user);
+                Point point = new Point(user.getId(), current);
+                pointJpaRepository.save(point);
+
+                // act
+                pointService.use(user.getId(), amount);
+
+                // assert
+                Optional<Point> saved = pointJpaRepository.findByUserId(user.getId());
+                assertThat(saved.get().getPoint()).isEqualTo(current-amount);
+            }
+        }
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 충전에_실패한_후_404_Not_Found_예외가_발생한다 {
+
+            @DisplayName("존재하지 않는 유저 아이디라면")
+            @Test
+            void 존재하지_않는_유저_아이디라면() {
+                // act
+                CoreException exception = assertThrows(CoreException.class, () ->
+                        pointService.use(1L, 10000)
+                );
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+            }
+        }
+    }
+
 }
