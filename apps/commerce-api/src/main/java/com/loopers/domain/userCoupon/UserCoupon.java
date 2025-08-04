@@ -4,11 +4,14 @@ import com.loopers.domain.BaseEntity;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.ZonedDateTime;
 
-import static com.loopers.support.utils.Validation.Message.MESSAGE_COUPON_USED;
+import static com.loopers.support.utils.Validation.Message.MESSAGE_COUPON_UNUSABLE;
 
 @Getter
 @Entity
@@ -56,8 +59,8 @@ public class UserCoupon extends BaseEntity {
     }
 
     public void use() {
-        if (this.status != UserCouponStatus.UNUSED) {
-            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_COUPON_USED);
+        if (!isUsable()) {
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_COUPON_UNUSABLE);
         }
         this.status = UserCouponStatus.USED;
         this.usedAt = ZonedDateTime.now();

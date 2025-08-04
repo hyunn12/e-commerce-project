@@ -39,4 +39,8 @@ public class Coupon extends BaseEntity {
         this.discountValue = discountValue;
         this.minAmount = minAmount;
     }
+
+    public boolean isUnderMinAmount(int orderAmount) {
+        return orderAmount < minAmount;
+    }
 }
