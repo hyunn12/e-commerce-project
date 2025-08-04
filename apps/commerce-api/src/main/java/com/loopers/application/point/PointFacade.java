@@ -10,8 +10,8 @@ public class PointFacade {
 
     private final PointService pointService;
 
-    public PointInfo getPointByUserId(Long userId) {
-        return PointInfo.from(pointService.getPointByUserId(userId));
+    public PointInfo getDetail(Long userId) {
+        return PointInfo.from(pointService.getDetailByUserId(userId));
     }
 
     public PointInfo charge(PointCommand.Charge command) {

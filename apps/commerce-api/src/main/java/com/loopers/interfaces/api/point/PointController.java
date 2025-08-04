@@ -19,7 +19,7 @@ public class PointController {
             HttpServletRequest httpServletRequest
     ) {
         Long userId = (Long) httpServletRequest.getAttribute("userId");
-        return ApiResponse.success(PointDto.PointResponse.from(pointFacade.getPointByUserId(userId)));
+        return ApiResponse.success(PointDto.PointResponse.from(pointFacade.getDetail(userId)));
     }
 
     @PostMapping("/charge")

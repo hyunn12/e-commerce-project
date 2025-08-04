@@ -44,7 +44,7 @@ public class OrderService {
         return order;
     }
 
-    public Page<Order> getListByUserId(Long userId, OrderStatus status, Pageable pageable) {
+    public Page<Order> getList(Long userId, OrderStatus status, Pageable pageable) {
         if (status == null) {
             return orderRepository.findAllByUserId(userId, pageable);
         }

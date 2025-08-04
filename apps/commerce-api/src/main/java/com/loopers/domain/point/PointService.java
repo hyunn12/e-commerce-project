@@ -14,7 +14,7 @@ public class PointService {
 
     private final PointRepository pointRepository;
 
-    public Point getPointByUserId(Long userId) {
+    public Point getDetailByUserId(Long userId) {
         return pointRepository.getPointByUserId(userId);
     }
 
