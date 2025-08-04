@@ -91,6 +91,20 @@ class OrderServiceIntegrationTest {
             // assert
             assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCEL);
         }
+
+        @DisplayName("markFail 호출한다면 상태가 CANCEL 로 변경된다.")
+        @Test
+        void markFail_whenCalled() {
+            // arrange
+            OrderItem item = OrderItem.of(1L, 2, 10000);
+            Order order = orderJpaRepository.save(Order.create(userId, List.of(item)));
+
+            // act
+            orderService.markFail(order);
+
+            // assert
+            assertThat(order.getStatus()).isEqualTo(OrderStatus.FAIL);
+        }
     }
 
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)

@@ -31,6 +31,11 @@ public class OrderService {
         order.markCancel();
     }
 
+    @Transactional
+    public void markFail(Order order) {
+        order.markFail();
+    }
+
     public Order getDetail(Long orderId) {
         Order order = orderRepository.findById(orderId);
         if (order == null) {
