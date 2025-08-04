@@ -37,5 +37,7 @@ public class Validation {
         public static final String MESSAGE_ORDER_ITEM_EMPTY = "주문 항목이 누락되었습니다.";
         public static final String MESSAGE_ORDER_ITEM_QUANTITY = "수량은 0 보다 커야 합니다.";
         public static final String MESSAGE_ORDER_ITEM_AMOUNT = "금액은 0 보다 커야 합니다.";
+
+        public static final String MESSAGE_COUPON_USED = "이미 사용된 쿠폰입니다.";
     }
 }
