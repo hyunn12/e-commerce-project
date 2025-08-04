@@ -5,8 +5,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PointRepository {
 
-    Point getPointByUserId(String userId);
+    Point getPointByUserId(Long userId);
 
     Point save(Point point);
+
+    void saveHistory(PointHistory pointHistory);
 
 }

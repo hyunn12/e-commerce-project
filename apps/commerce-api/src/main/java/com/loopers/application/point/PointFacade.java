@@ -10,7 +10,7 @@ public class PointFacade {
 
     private final PointService pointService;
 
-    public PointInfo getPointByUserId(String userId) {
+    public PointInfo getPointByUserId(Long userId) {
         return PointInfo.from(pointService.getPointByUserId(userId));
     }
 

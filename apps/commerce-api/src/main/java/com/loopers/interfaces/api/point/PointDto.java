@@ -13,13 +13,13 @@ public class PointDto {
             @NotNull @Min(value = 1, message = MESSAGE_POINT_CHARGE)
             int amount
     ) {
-        public PointCommand.Charge toCommand(String userId) {
+        public PointCommand.Charge toCommand(Long userId) {
             return PointCommand.Charge.builder().userId(userId).amount(amount).build();
         }
     }
 
     public record PointResponse(
-            String userId,
+            Long userId,
             int amount
     ) {
         public static PointResponse from(PointInfo info) {

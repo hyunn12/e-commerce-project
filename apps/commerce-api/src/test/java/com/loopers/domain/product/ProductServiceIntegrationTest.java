@@ -1,0 +1,340 @@
+package com.loopers.domain.product;
+
+import com.loopers.application.product.ProductCommand;
+import com.loopers.application.product.ProductSortType;
+import com.loopers.domain.brand.Brand;
+import com.loopers.infrastructure.brand.BrandJpaRepository;
+import com.loopers.infrastructure.product.ProductJpaRepository;
+import com.loopers.infrastructure.product.StockJpaRepository;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
+import com.loopers.utils.DatabaseCleanUp;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@SpringBootTest
+class ProductServiceIntegrationTest {
+    // orm --
+    @Autowired
+    private ProductJpaRepository productJpaRepository;
+    @Autowired
+    private BrandJpaRepository brandJpaRepository;
+    @Autowired
+    private StockJpaRepository stockJpaRepository;
+    @Autowired
+    private DatabaseCleanUp databaseCleanUp;
+
+    // sut --
+    @Autowired
+    private ProductService productService;
+
+    @AfterEach
+    void tearDown() {
+        databaseCleanUp.truncateAllTables();
+    }
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class 상품_단건_조회_시 {
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 상품_단건_조회에_성공한다 {
+
+            @DisplayName("존재하는 상품의 ID가 주어진다면")
+            @Test
+            void whenValidProductId() {
+                // arrange
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+                Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+
+                // act
+                Product result = productService.getDetail(product.getId());
+
+                // assert
+                assertThat(result).isNotNull();
+                assertThat(result.getId()).isEqualTo(product.getId());
+                assertThat(result.getName()).isEqualTo(product.getName());
+            }
+        }
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class Null을_반환한다 {
+
+            @DisplayName("상품이 존재하지 않는다면")
+            @Test
+            void whenBrandNotExists() {
+                // act
+                Product result = productService.getDetail(1L);
+
+                // assert
+                assertThat(result).isNull();
+            }
+        }
+    }
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class 상품_목록_조회_시 {
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 정상적으로_상품_목록이_조회된다 {
+
+            @DisplayName("정상적인 파라미터가 주어진 경우")
+            @Test
+            void whenValidParameter() {
+                // arrange
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+                Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+                Product product2 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품2").price(50000).build());
+
+                Pageable pageable = PageRequest.of(0, 10);
+
+                // act
+                Page<Product> result = productService.getList(pageable);
+
+                // assert
+                assertThat(result).hasSize(2);
+                assertThat(result.getContent())
+                        .extracting(Product::getName)
+                        .containsExactlyInAnyOrder(product1.getName(), product2.getName());
+            }
+
+            @DisplayName("최신순 정렬로 조회한 경우")
+            @Test
+            void whenSortIsLatest() throws InterruptedException {
+                // arrange
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+                Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+                Product product2 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품2").price(50000).build());
+
+                ProductCommand.Search search = new ProductCommand.Search(brand.getId(), ProductSortType.LATEST, 0, 10);
+
+                // act
+                Page<Product> result = productService.getList(search.toPageable());
+
+                // assert
+                assertThat(result.getContent())
+                        .extracting(Product::getName)
+                        .containsExactly(product2.getName(), product1.getName());
+            }
+
+            @DisplayName("가격 오름차순 정렬로 조회한 경우")
+            @Test
+            void whenSortIsPriceAsc() {
+                // arrange
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("설명").build());
+                Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(50000).build());
+                Product product2 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품2").price(10000).build());
+                Product product3 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품3").price(30000).build());
+
+                ProductCommand.Search search = new ProductCommand.Search(brand.getId(), ProductSortType.PRICE_ASC, 0, 10);
+
+                // act
+                Page<Product> result = productService.getList(search.toPageable());
+
+                // assert
+                assertThat(result.getContent())
+                        .extracting(Product::getPrice)
+                        .containsExactly(product2.getPrice(), product3.getPrice(), product1.getPrice());
+                assertThat(result.getContent())
+                        .extracting(Product::getName)
+                        .containsExactly(product2.getName(), product3.getName(), product1.getName());
+            }
+
+        }
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 빈_목록이_조회된다 {
+            @DisplayName("페이지 크기보다 작은 범위를 요청한 경우")
+            @Test
+            void whenPageIsOutOfBounds() {
+                // arrange
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+                productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+
+                Pageable pageable = PageRequest.of(1, 10);
+
+                // act
+                Page<Product> result = productService.getList(pageable);
+
+                // assert
+                assertThat(result.getContent()).isEmpty();
+            }
+        }
+    }
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class 좋아요_추가_시 {
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 좋아요_개수가_증가한다 {
+
+            @DisplayName("존재하는 상품의 ID가 주어진다면")
+            @Test
+            void whenProductExists() {
+                // arrange
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+                Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+
+                // act
+                productService.increaseLike(product.getId());
+
+                // assert
+                Product result = productJpaRepository.findById(product.getId()).get();
+                assertThat(result.getLikeCount()).isEqualTo(1);
+            }
+        }
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 좋아요_개수_증가에_실패한_뒤_404_Not_Found_예외가_발생한다 {
+
+            @DisplayName("상품이 존재하지 않는다면")
+            @Test
+            void whenProductNotExists() {
+                // act
+                CoreException exception = assertThrows(CoreException.class, () -> productService.increaseLike(1L));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+            }
+        }
+    }
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class 좋아요_취소_시 {
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 좋아요_개수가_감소한다 {
+
+            @DisplayName("존재하는 상품의 ID가 주어진다면")
+            @Test
+            void whenProductExists() {
+                // arrange
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+                Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+                productService.increaseLike(product.getId());
+                productService.increaseLike(product.getId());
+
+                // act
+                productService.decreaseLike(product.getId());
+
+                // assert
+                Product result = productJpaRepository.findById(product.getId()).get();
+                assertThat(result.getLikeCount()).isEqualTo(1);
+            }
+        }
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 좋아요_개수_감소에_실패한_뒤_404_Not_Found_예외가_발생한다 {
+
+            @DisplayName("상품이 존재하지 않는다면")
+            @Test
+            void whenProductNotExists() {
+                // act
+                CoreException exception = assertThrows(CoreException.class, () -> productService.decreaseLike(1L));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+            }
+        }
+    }
+
+    @Nested
+    class 재고_감소_시 {
+
+        private Long productId;
+        private Product product;
+
+        @BeforeEach
+        void setUp() {
+            Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+            product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+            productId = product.getId();
+        }
+
+        @Nested
+        class 재고가_정상적으로_차감된다 {
+
+            @DisplayName("재고 수량이 충분하다면")
+            @Test
+            void whenStockEnough() {
+                // arrange
+                int initQuantity = 10;
+                int decreaseQuantity = 1;
+                stockJpaRepository.save(Stock.builder().product(product).quantity(initQuantity).build());
+
+                // act
+                productService.decreaseStock(productId, decreaseQuantity);
+
+                // assert
+                Stock result = stockJpaRepository.findByProductId(productId).get();
+                assertThat(result.getQuantity()).isEqualTo(initQuantity - decreaseQuantity);
+            }
+        }
+
+        @Nested
+        class 재고가_차감되지_않고_409_Conflict_예외가_발생한다 {
+
+            @DisplayName("재고가 부족하다면")
+            @Test
+            void whenStockIsNotEnough() {
+                // arrange
+                int initQuantity = 1;
+                int decreaseQuantity = 10;
+                stockJpaRepository.save(Stock.builder().product(product).quantity(initQuantity).build());
+
+                // act
+                CoreException exception = assertThrows(CoreException.class, () -> productService.decreaseStock(productId, decreaseQuantity));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);
+            }
+
+            @DisplayName("재고가 0 이라면")
+            @Test
+            void whenStockIsZero() {
+                // arrange
+                int initQuantity = 0;
+                int decreaseQuantity = 10;
+                stockJpaRepository.save(Stock.builder().product(product).quantity(initQuantity).build());
+
+                // act
+                CoreException exception = assertThrows(CoreException.class, () -> productService.decreaseStock(productId, decreaseQuantity));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);
+            }
+        }
+
+        @Nested
+        class 재고가_차감되지_않고_404_Not_Found_예외가_발생한다 {
+
+            @DisplayName("재고가 존재하지 않는다면")
+            @Test
+            void whenStockIsNotExist() {
+                // act
+                CoreException exception = assertThrows(CoreException.class, () -> productService.decreaseStock(productId, 1));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+            }
+        }
+    }
+}

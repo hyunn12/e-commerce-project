@@ -9,10 +9,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserDomainTest {
 
-    static final String validId = "test123";
-    static final String validEmail = "test@test.com";
-    static final String validGender = "M";
-    static final String validBirth = "2000-01-01";
+    static final LoginId validLoginId = LoginId.of("test123");
+    static final Email validEmail = Email.of("test@test.com");
+    static final Gender validGender = Gender.fromValue("M");
+    static final Birth validBirth = Birth.of("2000-01-01");
 
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
@@ -26,7 +26,7 @@ class UserDomainTest {
             @Test
             void 유효한_값이_주어진다면() {
                 assertDoesNotThrow(() -> User.saveBuilder()
-                        .userId(validId)
+                        .loginId(validLoginId)
                         .email(validEmail)
                         .gender(validGender)
                         .birth(validBirth)
@@ -43,7 +43,7 @@ class UserDomainTest {
             @Test
             void 형식에_맞지_않는_아이디라면() {
                 CoreException exception = assertThrows(CoreException.class, () -> User.saveBuilder()
-                                .userId("test1234567")
+                                .loginId(LoginId.of("test1234567"))
                                 .email(validEmail)
                                 .gender(validGender)
                                 .birth(validBirth)
@@ -57,8 +57,8 @@ class UserDomainTest {
             @Test
             void 형식에_맞지_않는_이메일이라면() {
                 CoreException exception = assertThrows(CoreException.class, () -> User.saveBuilder()
-                        .userId(validId)
-                        .email("test")
+                        .loginId(validLoginId)
+                        .email(Email.of("test"))
                         .gender(validGender)
                         .birth(validBirth)
                         .build()
@@ -71,9 +71,9 @@ class UserDomainTest {
             @Test
             void 유효하지_않은_성별이라면() {
                 CoreException exception = assertThrows(CoreException.class, () -> User.saveBuilder()
-                        .userId(validId)
+                        .loginId(validLoginId)
                         .email(validEmail)
-                        .gender("N")
+                        .gender(Gender.fromValue("N"))
                         .birth(validBirth)
                         .build()
                 );
@@ -85,10 +85,10 @@ class UserDomainTest {
             @Test
             void 형식에_맞지_않는_생년월일이라면() {
                 CoreException exception = assertThrows(CoreException.class, () -> User.saveBuilder()
-                        .userId(validId)
+                        .loginId(validLoginId)
                         .email(validEmail)
                         .gender(validGender)
-                        .birth("2020.01.01")
+                        .birth(Birth.of("2020.01.01"))
                         .build()
                 );
 

@@ -7,7 +7,7 @@
 - **LIKE**: 좋아요
 - **BRAND**: 브랜드
 - **PRODUCT**: 상품
-- **PRODUCT_STOCK**: 재고
+- **STOCK**: 재고
 - **ORDER**: 주문
 - **ORDER_ITEM**: 주문 상세
 - **PAYMENT**: 결제
@@ -17,7 +17,7 @@
 erDiagram  
     USER {  
         BIGINT ID PK "사용자 ID"  
-        VARCHAR USER_ID "아이디"
+        VARCHAR LOGIN_ID "아이디"
         VARCHAR EMAIL "이메일"
         VARCHAR GENDER "성별"
         DATETIME BIRTH "생년월일"
@@ -49,7 +49,6 @@ erDiagram
         BIGINT ID PK "ID"
         BIGINT USER_ID FK "사용자 ID"  
         INT PRODUCT_ID FK "상품 ID"
-        BOOLEAN IS_LIKED "좋아요 여부"
         DATETIME CREATED_AT "생성일"  
         DATETIME UPDATED_AT "수정일"  
         DATETIME DELETED_AT "삭제일"  
@@ -58,7 +57,7 @@ erDiagram
     BRAND {  
         BIGINT ID PK "ID"  
         VARCHAR NAME "브랜드명"  
-        VARCHAR DESC "브랜드설명"  
+        VARCHAR DESCRIPTION "브랜드설명"  
         DATETIME CREATED_AT "생성일"  
         DATETIME UPDATED_AT "수정일"  
         DATETIME DELETED_AT "삭제일"  
@@ -69,12 +68,13 @@ erDiagram
         BIGINT BRAND_ID FK "브랜드 ID"  
         VARCHAR NAME "상품명"  
         INT PRICE "가격"
+        INT LIKE_COUNT "좋아요 개수"
         DATETIME CREATED_AT "생성일"  
         DATETIME UPDATED_AT "수정일"  
         DATETIME DELETED_AT "삭제일"  
     }
 
-    PRODUCT_STOCK {
+    STOCK {
         BIGINT ID PK "ID"
         BIGINT PRODUCT_ID FK "상품 ID"
         INT QUANTITY "수량"
@@ -97,8 +97,9 @@ erDiagram
         BIGINT ID PK "ID"
         BIGINT ORDER_ID FK "주문 ID"
         BIGINT PRODUCT_ID FK "상품 ID"  
-        INT QUANTITY "수량"  
-        INT SUBTOTAL "소계"  
+        INT QUANTITY "수량"
+        INT AMOUNT "금액"
+        INT SUBTOTAL "합계"  
         DATETIME CREATED_AT "생성일"  
         DATETIME UPDATED_AT "수정일"  
         DATETIME DELETED_AT "삭제일"  
@@ -115,7 +116,7 @@ erDiagram
     }  
     
     BRAND ||--o{ PRODUCT : "1:N"
-    PRODUCT ||--|| PRODUCT_STOCK : "1:1"
+    PRODUCT ||--|| STOCK : "1:1"
     USER ||--o{ ORDER : "1:N"
     PRODUCT ||--o{ ORDER_ITEM : "1:N"
     ORDER ||--o{ ORDER_ITEM : "1:N"

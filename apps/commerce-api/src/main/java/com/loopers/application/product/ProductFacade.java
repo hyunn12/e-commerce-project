@@ -1,0 +1,62 @@
+package com.loopers.application.product;
+
+import com.loopers.domain.BaseEntity;
+import com.loopers.domain.brand.Brand;
+import com.loopers.domain.brand.BrandService;
+import com.loopers.domain.product.Product;
+import com.loopers.domain.product.ProductService;
+import com.loopers.domain.product.Stock;
+import com.loopers.domain.product.StockService;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+import static com.loopers.support.utils.Validation.Message.*;
+
+@Component
+@RequiredArgsConstructor
+public class ProductFacade {
+
+    private final BrandService brandService;
+    private final ProductService productService;
+    private final StockService stockService;
+
+    public ProductInfo.Search getList(ProductCommand.Search command) {
+        Page<Product> products = productService.getList(command.toPageable());
+        if (products.isEmpty()) {
+            return ProductInfo.Search.empty();
+        }
+
+        List<Long> productIds = products.stream().map(BaseEntity::getId).toList();
+
+        List<Long> brandIds = products.stream().map(product -> product.getBrand().getId()).distinct().toList();
+        List<Brand> brands = brandService.getListByIds(brandIds);
+
+        List<Stock> stocks = stockService.getListByProductIds(productIds);
+
+        return ProductInfo.Search.from(products, brands, stocks);
+    }
+
+    public ProductInfo.Main getDetail(Long productId) {
+        Product product = productService.getDetail(productId);
+        if (product == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_PRODUCT_NOT_FOUND);
+        }
+
+        Brand brand = brandService.getDetail(product.getBrand().getId());
+        if (brand == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_BRAND_NOT_FOUND);
+        }
+
+        Stock stock = stockService.getDetailByProductId(product.getId());
+        if (stock == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_STOCK_NOT_FOUND);
+        }
+
+        return ProductInfo.Main.from(product, brand, stock);
+    }
+}

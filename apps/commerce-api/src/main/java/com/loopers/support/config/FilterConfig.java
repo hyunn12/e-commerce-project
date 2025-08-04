@@ -19,7 +19,7 @@ public class FilterConfig {
                 "/api/v1/points/**"
         );
         registrationBean.setOrder(1);
-        registrationBean.setName("userIdFilter");
+        registrationBean.setName("userIdLFilter");
 
         return registrationBean;
     }

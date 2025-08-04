@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class UserInfo {
 
     private Long id;
-    private String userId;
+    private String loginId;
     private String email;
     private String gender;
     private String birth;
@@ -20,19 +20,10 @@ public class UserInfo {
     public static UserInfo from(User user) {
         return new UserInfo(
                 user.getId(),
-                user.getUserId(),
-                user.getEmail(),
-                user.getGender(),
-                user.getBirth().toString()
-        );
-    }
-
-    public User toModel() {
-        return new User(
-                userId,
-                email,
-                gender,
-                birth
+                user.getLoginId().getValue(),
+                user.getEmail().getValue(),
+                user.getGender().getValue(),
+                user.getBirth().getValue()
         );
     }
 }

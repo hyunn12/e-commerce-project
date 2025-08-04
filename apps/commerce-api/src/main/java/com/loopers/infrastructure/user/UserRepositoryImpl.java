@@ -1,5 +1,6 @@
 package com.loopers.infrastructure.user;
 
+import com.loopers.domain.user.LoginId;
 import com.loopers.domain.user.User;
 import com.loopers.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +18,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public boolean existsByUserId(String userId) {
-        return userJpaRepository.existsByUserId(userId);
+    public boolean existsByLoginId(LoginId loginId) {
+        return userJpaRepository.existsByLoginId_Value(loginId.getValue());
     }
 
     @Override
-    public User getUserByUserId(String userId) {
-        return userJpaRepository.findByUserId(userId).orElse(null);
+    public User getUserById(Long userId) {
+        return userJpaRepository.findById(userId).orElse(null);
     }
 }

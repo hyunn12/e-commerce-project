@@ -1,6 +1,6 @@
 package com.loopers.interfaces.api.user;
 
-import com.loopers.domain.user.User;
+import com.loopers.domain.user.*;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.interfaces.api.ApiResponse;
 import com.loopers.utils.DatabaseCleanUp;
@@ -66,7 +66,7 @@ class UserControllerE2ETest {
                 // assert
                 assertAll(
                         () -> assertTrue(response.getStatusCode().is2xxSuccessful()),
-                        () -> assertThat(response.getBody().data().userId()).isEqualTo(requestBody.userId()),
+                        () -> assertThat(response.getBody().data().loginId()).isEqualTo(requestBody.loginId()),
                         () -> assertThat(response.getBody().data().email()).isEqualTo(requestBody.email()),
                         () -> assertThat(response.getBody().data().gender()).isEqualTo(requestBody.gender()),
                         () -> assertThat(response.getBody().data().birth()).isEqualTo(requestBody.birth())
@@ -107,24 +107,30 @@ class UserControllerE2ETest {
     class GET {
 
         private final String requestUrl = "/api/v1/users/me";
-        private final String userId = "test123";
+        private Long userId;
 
         @BeforeEach
         void setData() {
-            User user = new User(userId, "test@test.com", "F", "2000-01-01");
+            User user = User.saveBuilder()
+                    .loginId(LoginId.of("test123"))
+                    .email(Email.of("test1@test.com"))
+                    .gender(Gender.fromValue("F"))
+                    .birth(Birth.of("2000-01-01"))
+                    .build();
             userJpaRepository.save(user);
+            userId = user.getId();
         }
 
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
         @Nested
         class 조회에_성공한_후_유저_정보를_받는다 {
 
-            @DisplayName("주어진 userId의 회원이 존재하는 회원이라면")
+            @DisplayName("주어진 loginId의 회원이 존재하는 회원이라면")
             @Test
-            void 주어진_userId의_회원이_존재하는_회원이라면() {
+            void 주어진_loginId의_회원이_존재하는_회원이라면() {
                 // arrange
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", userId);
+                headers.add("X-USER-ID", userId.toString());
 
                 // act
                 ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
@@ -134,7 +140,7 @@ class UserControllerE2ETest {
                 // assert
                 assertAll(
                         () -> assertThat(response.getStatusCode().is2xxSuccessful()).isTrue(),
-                        () -> assertThat(response.getBody().data().userId()).isEqualTo(userId)
+                        () -> assertThat(response.getBody().data().id()).isEqualTo(userId)
                 );
             }
         }
@@ -143,12 +149,12 @@ class UserControllerE2ETest {
         @Nested
         class 조회에_실패한_후_404_Not_Found_응답을_받는다 {
 
-            @DisplayName("주어진 userId의 회원이 존재하지 않는 회원이라면")
+            @DisplayName("주어진 loginId의 회원이 존재하지 않는 회원이라면")
             @Test
-            void 주어진_userId의_회원이_존재하지_않는_회원이라면() {
+            void 주어진_loginId의_회원이_존재하지_않는_회원이라면() {
                 // arrange
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", "test");
+                headers.add("X-USER-ID", Long.toString(Long.MAX_VALUE)); // 절대 존재하지 않을 userId
 
                 // act
                 ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};

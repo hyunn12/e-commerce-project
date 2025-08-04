@@ -10,6 +10,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import static com.loopers.support.utils.Validation.Message.MESSAGE_USER_NOT_FOUND;
+
 @Component
 @RequiredArgsConstructor
 public class UserFacade {
@@ -22,15 +24,15 @@ public class UserFacade {
         UserInfo joinInfo = UserInfo.from(userService.save(command.toDomain()));
 
         // 포인트 초기화
-        pointService.save(new Point(joinInfo.getUserId(), 0));
+        pointService.save(new Point(joinInfo.getId(), 0));
 
         return joinInfo;
     }
 
-    public UserInfo getUserInfo(String userId) {
-        User user = userService.findByUserId(userId);
+    public UserInfo getDetail(Long userId) {
+        User user = userService.getDetail(userId);
         if (user == null) {
-            throw new CoreException(ErrorType.NOT_FOUND, "존재하지 않는 회원입니다.");
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_USER_NOT_FOUND);
         }
         return UserInfo.from(user);
     }
