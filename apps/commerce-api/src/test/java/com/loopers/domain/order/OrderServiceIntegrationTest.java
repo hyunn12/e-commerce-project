@@ -64,7 +64,7 @@ class OrderServiceIntegrationTest {
     @Nested
     class 주문_상태_변경_시 {
 
-        @DisplayName("markSuccess 호출한다면 상태가 SUCCESS 로 변경된다.")
+        @DisplayName("상태가 정상적으로 변경된다.")
         @Test
         void markSuccess_whenCalled() {
             // arrange
@@ -72,38 +72,10 @@ class OrderServiceIntegrationTest {
             Order order = orderJpaRepository.save(Order.create(userId, List.of(item)));
 
             // act
-            orderService.markSuccess(order);
+            orderService.markStatus(order, OrderStatus.SUCCESS);
 
             // assert
             assertThat(order.getStatus()).isEqualTo(OrderStatus.SUCCESS);
-        }
-
-        @DisplayName("markCancel 호출한다면 상태가 CANCEL 로 변경된다.")
-        @Test
-        void markCancel_whenCalled() {
-            // arrange
-            OrderItem item = OrderItem.of(1L, 2, 10000);
-            Order order = orderJpaRepository.save(Order.create(userId, List.of(item)));
-
-            // act
-            orderService.markCancel(order);
-
-            // assert
-            assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCEL);
-        }
-
-        @DisplayName("markFail 호출한다면 상태가 CANCEL 로 변경된다.")
-        @Test
-        void markFail_whenCalled() {
-            // arrange
-            OrderItem item = OrderItem.of(1L, 2, 10000);
-            Order order = orderJpaRepository.save(Order.create(userId, List.of(item)));
-
-            // act
-            orderService.markFail(order);
-
-            // assert
-            assertThat(order.getStatus()).isEqualTo(OrderStatus.FAIL);
         }
     }
 
@@ -124,7 +96,7 @@ class OrderServiceIntegrationTest {
             Pageable pageable = PageRequest.of(0, 10);
 
             // act
-            Page<Order> result = orderService.getListByUserId(userId, null, pageable);
+            Page<Order> result = orderService.getList(userId, null, pageable);
 
             // assert
             assertThat(result.getTotalElements()).isEqualTo(2);
@@ -145,7 +117,7 @@ class OrderServiceIntegrationTest {
             Pageable pageable = PageRequest.of(0, 10);
 
             // act
-            Page<Order> result = orderService.getListByUserId(userId, OrderStatus.CANCEL, pageable);
+            Page<Order> result = orderService.getList(userId, OrderStatus.CANCEL, pageable);
 
             // assert
             assertThat(result.getTotalElements()).isEqualTo(1);

@@ -22,18 +22,12 @@ public class OrderService {
     }
 
     @Transactional
-    public void markSuccess(Order order) {
-        order.markSuccess();
-    }
-
-    @Transactional
-    public void markCancel(Order order) {
-        order.markCancel();
-    }
-
-    @Transactional
-    public void markFail(Order order) {
-        order.markFail();
+    public void markStatus(Order order, OrderStatus status) {
+        switch (status) {
+            case SUCCESS -> order.markSuccess();
+            case CANCEL -> order.markCancel();
+            case FAIL -> order.markFail();
+        }
     }
 
     public Order getDetail(Long orderId) {

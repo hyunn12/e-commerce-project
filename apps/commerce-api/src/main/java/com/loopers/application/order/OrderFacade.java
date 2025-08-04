@@ -3,6 +3,7 @@ package com.loopers.application.order;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
+import com.loopers.domain.order.OrderStatus;
 import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.point.PointService;
 import com.loopers.domain.product.ProductService;
@@ -22,7 +23,7 @@ public class OrderFacade {
     private final ExternalOrderSender externalOrderSender;
 
     @Transactional
-    public OrderInfo.Main createOrder(OrderCommand.Create command) {
+    public OrderInfo.Main create(OrderCommand.Create command) {
 
         // 주문 정보 저장
         Order order = orderService.create(command.toOrderDomain());
@@ -42,14 +43,14 @@ public class OrderFacade {
         externalOrderSender.send(order);
 
         // 주문 상태 변경
-        orderService.markSuccess(order);
+        orderService.markStatus(order, OrderStatus.SUCCESS);
 
         return OrderInfo.Main.from(order);
     }
 
     @Transactional
     public OrderInfo.Summary getList(OrderCommand.Summary command) {
-        Page<Order> orders = orderService.getListByUserId(command.getUserId(), command.getStatus(), command.toPageable());
+        Page<Order> orders = orderService.getList(command.getUserId(), command.getStatus(), command.toPageable());
         return OrderInfo.Summary.from(orders);
     }
 
