@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.loopers.application.product.ProductSortType.LATEST;
+import static com.loopers.domain.product.ProductSortType.LATEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -58,7 +58,7 @@ class ProductFacadeIntegrationTest {
             ProductCommand.Search command = new ProductCommand.Search(null, LATEST, 0, 10);
 
             // act
-            ProductInfo.Search result = productFacade.getList(command);
+            ProductInfo.Summary result = productFacade.getList(command);
 
             // assert
             assertThat(result.getProducts()).hasSize(2);
@@ -77,7 +77,7 @@ class ProductFacadeIntegrationTest {
             ProductCommand.Search command = new ProductCommand.Search(null, LATEST, 0, 10);
 
             // act
-            ProductInfo.Search result = productFacade.getList(command);
+            ProductInfo.Summary result = productFacade.getList(command);
 
             // assert
             assertThat(result.getProducts()).isEmpty();
@@ -97,7 +97,7 @@ class ProductFacadeIntegrationTest {
             ProductCommand.Search command = new ProductCommand.Search(null, LATEST, 0, 10);
 
             // act
-            ProductInfo.Search result = productFacade.getList(command);
+            ProductInfo.Summary result = productFacade.getList(command);
 
             // assert
             Map<String, String> nameToBrandMap = result.getProducts().stream()

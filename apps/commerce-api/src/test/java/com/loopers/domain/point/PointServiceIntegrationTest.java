@@ -118,7 +118,7 @@ class PointServiceIntegrationTest {
                 pointJpaRepository.save(new Point(userId, point));
 
                 // act
-                Point result = pointService.getPointByUserId(userId);
+                Point result = pointService.getDetailByUserId(userId);
 
                 // assert
                 assertThat(result.getPoint()).isEqualTo(point);
@@ -133,7 +133,7 @@ class PointServiceIntegrationTest {
             @Test
             void 주어진_userId의_회원이_존재하지_않는_회원이라면() {
                 // act
-                Point result = pointService.getPointByUserId(1L);
+                Point result = pointService.getDetailByUserId(1L);
 
                 // assert
                 assertThat(result).isNull();

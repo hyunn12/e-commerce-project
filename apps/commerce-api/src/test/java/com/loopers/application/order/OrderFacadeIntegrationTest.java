@@ -100,7 +100,7 @@ class OrderFacadeIntegrationTest {
                         .build();
 
                 // act
-                OrderInfo.Main result = orderFacade.createOrder(command);
+                OrderInfo.Main result = orderFacade.create(command);
 
                 // assert
                 Order order = orderJpaRepository.findById(result.getId()).get();
@@ -153,7 +153,7 @@ class OrderFacadeIntegrationTest {
                         .build();
 
                 // act
-                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.createOrder(command));
+                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.create(command));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);
@@ -183,7 +183,7 @@ class OrderFacadeIntegrationTest {
                         .build();
 
                 // act
-                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.createOrder(command));
+                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.create(command));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);

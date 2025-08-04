@@ -1,7 +1,6 @@
 package com.loopers.domain.product;
 
 import com.loopers.application.product.ProductCommand;
-import com.loopers.application.product.ProductSortType;
 import com.loopers.domain.brand.Brand;
 import com.loopers.infrastructure.brand.BrandJpaRepository;
 import com.loopers.infrastructure.product.ProductJpaRepository;
@@ -13,8 +12,6 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -97,10 +94,10 @@ class ProductServiceIntegrationTest {
                 Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
                 Product product2 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품2").price(50000).build());
 
-                Pageable pageable = PageRequest.of(0, 10);
+                ProductCommand.Search search = new ProductCommand.Search(brand.getId(), ProductSortType.LATEST, 0, 10);
 
                 // act
-                Page<Product> result = productService.getList(pageable);
+                Page<Product> result = productService.getList(search.getBrandId(), search.toPageable(), search.getSort());
 
                 // assert
                 assertThat(result).hasSize(2);
@@ -111,7 +108,7 @@ class ProductServiceIntegrationTest {
 
             @DisplayName("최신순 정렬로 조회한 경우")
             @Test
-            void whenSortIsLatest() throws InterruptedException {
+            void whenSortIsLatest() {
                 // arrange
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
                 Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
@@ -120,7 +117,7 @@ class ProductServiceIntegrationTest {
                 ProductCommand.Search search = new ProductCommand.Search(brand.getId(), ProductSortType.LATEST, 0, 10);
 
                 // act
-                Page<Product> result = productService.getList(search.toPageable());
+                Page<Product> result = productService.getList(search.getBrandId(), search.toPageable(), search.getSort());
 
                 // assert
                 assertThat(result.getContent())
@@ -140,7 +137,7 @@ class ProductServiceIntegrationTest {
                 ProductCommand.Search search = new ProductCommand.Search(brand.getId(), ProductSortType.PRICE_ASC, 0, 10);
 
                 // act
-                Page<Product> result = productService.getList(search.toPageable());
+                Page<Product> result = productService.getList(search.getBrandId(), search.toPageable(), search.getSort());
 
                 // assert
                 assertThat(result.getContent())
@@ -163,10 +160,10 @@ class ProductServiceIntegrationTest {
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
                 productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
 
-                Pageable pageable = PageRequest.of(1, 10);
+                ProductCommand.Search search = new ProductCommand.Search(brand.getId(), ProductSortType.LATEST, 1, 10);
 
                 // act
-                Page<Product> result = productService.getList(pageable);
+                Page<Product> result = productService.getList(search.getBrandId(), search.toPageable(), search.getSort());
 
                 // assert
                 assertThat(result.getContent()).isEmpty();

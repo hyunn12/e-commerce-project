@@ -6,6 +6,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import static com.loopers.support.constants.HeaderConstants.USER_USER_ID_HEADER;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -22,7 +24,7 @@ public class UserController {
 
     @GetMapping("/me")
     public ApiResponse<UserDto.UserResponse> getUserInfo(
-            @RequestHeader("X-USER-ID") Long userId
+            @RequestHeader(USER_USER_ID_HEADER) Long userId
     ) {
         return ApiResponse.success(UserDto.UserResponse.from(userFacade.getDetail(userId)));
     }

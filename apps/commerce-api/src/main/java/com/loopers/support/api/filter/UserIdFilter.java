@@ -8,11 +8,11 @@ import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 
+import static com.loopers.support.constants.HeaderConstants.USER_USER_ID_ATTR;
+import static com.loopers.support.constants.HeaderConstants.USER_USER_ID_HEADER;
+
 @Slf4j
 public class UserIdFilter implements Filter {
-
-    public static final String USER_USER_ID_HEADER = "X-USER-ID";
-    public static final String USER_USER_ID_ATTR = "userId";
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

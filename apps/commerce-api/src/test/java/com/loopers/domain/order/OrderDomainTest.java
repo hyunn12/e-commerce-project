@@ -103,5 +103,18 @@ class OrderDomainTest {
             // assert
             assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCEL);
         }
+
+        @DisplayName("상태가 FAIL 로 변경된다.")
+        @Test
+        void changeStatusFAIL() {
+            // arrange
+            Order order = Instancio.create(Order.class);
+
+            // act
+            order.markFail();
+
+            // assert
+            assertThat(order.getStatus()).isEqualTo(OrderStatus.FAIL);
+        }
     }
 }
