@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 
+import static com.loopers.support.constants.HeaderConstants.USER_USER_ID_HEADER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -130,7 +131,7 @@ class UserControllerE2ETest {
             void 주어진_loginId의_회원이_존재하는_회원이라면() {
                 // arrange
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", userId.toString());
+                headers.add(USER_USER_ID_HEADER, userId.toString());
 
                 // act
                 ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
@@ -154,7 +155,7 @@ class UserControllerE2ETest {
             void 주어진_loginId의_회원이_존재하지_않는_회원이라면() {
                 // arrange
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", Long.toString(Long.MAX_VALUE)); // 절대 존재하지 않을 userId
+                headers.add(USER_USER_ID_HEADER, Long.toString(Long.MAX_VALUE));
 
                 // act
                 ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
