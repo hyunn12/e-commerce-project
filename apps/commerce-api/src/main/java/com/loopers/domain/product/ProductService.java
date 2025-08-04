@@ -22,8 +22,8 @@ public class ProductService {
         return productRepository.findById(productId);
     }
 
-    public Page<Product> getList(Pageable pageable) {
-        return productRepository.findAll(pageable);
+    public Page<Product> getList(Long brandId, Pageable pageable, ProductSortType sortType) {
+        return productRepository.search(brandId, pageable, sortType);
     }
 
     @Transactional

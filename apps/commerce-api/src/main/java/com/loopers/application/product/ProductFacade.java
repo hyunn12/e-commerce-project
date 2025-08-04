@@ -25,10 +25,10 @@ public class ProductFacade {
     private final ProductService productService;
     private final StockService stockService;
 
-    public ProductInfo.Search getList(ProductCommand.Search command) {
-        Page<Product> products = productService.getList(command.toPageable());
+    public ProductInfo.Summary getList(ProductCommand.Search command) {
+        Page<Product> products = productService.getList(command.getBrandId(), command.toPageable(), command.getSort());
         if (products.isEmpty()) {
-            return ProductInfo.Search.empty();
+            return ProductInfo.Summary.empty();
         }
 
         List<Long> productIds = products.stream().map(BaseEntity::getId).toList();
@@ -38,7 +38,7 @@ public class ProductFacade {
 
         List<Stock> stocks = stockService.getListByProductIds(productIds);
 
-        return ProductInfo.Search.from(products, brands, stocks);
+        return ProductInfo.Summary.from(products, brands, stocks);
     }
 
     public ProductInfo.Main getDetail(Long productId) {
