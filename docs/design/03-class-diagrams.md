@@ -113,6 +113,12 @@ classDiagram
         -DateTime expiredAt        
     }
     
+    class CouponHistory {
+        -Long id
+        -Long userId
+        -Long userCouponId
+    }
+    
     %% 관계
     User "1" --> "1" Point : has
     Point "1" --> "*" PointHistory : contains

@@ -143,6 +143,15 @@ erDiagram
         DATETIME UPDATED_AT "수정일"
         DATETIME DELETED_AT "삭제일"
     }
+    
+    COUPON_HISTORY {
+        BIGINT ID PK "ID"
+        INT USER_ID FK "사용자 ID"
+        INT USER_COUPON_ID FK "사용자쿠폰ID"
+        DATETIME CREATED_AT "생성일"
+        DATETIME UPDATED_AT "수정일"
+        DATETIME DELETED_AT "삭제일"
+    }
 
     BRAND ||--o{ PRODUCT : "1:N"
     PRODUCT ||--|| STOCK : "1:1"
