@@ -6,10 +6,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import static com.loopers.support.utils.Validation.Message.MESSAGE_COUPON_MIN_AMOUNT;
+import static com.loopers.support.utils.Validation.Message.MESSAGE_COUPON_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
 public class CouponService {
+
+    private final CouponRepository couponRepository;
+
+    public Coupon getDetail(Long couponId) {
+        Coupon coupon = couponRepository.findById(couponId);
+        if (coupon == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_COUPON_NOT_FOUND);
+        }
+        return coupon;
+    }
 
     public void validateAmount(Coupon coupon, int orderAmount) {
         if (coupon.isUnderMinAmount(orderAmount)) {

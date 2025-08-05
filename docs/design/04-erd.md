@@ -90,6 +90,7 @@ erDiagram
         BIGINT USER_ID FK "사용자 ID"
         INT COUPON_ID FK "쿠폰 ID"
         INT TOTAL_AMOUNT "총금액"  
+        INT DISCOUNT_AMOUNT "할인금액"  
         VARCHAR STATUS "주문상태 (INIT, SUCCESS, CANCEL)" 
         DATETIME CREATED_AT "생성일"  
         DATETIME UPDATED_AT "수정일"  

@@ -63,6 +63,7 @@ classDiagram
         -Long id
         -Long user
         -int totalAmount
+        -int discountAmount
         -OrderStatus status
         
         +create()
@@ -102,6 +103,8 @@ classDiagram
         -int discountValue
         -int minAmount
         -int maxDiscountAmount
+        
+        +isUnderMinAmount()
     }
     
     class UserCoupon {
@@ -111,6 +114,11 @@ classDiagram
         -CouponStatus status
         -DateTime usedAt
         -DateTime expiredAt        
+        
+        +isUsed()
+        +isExpired()
+        +isUsable()
+        +use()
     }
     
     class CouponUsageHistory {

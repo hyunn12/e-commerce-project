@@ -5,18 +5,57 @@ import com.loopers.support.error.ErrorType;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.loopers.domain.coupon.DiscountType.PRICE;
 import static com.loopers.domain.coupon.DiscountType.RATE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CouponServiceDomainTest {
+    
+    @Mock
+    private CouponRepository couponRepository;
 
     @InjectMocks
     private CouponService couponService;
+
+    @Nested
+    class 쿠폰_조회_시 {
+
+        @DisplayName("존재하는 쿠폰 ID로 조회하면 쿠폰이 반환된다.")
+        @Test
+        void getDetail_withValidId_returnsCoupon() {
+            // arrange
+            Long couponId = 1L;
+            Coupon expectedCoupon = mock(Coupon.class);
+            when(couponRepository.findById(couponId)).thenReturn(expectedCoupon);
+
+            // act
+            Coupon actual = couponService.getDetail(couponId);
+
+            // assert
+            verify(couponRepository).findById(couponId);
+            assertThat(actual).isEqualTo(expectedCoupon);
+        }
+
+        @DisplayName("존재하지 않는 쿠폰 ID로 조회하면 Not Found 예외를 던진다.")
+        @Test
+        void throwNotFound_withInvalidId() {
+            // arrange
+            Long couponId = 999L;
+            when(couponRepository.findById(couponId)).thenReturn(null);
+
+            // act
+            CoreException exception = assertThrows(CoreException.class, () -> couponService.getDetail(couponId));
+
+            // assert
+            assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
+        }
+    }
 
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
