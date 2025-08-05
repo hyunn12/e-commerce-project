@@ -15,7 +15,7 @@ class CouponDomainTest {
         void returnTrue_whenOrderAmountIsUnderMinAmount() {
             // arrange
             int minAmount = 10000;
-            Coupon coupon = new Coupon("3000원 할인", 100, 0, DiscountType.PRICE, 3000, minAmount);
+            Coupon coupon = new Coupon("3000원 할인", 100, 0, DiscountType.PRICE, 3000, null, minAmount);
 
             // act
             boolean result = coupon.isUnderMinAmount(minAmount-1000);
@@ -29,7 +29,7 @@ class CouponDomainTest {
         void returnFalse_whenOrderAmountIsEqualOrOverMinAmount() {
             // arrange
             int minAmount = 10000;
-            Coupon coupon = new Coupon("3000원 할인", 100, 0, DiscountType.PRICE, 3000, minAmount);
+            Coupon coupon = new Coupon("3000원 할인", 100, 0, DiscountType.PRICE, 3000, null, minAmount);
 
             // act
             boolean result1 = coupon.isUnderMinAmount(minAmount);

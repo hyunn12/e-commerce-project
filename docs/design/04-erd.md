@@ -125,6 +125,7 @@ erDiagram
         INT ISSUED_COUNT "발급개수"
         VARCHAR DISCOUNT_TYPE "할인유형 (PRICE, RATE)"
         INT DISCOUNT_VALUE "할인값"
+        INT MAX_DISCOUNT_AMOUNT "최대할인금액"
         INT MIN_AMOUNT "최소금액"
         DATETIME CREATED_AT "생성일"
         DATETIME UPDATED_AT "수정일"

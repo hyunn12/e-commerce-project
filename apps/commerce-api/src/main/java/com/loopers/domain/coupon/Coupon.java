@@ -28,15 +28,19 @@ public class Coupon extends BaseEntity {
     @Column(name = "discount_value", nullable = false)
     private int discountValue;
 
+    @Column(name = "max_discount_amount")
+    private Integer maxDiscountAmount;
+
     @Column(name = "min_amount", nullable = false)
     private int minAmount;
 
-    public Coupon(String name, int maxCount, int issuedCount, DiscountType type, int discountValue, int minAmount) {
+    public Coupon(String name, int maxCount, int issuedCount, DiscountType type, int discountValue, Integer maxDiscountAmount, int minAmount) {
         this.name = name;
         this.maxCount = maxCount;
         this.issuedCount = issuedCount;
         this.type = type;
         this.discountValue = discountValue;
+        this.maxDiscountAmount = maxDiscountAmount;
         this.minAmount = minAmount;
     }
 

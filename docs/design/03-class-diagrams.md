@@ -101,6 +101,7 @@ classDiagram
         -DiscountType type
         -int discountValue
         -int minAmount
+        -int maxDiscountAmount
     }
     
     class UserCoupon {
