@@ -41,7 +41,7 @@ public class UserCouponService {
         userCoupon.use();
     }
 
-    public CouponHistory saveHistory(CouponHistory couponHistory) {
-        return userCouponRepository.saveHistory(couponHistory);
+    public CouponUsageHistory saveHistory(CouponUsageHistory couponUsageHistory) {
+        return userCouponRepository.saveHistory(couponUsageHistory);
     }
 }

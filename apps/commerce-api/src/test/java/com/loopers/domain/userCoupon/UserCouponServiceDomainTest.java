@@ -152,15 +152,15 @@ class UserCouponServiceDomainTest {
         @DisplayName("정상적인 값이 주어지면 저장된 결과가 반환된다.")
         void saveHistory_returnsSavedEntity() {
             // given
-            CouponHistory couponHistory = CouponHistory.create(1L, 1L);
-            given(userCouponRepository.saveHistory(couponHistory)).willReturn(couponHistory);
+            CouponUsageHistory couponUsageHistory = CouponUsageHistory.create(1L, 1L);
+            given(userCouponRepository.saveHistory(couponUsageHistory)).willReturn(couponUsageHistory);
 
             // when
-            CouponHistory result = userCouponService.saveHistory(couponHistory);
+            CouponUsageHistory result = userCouponService.saveHistory(couponUsageHistory);
 
             // then
-            assertThat(result).isEqualTo(couponHistory);
-            verify(userCouponRepository, times(1)).saveHistory(couponHistory);
+            assertThat(result).isEqualTo(couponUsageHistory);
+            verify(userCouponRepository, times(1)).saveHistory(couponUsageHistory);
         }
     }
 }

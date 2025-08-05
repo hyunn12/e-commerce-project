@@ -144,7 +144,7 @@ erDiagram
         DATETIME DELETED_AT "삭제일"
     }
     
-    COUPON_HISTORY {
+    COUPON_USAGE_HISTORY {
         BIGINT ID PK "ID"
         INT USER_ID FK "사용자 ID"
         INT USER_COUPON_ID FK "사용자쿠폰ID"

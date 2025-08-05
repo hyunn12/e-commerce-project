@@ -113,7 +113,7 @@ classDiagram
         -DateTime expiredAt        
     }
     
-    class CouponHistory {
+    class CouponUsageHistory {
         -Long id
         -Long userId
         -Long userCouponId

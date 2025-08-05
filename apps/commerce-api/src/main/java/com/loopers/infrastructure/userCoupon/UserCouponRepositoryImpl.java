@@ -1,6 +1,6 @@
 package com.loopers.infrastructure.userCoupon;
 
-import com.loopers.domain.userCoupon.CouponHistory;
+import com.loopers.domain.userCoupon.CouponUsageHistory;
 import com.loopers.domain.userCoupon.UserCoupon;
 import com.loopers.domain.userCoupon.UserCouponRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
     }
 
     @Override
-    public CouponHistory saveHistory(CouponHistory couponHistory) {
-        return couponHistoryJpaRepository.save(couponHistory);
+    public CouponUsageHistory saveHistory(CouponUsageHistory couponUsageHistory) {
+        return couponHistoryJpaRepository.save(couponUsageHistory);
     }
 }
