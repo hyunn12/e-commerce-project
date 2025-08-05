@@ -125,42 +125,21 @@ class UserCouponServiceDomainTest {
 
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
-    class 쿠폰_사용_처리_시 {
-
-        @Test
-        @DisplayName("쿠폰의 use() 메서드를 호출한다면 USED 처리된다.")
-        void markUsed_callUse() {
-            // arrange
-            Long couponId = 1L;
-            Long userId = 1L;
-            UserCoupon userCoupon = UserCoupon.create(couponId, userId);
-
-            // act
-            userCouponService.markUsed(userCoupon);
-
-            // assert
-            assertThat(userCoupon.getStatus()).isEqualTo(UserCouponStatus.USED);
-            assertThat(userCoupon.getUsedAt()).isNotNull();
-        }
-    }
-
-    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-    @Nested
     class 쿠폰_사용_이력_저장_시 {
 
         @Test
         @DisplayName("정상적인 값이 주어지면 저장된 결과가 반환된다.")
         void saveHistory_returnsSavedEntity() {
             // given
-            CouponHistory couponHistory = CouponHistory.create(1L, 1L);
-            given(userCouponRepository.saveHistory(couponHistory)).willReturn(couponHistory);
+            CouponUsageHistory couponUsageHistory = CouponUsageHistory.create(1L, 1L);
+            given(userCouponRepository.saveHistory(couponUsageHistory)).willReturn(couponUsageHistory);
 
             // when
-            CouponHistory result = userCouponService.saveHistory(couponHistory);
+            CouponUsageHistory result = userCouponService.saveHistory(couponUsageHistory);
 
             // then
-            assertThat(result).isEqualTo(couponHistory);
-            verify(userCouponRepository, times(1)).saveHistory(couponHistory);
+            assertThat(result).isEqualTo(couponUsageHistory);
+            verify(userCouponRepository, times(1)).saveHistory(couponUsageHistory);
         }
     }
 }

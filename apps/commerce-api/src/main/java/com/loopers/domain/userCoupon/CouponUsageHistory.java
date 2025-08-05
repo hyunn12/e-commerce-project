@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "coupon_history")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CouponHistory extends BaseEntity {
+public class CouponUsageHistory extends BaseEntity {
 
     @Column(name = "user_id", nullable = false)
     private Long userId;
@@ -20,12 +20,12 @@ public class CouponHistory extends BaseEntity {
     @Column(name = "user_coupon_id", nullable = false)
     private Long userCouponId;
 
-    private CouponHistory(Long userId, Long userCouponId) {
+    private CouponUsageHistory(Long userId, Long userCouponId) {
         this.userId = userId;
         this.userCouponId = userCouponId;
     }
 
-    public static CouponHistory create(Long userId, Long userCouponId) {
-        return new CouponHistory(userId, userCouponId);
+    public static CouponUsageHistory create(Long userId, Long userCouponId) {
+        return new CouponUsageHistory(userId, userCouponId);
     }
 }

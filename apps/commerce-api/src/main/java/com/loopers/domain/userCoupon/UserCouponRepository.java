@@ -9,5 +9,5 @@ public interface UserCouponRepository {
 
     UserCoupon findById(Long userCouponId);
 
-    CouponHistory saveHistory(CouponHistory couponHistory);
+    CouponUsageHistory saveHistory(CouponUsageHistory couponUsageHistory);
 }

@@ -37,11 +37,17 @@ public class UserCouponService {
         return userCoupon;
     }
 
-    public void markUsed(UserCoupon userCoupon) {
+    public UserCoupon use(Long userCouponId, Long userId) {
+        UserCoupon userCoupon = getDetail(userCouponId, userId);
         userCoupon.use();
+
+        CouponUsageHistory couponUsageHistory = CouponUsageHistory.create(userCoupon.getId(), userCoupon.getUserId());
+        saveHistory(couponUsageHistory);
+
+        return userCouponRepository.save(userCoupon);
     }
 
-    public CouponHistory saveHistory(CouponHistory couponHistory) {
-        return userCouponRepository.saveHistory(couponHistory);
+    public CouponUsageHistory saveHistory(CouponUsageHistory couponUsageHistory) {
+        return userCouponRepository.saveHistory(couponUsageHistory);
     }
 }

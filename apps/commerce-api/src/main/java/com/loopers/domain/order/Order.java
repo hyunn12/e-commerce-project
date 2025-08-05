@@ -4,10 +4,7 @@ import com.loopers.domain.BaseEntity;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +26,10 @@ public class Order extends BaseEntity {
 
     @Column(name = "total_amount", nullable = false)
     private int totalAmount;
+
+    @Setter
+    @Column(name = "discount_amount", nullable = false)
+    private int discountAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

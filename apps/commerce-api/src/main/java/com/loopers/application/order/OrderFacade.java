@@ -1,5 +1,6 @@
 package com.loopers.application.order;
 
+import com.loopers.application.userCoupon.UserCouponUseService;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 public class OrderFacade {
 
     private final OrderService orderService;
+    private final UserCouponUseService userCouponUseService;
     private final ProductService productService;
     private final PointService pointService;
     private final PaymentService paymentService;
@@ -24,9 +26,17 @@ public class OrderFacade {
 
     @Transactional
     public OrderInfo.Main create(OrderCommand.Create command) {
-
-        // 주문 정보 저장
+        // 주문 생성
         Order order = orderService.create(command.toOrderDomain());
+
+        // 쿠폰 조회 및 사용
+        int discountAmount = 0;
+        if (command.getUserCouponId() != null) {
+            discountAmount = userCouponUseService.use(command.getUserCouponId(), command.getUserId(), order.getTotalAmount());
+        }
+
+        int finalAmount = order.getTotalAmount() - discountAmount;
+        order.setDiscountAmount(discountAmount);
 
         // 상품 재고 조회 및 차감
         for (OrderItem item : order.getOrderItems()) {
@@ -34,10 +44,10 @@ public class OrderFacade {
         }
 
         // 포인트 조회 및 차감
-        pointService.use(command.getUserId(), order.getTotalAmount());
+        pointService.use(command.getUserId(), finalAmount);
 
         // 결제내역 저장
-        paymentService.save(command.getUserId(), order.getTotalAmount());
+        paymentService.save(command.getUserId(), finalAmount);
 
         // 주문 정보 전달
         externalOrderSender.send(order);
