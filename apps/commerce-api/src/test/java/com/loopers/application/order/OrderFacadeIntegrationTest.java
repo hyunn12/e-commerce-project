@@ -205,7 +205,7 @@ class OrderFacadeIntegrationTest {
                 OrderItem item1 = OrderItem.of(1L, 2, 10000);
                 OrderItem item2 = OrderItem.of(2L, 3, 20000);
                 List<OrderItem> items = List.of(item1, item2);
-                Order order = Order.create(userId, items);
+                Order order = Order.create(userId, 1L, items);
                 order.markSuccess();
                 orderJpaRepository.save(order);
             }
@@ -236,7 +236,7 @@ class OrderFacadeIntegrationTest {
             stockJpaRepository.save(new Stock(product, 10));
 
             int quantity = 2;
-            Order order = Order.create(userId, List.of(OrderItem.of(product.getId(), quantity, quantity*product.getPrice())));
+            Order order = Order.create(userId, 1L, List.of(OrderItem.of(product.getId(), quantity, quantity*product.getPrice())));
             order.markSuccess();
             orderJpaRepository.save(order);
 

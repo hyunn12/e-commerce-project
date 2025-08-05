@@ -48,7 +48,7 @@ class OrderServiceIntegrationTest {
         void saveOrder_whenValidOrder() {
             // arrange
             OrderItem item = OrderItem.of(1L, 2, 10000);
-            Order order = Order.create(userId, List.of(item));
+            Order order = Order.create(userId, 1L, List.of(item));
 
             // act
             Order savedOrder = orderService.create(order);
@@ -69,7 +69,7 @@ class OrderServiceIntegrationTest {
         void markSuccess_whenCalled() {
             // arrange
             OrderItem item = OrderItem.of(1L, 2, 10000);
-            Order order = orderJpaRepository.save(Order.create(userId, List.of(item)));
+            Order order = orderJpaRepository.save(Order.create(userId, 1L, List.of(item)));
 
             // act
             orderService.markStatus(order, OrderStatus.SUCCESS);
@@ -88,10 +88,10 @@ class OrderServiceIntegrationTest {
         void returnOrderList_whenStatusIsNull() {
             // arrange
             OrderItem item1 = OrderItem.of(1L, 2, 10000);
-            orderJpaRepository.save(Order.create(userId, List.of(item1)));
+            orderJpaRepository.save(Order.create(userId, 1L, List.of(item1)));
 
             OrderItem item2 = OrderItem.of(2L, 3, 20000);
-            orderJpaRepository.save(Order.create(userId, List.of(item2)));
+            orderJpaRepository.save(Order.create(userId, 1L, List.of(item2)));
 
             Pageable pageable = PageRequest.of(0, 10);
 
@@ -107,10 +107,10 @@ class OrderServiceIntegrationTest {
         void returnOrderList_whenStatusIsGiven() {
             // arrange
             OrderItem item1 = OrderItem.of(1L, 2, 10000);
-            orderJpaRepository.save(Order.create(userId, List.of(item1)));
+            orderJpaRepository.save(Order.create(userId, 1L, List.of(item1)));
 
             OrderItem item2 = OrderItem.of(2L, 3, 20000);
-            Order order = Order.create(userId, List.of(item2));
+            Order order = Order.create(userId, 1L, List.of(item2));
             order.markCancel();
             orderJpaRepository.save(order);
 
@@ -136,7 +136,7 @@ class OrderServiceIntegrationTest {
         void returnOrderDetail_whenValidOrderId() {
             // arrange
             OrderItem item = OrderItem.of(1L, 2, 10000);
-            Order order = orderJpaRepository.save(Order.create(userId, List.of(item)));
+            Order order = orderJpaRepository.save(Order.create(userId, 1L, List.of(item)));
 
             // act
             Order result = orderService.getDetail(order.getId());

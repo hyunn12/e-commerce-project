@@ -20,13 +20,14 @@ public class OrderCommand {
     public static class Create {
         private Long userId;
         private List<Item> items;
+        private Long userCouponId;
 
         public Order toOrderDomain() {
             List<OrderItem> orderItems = items.stream()
                     .map(item -> OrderItem.of(item.getProductId(), item.getQuantity(), item.getAmount()))
                     .toList();
 
-            return Order.create(userId, orderItems);
+            return Order.create(userId, userCouponId, orderItems);
         }
     }
 
