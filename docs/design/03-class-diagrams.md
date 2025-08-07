@@ -15,8 +15,8 @@ classDiagram
         -Long userId
         -int point
         
-        +addPoint()
-        +usePoint()
+        +add()
+        +use()
     }
     
     class PointHistory {
@@ -66,7 +66,6 @@ classDiagram
         -int discountAmount
         -OrderStatus status
         
-        +create()
         +addItem()
         +markSuccess()
         +markCancel()
