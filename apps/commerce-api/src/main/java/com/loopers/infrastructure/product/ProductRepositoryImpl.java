@@ -1,9 +1,6 @@
 package com.loopers.infrastructure.product;
 
-import com.loopers.domain.product.Product;
-import com.loopers.domain.product.ProductRepository;
-import com.loopers.domain.product.ProductSortType;
-import com.loopers.domain.product.QProduct;
+import com.loopers.domain.product.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -20,6 +17,7 @@ import java.util.List;
 public class ProductRepositoryImpl implements ProductRepository {
 
     private final ProductJpaRepository productJpaRepository;
+    private final StockJpaRepository stockJpaRepository;
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
@@ -57,5 +55,15 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .fetchOne();
 
         return new PageImpl<>(products, pageable, total != null ? total : 0);
+    }
+
+    @Override
+    public Stock findStockByProductId(Long productId) {
+        return stockJpaRepository.findByProductId(productId).orElse(null);
+    }
+
+    @Override
+    public List<Stock> findStocksByProductIds(List<Long> productIds) {
+        return stockJpaRepository.findAllByProductIdIn(productIds);
     }
 }

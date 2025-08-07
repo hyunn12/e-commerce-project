@@ -6,7 +6,6 @@ import com.loopers.domain.brand.BrandService;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.product.Stock;
-import com.loopers.domain.product.StockService;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ public class ProductFacade {
 
     private final BrandService brandService;
     private final ProductService productService;
-    private final StockService stockService;
 
     public ProductInfo.Summary getList(ProductCommand.Search command) {
         Page<Product> products = productService.getList(command.getBrandId(), command.toPageable(), command.getSort());
@@ -36,7 +34,7 @@ public class ProductFacade {
         List<Long> brandIds = products.stream().map(product -> product.getBrand().getId()).distinct().toList();
         List<Brand> brands = brandService.getListByIds(brandIds);
 
-        List<Stock> stocks = stockService.getListByProductIds(productIds);
+        List<Stock> stocks = productService.getStocksByProductIds(productIds);
 
         return ProductInfo.Summary.from(products, brands, stocks);
     }
@@ -52,7 +50,7 @@ public class ProductFacade {
             throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_BRAND_NOT_FOUND);
         }
 
-        Stock stock = stockService.getDetailByProductId(product.getId());
+        Stock stock = productService.getStockByProductId(product.getId());
         if (stock == null) {
             throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_STOCK_NOT_FOUND);
         }
