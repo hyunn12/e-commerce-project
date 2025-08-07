@@ -63,6 +63,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public Stock findStockByProductIdWithLock(Long productId) {
+        return stockJpaRepository.findByProductIdWithLock(productId).orElse(null);
+    }
+
+    @Override
     public List<Stock> findStocksByProductIds(List<Long> productIds) {
         return stockJpaRepository.findAllByProductIdIn(productIds);
     }

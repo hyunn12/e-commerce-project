@@ -17,6 +17,7 @@ public class OrderFacade {
 
     private final OrderService orderService;
     private final CouponUseService couponUseService;
+    private final StockDecreaseService stockDecreaseService;
     private final ProductService productService;
     private final PointUseService pointUseService;
     private final PaymentService paymentService;
@@ -38,7 +39,7 @@ public class OrderFacade {
 
         // 상품 재고 조회 및 차감
         for (OrderItem item : order.getOrderItems()) {
-            productService.decreaseStock(item.getProductId(), item.getQuantity());
+            stockDecreaseService.decrease(item.getProductId(), item.getQuantity());
         }
 
         // 포인트 조회 및 차감

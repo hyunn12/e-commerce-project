@@ -62,4 +62,18 @@ public class ProductService {
         Stock stock = getStockByProductId(productId);
         stock.decrease(quantity);
     }
+
+    public Stock getStockByProductIdWithLock(Long productId) {
+        Stock stock = productRepository.findStockByProductIdWithLock(productId);
+        if (stock == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_STOCK_NOT_FOUND);
+        }
+        return stock;
+    }
+
+    @Transactional
+    public void decreaseStockWithLock(Long productId, int quantity) {
+        Stock stock = getStockByProductIdWithLock(productId);
+        stock.decrease(quantity);
+    }
 }

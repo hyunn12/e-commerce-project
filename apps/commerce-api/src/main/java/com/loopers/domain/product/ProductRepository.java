@@ -14,6 +14,7 @@ public interface ProductRepository {
     Page<Product> search(Long brandId, Pageable pageable, ProductSortType sortType);
 
     Stock findStockByProductId(Long productId);
+    Stock findStockByProductIdWithLock(Long productId);
 
     List<Stock> findStocksByProductIds(List<Long> productIds);
 }
