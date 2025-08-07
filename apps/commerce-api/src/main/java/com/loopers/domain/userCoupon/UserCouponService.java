@@ -37,14 +37,13 @@ public class UserCouponService {
         return userCoupon;
     }
 
-    public UserCoupon use(Long userCouponId, Long userId) {
+    @Transactional
+    public void use(Long userCouponId, Long userId) {
         UserCoupon userCoupon = getDetail(userCouponId, userId);
         userCoupon.use();
 
         CouponUsageHistory couponUsageHistory = CouponUsageHistory.create(userCoupon.getId(), userCoupon.getUserId());
         saveHistory(couponUsageHistory);
-
-        return userCouponRepository.save(userCoupon);
     }
 
     public CouponUsageHistory saveHistory(CouponUsageHistory couponUsageHistory) {
