@@ -8,5 +8,4 @@ public interface LikeRepository {
     Like findLike(Like like);
 
     Like save(Like like);
-
 }
