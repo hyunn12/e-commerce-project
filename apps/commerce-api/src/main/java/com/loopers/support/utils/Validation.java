@@ -23,6 +23,7 @@ public class Validation {
         public static final String MESSAGE_POINT_USE = "사용할 포인트는 0 보다 커야 합니다.";
         public static final String MESSAGE_POINT_NOT_ENOUGH = "포인트가 부족합니다";
         public static final String MESSAGE_POINT_NOT_FOUND = "포인트 정보를 찾을 수 없습니다.";
+        public static final String MESSAGE_POINT_CONFLICT = "포인트 사용에 실패했습니다.";
 
         public static final String MESSAGE_BRAND_NOT_FOUND = "브랜드 정보를 찾을 수 없습니다.";
         public static final String MESSAGE_PRODUCT_NOT_FOUND = "상품 정보를 찾을 수 없습니다.";

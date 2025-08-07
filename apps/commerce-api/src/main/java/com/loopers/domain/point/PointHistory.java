@@ -28,7 +28,7 @@ public class PointHistory extends BaseEntity {
         this.type = type;
     }
 
-    public static PointHistory of(long userId, int amount, PointType type) {
+    public static PointHistory create(long userId, int amount, PointType type) {
         return new PointHistory(userId, amount, type);
     }
 }

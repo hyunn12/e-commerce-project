@@ -6,6 +6,7 @@ import com.loopers.support.error.ErrorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,9 @@ public class Point extends BaseEntity {
     @Column(name = "point", nullable = false)
     private int point;
 
+    @Version
+    private Long version;
+
     public Point(Long userId, int point) {
         if (point < 0) {
             throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_POINT_CREATE);
@@ -32,14 +36,14 @@ public class Point extends BaseEntity {
         this.point = point;
     }
 
-    public void addPoint(int amount) {
+    public void add(int amount) {
         if (amount <= 0) {
             throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_POINT_CHARGE);
         }
         this.point += amount;
     }
 
-    public void usePoint(int amount) {
+    public void use(int amount) {
         if (amount <= 0) {
             throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_POINT_USE);
         }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 public interface PointRepository {
 
     Point getPointByUserId(Long userId);
+    Point getPointByUserIdWithLock(Long userId);
 
     Point save(Point point);
 
