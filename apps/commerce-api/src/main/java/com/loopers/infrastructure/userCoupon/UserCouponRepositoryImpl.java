@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class UserCouponRepositoryImpl implements UserCouponRepository {
 
     private final UserCouponJpaRepository userCouponJpaRepository;
-    private final CouponHistoryJpaRepository couponHistoryJpaRepository;
+    private final CouponUsageHistoryJpaRepository couponUsageHistoryJpaRepository;
 
     @Override
     public UserCoupon save(UserCoupon userCoupon) {
@@ -25,6 +25,6 @@ public class UserCouponRepositoryImpl implements UserCouponRepository {
 
     @Override
     public CouponUsageHistory saveHistory(CouponUsageHistory couponUsageHistory) {
-        return couponHistoryJpaRepository.save(couponUsageHistory);
+        return couponUsageHistoryJpaRepository.save(couponUsageHistory);
     }
 }

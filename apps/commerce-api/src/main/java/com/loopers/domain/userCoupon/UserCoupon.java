@@ -36,6 +36,9 @@ public class UserCoupon extends BaseEntity {
     @Column(name = "expired_at")
     private ZonedDateTime expiredAt;
 
+    @Version
+    private Long version;
+
     private UserCoupon(Long couponId, Long userId) {
         this.couponId = couponId;
         this.userId = userId;

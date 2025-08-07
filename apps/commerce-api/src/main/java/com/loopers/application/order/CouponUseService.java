@@ -1,4 +1,4 @@
-package com.loopers.application.userCoupon;
+package com.loopers.application.order;
 
 import com.loopers.domain.coupon.Coupon;
 import com.loopers.domain.coupon.CouponService;
@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class UserCouponUseService {
+public class CouponUseService {
 
     private final CouponService couponService;
     private final UserCouponService userCouponService;
@@ -23,7 +23,7 @@ public class UserCouponUseService {
         couponService.validateAmount(coupon, orderAmount);
         int discountAmount = couponService.calculateDiscountAmount(coupon, orderAmount);
 
-        userCoupon.use();
+        userCouponService.use(userCouponId, userId);
 
         return discountAmount;
     }

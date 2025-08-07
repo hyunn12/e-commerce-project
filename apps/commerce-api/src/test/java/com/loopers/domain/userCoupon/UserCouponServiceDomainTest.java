@@ -135,10 +135,9 @@ class UserCouponServiceDomainTest {
             given(userCouponRepository.saveHistory(couponUsageHistory)).willReturn(couponUsageHistory);
 
             // when
-            CouponUsageHistory result = userCouponService.saveHistory(couponUsageHistory);
+            userCouponService.saveHistory(couponUsageHistory);
 
             // then
-            assertThat(result).isEqualTo(couponUsageHistory);
             verify(userCouponRepository, times(1)).saveHistory(couponUsageHistory);
         }
     }

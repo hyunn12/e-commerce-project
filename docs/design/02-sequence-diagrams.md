@@ -47,6 +47,7 @@ sequenceDiagram
     participant OC as OrderController
     participant OF as OrderFacade
     participant US as UserService
+    participant CS as UserCouponService
     participant PS as ProductService
     participant PTS as PointService
     participant ES as ExternalService
@@ -61,6 +62,17 @@ sequenceDiagram
     else 사용자 있음
         US -->>- OC: 사용자 정보 반환 (point 포함)
         OC ->>+ OF: 주문 요청
+        
+        alt 쿠폰 적용 시
+            OF ->>+ CS: 쿠폰 정보 조회
+            
+            alt 쿠폰 사용 불가능
+                CS -->> OF: 400 Bad Request
+            else 쿠폰 사용 가능
+                CS -->>- OF: 쿠폰 사용 처리 결과 반환
+            end
+        end
+        
         OF ->>+ PS: 상품 목록 조회
 
         alt 상품 미존재
@@ -69,9 +81,6 @@ sequenceDiagram
             alt 판매중 아님
                 PS -->> OF: 409 Conflict
             else 판매중
-                PS -->>- OF: 상품 정보 반환
-                OF ->>+ PS: 재고 차감 요청
-                
                 alt 재고 부족
                     PS -->> OF: 409 Conflict
                 else 재고 차감 성공
