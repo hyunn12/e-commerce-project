@@ -19,8 +19,8 @@ public class PointUseService {
 
     @Retryable(
             retryFor = {OptimisticLockException.class, StaleObjectStateException.class, ObjectOptimisticLockingFailureException.class},
-            maxAttempts = 1000,
-            backoff = @Backoff(delay = 100)
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 50)
     )
     @Transactional
     public void use(Long userId, int amount) {
