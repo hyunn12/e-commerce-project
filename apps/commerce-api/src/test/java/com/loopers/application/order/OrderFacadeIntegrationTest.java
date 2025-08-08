@@ -201,7 +201,7 @@ class OrderFacadeIntegrationTest {
                                 .quantity(decreaseQuantity)
                                 .amount(product.getPrice())
                                 .build()))
-                        .userCouponId(1L)
+                        .userCouponId(null)
                         .build();
 
                 // act
@@ -232,7 +232,7 @@ class OrderFacadeIntegrationTest {
                                 .quantity(decreaseQuantity)
                                 .amount(product.getPrice())
                                 .build()))
-                        .userCouponId(1L)
+                        .userCouponId(null)
                         .build();
 
                 // act

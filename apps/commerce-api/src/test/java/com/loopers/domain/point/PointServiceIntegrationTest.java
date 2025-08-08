@@ -127,16 +127,16 @@ class PointServiceIntegrationTest {
 
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
         @Nested
-        class Null을_반환한다 {
+        class 조회에_실패하고_Not_Found_예외를_반환한다 {
 
             @DisplayName("주어진 userId의 회원이 존재하지 않는 회원이라면")
             @Test
             void 주어진_userId의_회원이_존재하지_않는_회원이라면() {
                 // act
-                Point result = pointService.getDetailByUserId(1L);
+                CoreException exception = assertThrows(CoreException.class, () -> pointService.getDetailByUserId(1L));
 
                 // assert
-                assertThat(result).isNull();
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
             }
         }
     }
