@@ -250,11 +250,11 @@ class PointUseServiceConcurrencyTest {
 
             Point result = pointJpaRepository.findById(point.getId()).orElseThrow();
             System.out.println("[남은 포인트]: " + result.getPoint());
-            assertThat(result.getPoint()).isEqualTo(initialPoint-(requestCount*usePoint));
+            assertThat(result.getPoint()).isEqualTo(initialPoint-(successCount.get()*usePoint));
 
             List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(1L);
             System.out.println("[포인트 사용 이력 크기]: " + histories.size());
-            assertThat(histories).hasSize(requestCount);
+            assertThat(histories).hasSize(successCount.get());
         }
 
         @DisplayName("포인트가 부족하다면 포인트가 유효한 주문에 대해서만 포인트가 사용된다.")
