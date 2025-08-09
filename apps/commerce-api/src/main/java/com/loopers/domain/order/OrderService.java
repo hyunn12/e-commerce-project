@@ -22,13 +22,12 @@ public class OrderService {
     }
 
     @Transactional
-    public void markSuccess(Order order) {
-        order.markSuccess();
-    }
-
-    @Transactional
-    public void markCancel(Order order) {
-        order.markCancel();
+    public void markStatus(Order order, OrderStatus status) {
+        switch (status) {
+            case SUCCESS -> order.markSuccess();
+            case CANCEL -> order.markCancel();
+            case FAIL -> order.markFail();
+        }
     }
 
     public Order getDetail(Long orderId) {
@@ -39,7 +38,7 @@ public class OrderService {
         return order;
     }
 
-    public Page<Order> getListByUserId(Long userId, OrderStatus status, Pageable pageable) {
+    public Page<Order> getList(Long userId, OrderStatus status, Pageable pageable) {
         if (status == null) {
             return orderRepository.findAllByUserId(userId, pageable);
         }

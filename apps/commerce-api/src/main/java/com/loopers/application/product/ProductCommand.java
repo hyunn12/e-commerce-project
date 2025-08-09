@@ -1,31 +1,28 @@
 package com.loopers.application.product;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.loopers.domain.product.ProductSortType;
+import lombok.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProductCommand {
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Search {
         private Long brandId;
+        @Builder.Default
         private ProductSortType sort = ProductSortType.LATEST;
+        @Builder.Default
         private int page = 0;
+        @Builder.Default
         private int size = 20;
 
         public Pageable toPageable() {
-            return switch (sort) {
-                case LATEST -> PageRequest.of(page, size, Sort.by("createdAt").descending());
-                case PRICE_ASC -> PageRequest.of(page, size, Sort.by("price").ascending());
-                case LIKES_DESC -> PageRequest.of(page, size, Sort.by("likeCount").descending());
-            };
+            return PageRequest.of(page, size);
         }
     }
 }

@@ -1,12 +1,12 @@
 ### 포인트 충전
 POST {{commerce-api}}/api/v1/points/charge
-X-USER-ID: test123
+X-USER-ID: 1
 Content-Type: application/json
 
 {
-  "point": 10000
+  "amount": 10000
 }
 
 ### 포인트 조회
 GET {{commerce-api}}/api/v1/points
-X-USER-ID: test123
+X-USER-ID: 1

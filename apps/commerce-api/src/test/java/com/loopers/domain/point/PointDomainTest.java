@@ -26,7 +26,7 @@ class PointDomainTest {
 
                 // act
                 Point point = new Point(1L, current);
-                point.addPoint(amount);
+                point.add(amount);
 
                 // assert
                 assertThat(point.getPoint()).isEqualTo(current+amount);
@@ -47,7 +47,7 @@ class PointDomainTest {
                 // act
                 Point point = new Point(1L, current);
 
-                CoreException exception = assertThrows(CoreException.class, () -> point.addPoint(amount));
+                CoreException exception = assertThrows(CoreException.class, () -> point.add(amount));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -63,7 +63,7 @@ class PointDomainTest {
                 // act
                 Point point = new Point(1L, current);
 
-                CoreException exception = assertThrows(CoreException.class, () -> point.addPoint(amount));
+                CoreException exception = assertThrows(CoreException.class, () -> point.add(amount));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -88,7 +88,7 @@ class PointDomainTest {
 
                 // act
                 Point point = new Point(1L, current);
-                point.usePoint(amount);
+                point.use(amount);
 
                 // assert
                 assertThat(point.getPoint()).isEqualTo(current-amount);
@@ -109,7 +109,7 @@ class PointDomainTest {
                 // act
                 Point point = new Point(1L, current);
 
-                CoreException exception = assertThrows(CoreException.class, () -> point.usePoint(amount));
+                CoreException exception = assertThrows(CoreException.class, () -> point.use(amount));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -125,7 +125,7 @@ class PointDomainTest {
                 // act
                 Point point = new Point(1L, current);
 
-                CoreException exception = assertThrows(CoreException.class, () -> point.usePoint(amount));
+                CoreException exception = assertThrows(CoreException.class, () -> point.use(amount));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -145,7 +145,7 @@ class PointDomainTest {
                 // act
                 Point point = new Point(1L, current);
 
-                CoreException exception = assertThrows(CoreException.class, () -> point.usePoint(amount));
+                CoreException exception = assertThrows(CoreException.class, () -> point.use(amount));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);

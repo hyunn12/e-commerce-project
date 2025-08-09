@@ -23,6 +23,7 @@ public class Validation {
         public static final String MESSAGE_POINT_USE = "사용할 포인트는 0 보다 커야 합니다.";
         public static final String MESSAGE_POINT_NOT_ENOUGH = "포인트가 부족합니다";
         public static final String MESSAGE_POINT_NOT_FOUND = "포인트 정보를 찾을 수 없습니다.";
+        public static final String MESSAGE_POINT_CONFLICT = "포인트 사용에 실패했습니다.";
 
         public static final String MESSAGE_BRAND_NOT_FOUND = "브랜드 정보를 찾을 수 없습니다.";
         public static final String MESSAGE_PRODUCT_NOT_FOUND = "상품 정보를 찾을 수 없습니다.";
@@ -37,5 +38,10 @@ public class Validation {
         public static final String MESSAGE_ORDER_ITEM_EMPTY = "주문 항목이 누락되었습니다.";
         public static final String MESSAGE_ORDER_ITEM_QUANTITY = "수량은 0 보다 커야 합니다.";
         public static final String MESSAGE_ORDER_ITEM_AMOUNT = "금액은 0 보다 커야 합니다.";
+
+        public static final String MESSAGE_COUPON_NOT_FOUND = "쿠폰 정보를 찾을 수 없습니다.";
+        public static final String MESSAGE_COUPON_UNUSABLE = "이미 사용했거나 만료된 쿠폰입니다.";
+        public static final String MESSAGE_COUPON_MIN_AMOUNT = "최소 주문 금액보다 적어 쿠폰을 사용할 수 없습니다.";
+        public static final String MESSAGE_COUPON_INVALID_USER = "쿠폰의 소유자가 아닙니다.";
     }
 }

@@ -11,6 +11,8 @@
 - **ORDER**: 주문
 - **ORDER_ITEM**: 주문 상세
 - **PAYMENT**: 결제
+- **COUPON**: 쿠폰
+- **USER_COUPON**: 사용자 쿠폰
 
 ### ERD
 ```mermaid  
@@ -85,8 +87,10 @@ erDiagram
 
     ORDER {  
         BIGINT ID PK "ID"
-        BIGINT USER_ID FK "사용자 ID"  
+        BIGINT USER_ID FK "사용자 ID"
+        INT COUPON_ID FK "쿠폰 ID"
         INT TOTAL_AMOUNT "총금액"  
+        INT DISCOUNT_AMOUNT "할인금액"  
         VARCHAR STATUS "주문상태 (INIT, SUCCESS, CANCEL)" 
         DATETIME CREATED_AT "생성일"  
         DATETIME UPDATED_AT "수정일"  
@@ -113,8 +117,43 @@ erDiagram
         DATETIME CREATED_AT "생성일"  
         DATETIME UPDATED_AT "수정일"  
         DATETIME DELETED_AT "삭제일"  
-    }  
+    }
     
+    COUPON {
+        BIGINT ID PK "ID"
+        VARCHAR NAME "쿠폰명"
+        INT MAX_COUNT "최대개수"
+        INT ISSUED_COUNT "발급개수"
+        VARCHAR DISCOUNT_TYPE "할인유형 (PRICE, RATE)"
+        INT DISCOUNT_VALUE "할인값"
+        INT MAX_DISCOUNT_AMOUNT "최대할인금액"
+        INT MIN_AMOUNT "최소금액"
+        DATETIME CREATED_AT "생성일"
+        DATETIME UPDATED_AT "수정일"
+        DATETIME DELETED_AT "삭제일"
+    }
+
+    USER_COUPON {
+        BIGINT ID PK "ID"
+        INT COUPON_ID FK "쿠폰 ID"
+        INT USER_ID FK "사용자 ID"
+        VARCHAR STATUS "쿠폰상태 (UNUSED, USED, EXPIRED)"
+        DATETIME CREATED_AT "생성일"
+        DATETIME USED_AT "사용일"
+        DATETIME EXPIRE_AT "만료일"
+        DATETIME UPDATED_AT "수정일"
+        DATETIME DELETED_AT "삭제일"
+    }
+    
+    COUPON_USAGE_HISTORY {
+        BIGINT ID PK "ID"
+        INT USER_ID FK "사용자 ID"
+        INT USER_COUPON_ID FK "사용자쿠폰ID"
+        DATETIME CREATED_AT "생성일"
+        DATETIME UPDATED_AT "수정일"
+        DATETIME DELETED_AT "삭제일"
+    }
+
     BRAND ||--o{ PRODUCT : "1:N"
     PRODUCT ||--|| STOCK : "1:1"
     USER ||--o{ ORDER : "1:N"
@@ -125,5 +164,7 @@ erDiagram
     USER ||--|| POINT : "1:1"
     USER ||--o{ LIKE : "1:N"
     USER ||--o{ PAYMENT : "1:N"
-  
+    USER ||--o{ USER_COUPON : "1:N"
+    COUPON ||--o{ USER_COUPON : "1:N"
+
 ```

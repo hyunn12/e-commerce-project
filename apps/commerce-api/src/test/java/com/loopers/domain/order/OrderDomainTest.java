@@ -25,7 +25,7 @@ class OrderDomainTest {
             List<OrderItem> items = List.of(item1, item2);
 
             // act
-            Order order = Order.create(1L, items);
+            Order order = Order.create(1L, 1L, items);
 
             // assert
             assertThat(order.getTotalAmount()).isEqualTo((item1.getQuantity() * item1.getAmount()) + (item2.getQuantity() * item2.getAmount()));
@@ -38,7 +38,7 @@ class OrderDomainTest {
             OrderItem item = OrderItem.of(1L, 1, 10000);
 
             // act
-            Order order = Order.create(1L, List.of(item));
+            Order order = Order.create(1L, 1L, List.of(item));
 
             // assert
             assertThat(order.getStatus()).isEqualTo(OrderStatus.INIT);
@@ -52,7 +52,7 @@ class OrderDomainTest {
             OrderItem item2 = OrderItem.of(2L, 3, 20000);
 
             // act
-            Order order = Order.create(1L, List.of(item1, item2));
+            Order order = Order.create(1L, 1L, List.of(item1, item2));
 
             // assert
             assertThat(order.getOrderItems()).hasSize(2);
@@ -67,7 +67,7 @@ class OrderDomainTest {
             List<OrderItem> emptyItems = List.of();
 
             // act
-            CoreException exception = assertThrows(CoreException.class, () -> Order.create(1L, emptyItems));
+            CoreException exception = assertThrows(CoreException.class, () -> Order.create(1L, 1L, emptyItems));
 
             // assert
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
@@ -102,6 +102,19 @@ class OrderDomainTest {
 
             // assert
             assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCEL);
+        }
+
+        @DisplayName("상태가 FAIL 로 변경된다.")
+        @Test
+        void changeStatusFAIL() {
+            // arrange
+            Order order = Instancio.create(Order.class);
+
+            // act
+            order.markFail();
+
+            // assert
+            assertThat(order.getStatus()).isEqualTo(OrderStatus.FAIL);
         }
     }
 }

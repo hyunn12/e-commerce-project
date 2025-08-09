@@ -48,7 +48,7 @@ class OrderServiceIntegrationTest {
         void saveOrder_whenValidOrder() {
             // arrange
             OrderItem item = OrderItem.of(1L, 2, 10000);
-            Order order = Order.create(userId, List.of(item));
+            Order order = Order.create(userId, 1L, List.of(item));
 
             // act
             Order savedOrder = orderService.create(order);
@@ -64,32 +64,18 @@ class OrderServiceIntegrationTest {
     @Nested
     class 주문_상태_변경_시 {
 
-        @DisplayName("markSuccess 호출한다면 상태가 SUCCESS 로 변경된다.")
+        @DisplayName("상태가 정상적으로 변경된다.")
         @Test
         void markSuccess_whenCalled() {
             // arrange
             OrderItem item = OrderItem.of(1L, 2, 10000);
-            Order order = orderJpaRepository.save(Order.create(userId, List.of(item)));
+            Order order = orderJpaRepository.save(Order.create(userId, 1L, List.of(item)));
 
             // act
-            orderService.markSuccess(order);
+            orderService.markStatus(order, OrderStatus.SUCCESS);
 
             // assert
             assertThat(order.getStatus()).isEqualTo(OrderStatus.SUCCESS);
-        }
-
-        @DisplayName("markCancel 호출한다면 상태가 CANCEL 로 변경된다.")
-        @Test
-        void markCancel_whenCalled() {
-            // arrange
-            OrderItem item = OrderItem.of(1L, 2, 10000);
-            Order order = orderJpaRepository.save(Order.create(userId, List.of(item)));
-
-            // act
-            orderService.markCancel(order);
-
-            // assert
-            assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCEL);
         }
     }
 
@@ -102,15 +88,15 @@ class OrderServiceIntegrationTest {
         void returnOrderList_whenStatusIsNull() {
             // arrange
             OrderItem item1 = OrderItem.of(1L, 2, 10000);
-            orderJpaRepository.save(Order.create(userId, List.of(item1)));
+            orderJpaRepository.save(Order.create(userId, 1L, List.of(item1)));
 
             OrderItem item2 = OrderItem.of(2L, 3, 20000);
-            orderJpaRepository.save(Order.create(userId, List.of(item2)));
+            orderJpaRepository.save(Order.create(userId, 1L, List.of(item2)));
 
             Pageable pageable = PageRequest.of(0, 10);
 
             // act
-            Page<Order> result = orderService.getListByUserId(userId, null, pageable);
+            Page<Order> result = orderService.getList(userId, null, pageable);
 
             // assert
             assertThat(result.getTotalElements()).isEqualTo(2);
@@ -121,17 +107,17 @@ class OrderServiceIntegrationTest {
         void returnOrderList_whenStatusIsGiven() {
             // arrange
             OrderItem item1 = OrderItem.of(1L, 2, 10000);
-            orderJpaRepository.save(Order.create(userId, List.of(item1)));
+            orderJpaRepository.save(Order.create(userId, 1L, List.of(item1)));
 
             OrderItem item2 = OrderItem.of(2L, 3, 20000);
-            Order order = Order.create(userId, List.of(item2));
+            Order order = Order.create(userId, 1L, List.of(item2));
             order.markCancel();
             orderJpaRepository.save(order);
 
             Pageable pageable = PageRequest.of(0, 10);
 
             // act
-            Page<Order> result = orderService.getListByUserId(userId, OrderStatus.CANCEL, pageable);
+            Page<Order> result = orderService.getList(userId, OrderStatus.CANCEL, pageable);
 
             // assert
             assertThat(result.getTotalElements()).isEqualTo(1);
@@ -150,7 +136,7 @@ class OrderServiceIntegrationTest {
         void returnOrderDetail_whenValidOrderId() {
             // arrange
             OrderItem item = OrderItem.of(1L, 2, 10000);
-            Order order = orderJpaRepository.save(Order.create(userId, List.of(item)));
+            Order order = orderJpaRepository.save(Order.create(userId, 1L, List.of(item)));
 
             // act
             Order result = orderService.getDetail(order.getId());

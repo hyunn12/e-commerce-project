@@ -1,6 +1,7 @@
 package com.loopers.application.order;
 
 import com.loopers.domain.brand.Brand;
+import com.loopers.domain.coupon.Coupon;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderStatus;
@@ -10,13 +11,16 @@ import com.loopers.domain.point.PointHistory;
 import com.loopers.domain.point.PointType;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.Stock;
+import com.loopers.domain.userCoupon.UserCoupon;
 import com.loopers.infrastructure.brand.BrandJpaRepository;
+import com.loopers.infrastructure.coupon.CouponJpaRepository;
 import com.loopers.infrastructure.order.OrderJpaRepository;
 import com.loopers.infrastructure.payment.PaymentJpaRepository;
 import com.loopers.infrastructure.point.PointHistoryJpaRepository;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.infrastructure.product.ProductJpaRepository;
 import com.loopers.infrastructure.product.StockJpaRepository;
+import com.loopers.infrastructure.userCoupon.UserCouponJpaRepository;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
@@ -28,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.loopers.domain.coupon.DiscountType.PRICE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,6 +56,10 @@ class OrderFacadeIntegrationTest {
     private PointHistoryJpaRepository pointHistoryJpaRepository;
     @Autowired
     private PaymentJpaRepository paymentJpaRepository;
+    @Autowired
+    private CouponJpaRepository couponJpaRepository;
+    @Autowired
+    private UserCouponJpaRepository userCouponJpaRepository;
     @Autowired
     private DatabaseCleanUp databaseCleanUp;
 
@@ -84,11 +93,15 @@ class OrderFacadeIntegrationTest {
                 final int decreaseQuantity = 2;
                 final int initPoint = 50000;
                 final int price = 20000;
+                final int discountAmount = 3000;
+                final int totalAmount = (decreaseQuantity * price) - discountAmount;
 
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
                 Product product = productJpaRepository.save(Product.createBuilder().name("상품").price(price).brand(brand).build());
                 stockJpaRepository.save(new Stock(product, initQuantity));
                 pointJpaRepository.save(new Point(userId, initPoint));
+                Coupon coupon = couponJpaRepository.save(new Coupon("3천원 할인", 100, 0, PRICE, discountAmount, null, 10000));
+                UserCoupon userCoupon = userCouponJpaRepository.save(UserCoupon.create(coupon.getId(), userId));
 
                 OrderCommand.Create command = OrderCommand.Create.builder()
                         .userId(userId)
@@ -97,14 +110,16 @@ class OrderFacadeIntegrationTest {
                                 .quantity(decreaseQuantity)
                                 .amount(product.getPrice())
                                 .build()))
+                        .userCouponId(userCoupon.getId())
                         .build();
 
                 // act
-                OrderInfo.Main result = orderFacade.createOrder(command);
+                OrderInfo.Main result = orderFacade.create(command);
 
                 // assert
                 Order order = orderJpaRepository.findById(result.getId()).get();
                 assertThat(order.getStatus()).isEqualTo(OrderStatus.SUCCESS);
+                assertThat(order.getDiscountAmount()).isEqualTo(discountAmount);
 
                 verify(externalOrderSender, times(1)).send(any(Order.class));
 
@@ -112,7 +127,7 @@ class OrderFacadeIntegrationTest {
                 assertThat(stock.getQuantity()).isEqualTo(initQuantity-decreaseQuantity);
 
                 Point point = pointJpaRepository.findByUserId(userId).get();
-                assertThat(point.getPoint()).isEqualTo(initPoint-(decreaseQuantity*price));
+                assertThat(point.getPoint()).isEqualTo(initPoint-totalAmount);
 
                 List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(userId);
                 assertThat(histories).hasSize(1);
@@ -120,8 +135,44 @@ class OrderFacadeIntegrationTest {
 
                 List<Payment> payments = paymentJpaRepository.findAll();
                 assertThat(payments).hasSize(1);
-                assertThat(payments.get(0).getPaymentAmount()).isEqualTo(decreaseQuantity*price);
+                assertThat(payments.get(0).getPaymentAmount()).isEqualTo(totalAmount);
                 assertThat(payments.get(0).getUserId()).isEqualTo(userId);
+            }
+        }
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 주문_생성이_실패하고_404_Not_Found_예외가_발생한다 {
+
+            @DisplayName("사용 불가능하거나 존재하지 않는 쿠폰이라면")
+            @Test
+            void whenInvalidCoupon() {
+                // arrange
+                final int price = 20000;
+                final int quantity = 1;
+                final int initPoint = 50000;
+                Long userCouponId = 9999L;
+
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
+                Product product = productJpaRepository.save(Product.createBuilder().name("상품").price(price).brand(brand).build());
+                stockJpaRepository.save(new Stock(product, 10));
+                pointJpaRepository.save(new Point(userId, initPoint));
+
+                OrderCommand.Create command = OrderCommand.Create.builder()
+                        .userId(userId)
+                        .items(List.of(OrderCommand.Item.builder()
+                                .productId(product.getId())
+                                .quantity(quantity)
+                                .amount(price)
+                                .build()))
+                        .userCouponId(userCouponId)
+                        .build();
+
+                // act
+                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.create(command));
+
+                // assert
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
             }
         }
 
@@ -150,10 +201,11 @@ class OrderFacadeIntegrationTest {
                                 .quantity(decreaseQuantity)
                                 .amount(product.getPrice())
                                 .build()))
+                        .userCouponId(null)
                         .build();
 
                 // act
-                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.createOrder(command));
+                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.create(command));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);
@@ -180,10 +232,11 @@ class OrderFacadeIntegrationTest {
                                 .quantity(decreaseQuantity)
                                 .amount(product.getPrice())
                                 .build()))
+                        .userCouponId(null)
                         .build();
 
                 // act
-                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.createOrder(command));
+                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.create(command));
 
                 // assert
                 assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);
@@ -205,7 +258,7 @@ class OrderFacadeIntegrationTest {
                 OrderItem item1 = OrderItem.of(1L, 2, 10000);
                 OrderItem item2 = OrderItem.of(2L, 3, 20000);
                 List<OrderItem> items = List.of(item1, item2);
-                Order order = Order.create(userId, items);
+                Order order = Order.create(userId, 1L, items);
                 order.markSuccess();
                 orderJpaRepository.save(order);
             }
@@ -236,7 +289,7 @@ class OrderFacadeIntegrationTest {
             stockJpaRepository.save(new Stock(product, 10));
 
             int quantity = 2;
-            Order order = Order.create(userId, List.of(OrderItem.of(product.getId(), quantity, quantity*product.getPrice())));
+            Order order = Order.create(userId, 1L, List.of(OrderItem.of(product.getId(), quantity, quantity*product.getPrice())));
             order.markSuccess();
             orderJpaRepository.save(order);
 

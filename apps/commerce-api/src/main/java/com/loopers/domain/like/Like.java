@@ -4,6 +4,7 @@ import com.loopers.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,9 @@ public class Like extends BaseEntity {
 
     @Column(name = "product_id", nullable = false)
     private Long productId;
+
+    @Version
+    private Long version;
 
     private Like(Long userId, Long productId) {
         this.userId = userId;

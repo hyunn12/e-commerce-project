@@ -1,6 +1,11 @@
 package com.loopers.domain.like;
 
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.StaleObjectStateException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +15,11 @@ public class LikeService {
 
     private final LikeRepository likeRepository;
 
+    @Retryable(
+            retryFor = {OptimisticLockException.class, StaleObjectStateException.class, ObjectOptimisticLockingFailureException.class},
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 50)
+    )
     @Transactional
     public boolean add(Like like) {
         Like exist = likeRepository.findLike(like);
@@ -24,6 +34,11 @@ public class LikeService {
         return false;
     }
 
+    @Retryable(
+            retryFor = {OptimisticLockException.class, StaleObjectStateException.class, ObjectOptimisticLockingFailureException.class},
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 50)
+    )
     @Transactional
     public boolean delete(Like like) {
         Like exist = likeRepository.findLike(like);

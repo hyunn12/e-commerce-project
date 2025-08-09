@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static com.loopers.support.utils.Validation.Message.MESSAGE_PRODUCT_NOT_FOUND;
 import static com.loopers.support.utils.Validation.Message.MESSAGE_STOCK_NOT_FOUND;
 
@@ -16,14 +18,13 @@ import static com.loopers.support.utils.Validation.Message.MESSAGE_STOCK_NOT_FOU
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final StockRepository stockRepository;
 
     public Product getDetail(Long productId) {
         return productRepository.findById(productId);
     }
 
-    public Page<Product> getList(Pageable pageable) {
-        return productRepository.findAll(pageable);
+    public Page<Product> getList(Long brandId, Pageable pageable, ProductSortType sortType) {
+        return productRepository.search(brandId, pageable, sortType);
     }
 
     @Transactional
@@ -44,12 +45,35 @@ public class ProductService {
         product.decreaseLike();
     }
 
-    @Transactional
-    public void decreaseStock(Long productId, int quantity) {
-        Stock stock = stockRepository.findByProductId(productId);
+    public Stock getStockByProductId(Long productId) {
+        Stock stock = productRepository.findStockByProductId(productId);
         if (stock == null) {
             throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_STOCK_NOT_FOUND);
         }
+        return stock;
+    }
+
+    public List<Stock> getStocksByProductIds(List<Long> productIds) {
+        return productRepository.findStocksByProductIds(productIds);
+    }
+
+    @Transactional
+    public void decreaseStock(Long productId, int quantity) {
+        Stock stock = getStockByProductId(productId);
+        stock.decrease(quantity);
+    }
+
+    public Stock getStockByProductIdWithLock(Long productId) {
+        Stock stock = productRepository.findStockByProductIdWithLock(productId);
+        if (stock == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_STOCK_NOT_FOUND);
+        }
+        return stock;
+    }
+
+    @Transactional
+    public void decreaseStockWithLock(Long productId, int quantity) {
+        Stock stock = getStockByProductIdWithLock(productId);
         stock.decrease(quantity);
     }
 }

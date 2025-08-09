@@ -14,23 +14,31 @@ public class PointService {
 
     private final PointRepository pointRepository;
 
-    public Point getPointByUserId(Long userId) {
-        return pointRepository.getPointByUserId(userId);
+    public Point getDetailByUserId(Long userId) {
+        Point point = pointRepository.getPointByUserId(userId);
+        if (point == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_POINT_NOT_FOUND);
+        }
+        return point;
+    }
+
+    public Point getDetailByUserIdWithLock(Long userId) {
+        Point point = pointRepository.getPointByUserIdWithLock(userId);
+        if (point == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_POINT_NOT_FOUND);
+        }
+        return point;
     }
 
     @Transactional
     public Point charge(Point point) {
-        Point currentPoint = pointRepository.getPointByUserId(point.getUserId());
-        if (currentPoint == null) {
-            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_POINT_NOT_FOUND);
-        }
+        Point currentPoint = getDetailByUserId(point.getUserId());
+        currentPoint.add(point.getPoint());
 
-        currentPoint.addPoint(point.getPoint());
-
-        PointHistory history = PointHistory.of(point.getUserId(), point.getPoint(), PointType.CHARGE);
+        PointHistory history = PointHistory.create(point.getUserId(), point.getPoint(), PointType.CHARGE);
         pointRepository.saveHistory(history);
 
-        return pointRepository.save(currentPoint);
+        return currentPoint;
     }
 
     public Point save(Point point) {
@@ -38,16 +46,24 @@ public class PointService {
     }
 
     @Transactional
-    public Point use(Long userId, int amount) {
-        Point currentPoint = pointRepository.getPointByUserId(userId);
-        if (currentPoint == null) {
-            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_POINT_NOT_FOUND);
-        }
-        currentPoint.usePoint(amount);
+    public void use(Long userId, int amount) {
+        Point point = getDetailByUserId(userId);
+        point.use(amount);
 
-        PointHistory history = PointHistory.of(currentPoint.getUserId(), amount, PointType.USE);
+        PointHistory history = PointHistory.create(point.getUserId(), amount, PointType.USE);
+        saveHistory(history);
+    }
+
+    @Transactional
+    public void useWithLock(Long userId, int amount) {
+        Point point = getDetailByUserIdWithLock(userId);
+        point.use(amount);
+
+        PointHistory history = PointHistory.create(point.getUserId(), amount, PointType.USE);
+        saveHistory(history);
+    }
+
+    public void saveHistory(PointHistory history) {
         pointRepository.saveHistory(history);
-
-        return pointRepository.save(currentPoint);
     }
 }

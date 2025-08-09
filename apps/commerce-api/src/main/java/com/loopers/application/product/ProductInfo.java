@@ -44,12 +44,12 @@ public class ProductInfo {
 
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Search {
+    public static class Summary {
         private List<Main> products;
         private int page;
         private int size;
 
-        public static Search from(Page<Product> productPage, List<Brand> brands, List<Stock> stocks) {
+        public static Summary from(Page<Product> productPage, List<Brand> brands, List<Stock> stocks) {
             Map<Long, Brand> brandMap = brands.stream()
                 .collect(Collectors.toMap(Brand::getId, Function.identity()));
 
@@ -64,11 +64,11 @@ public class ProductInfo {
                     ))
                     .toList();
 
-            return new Search(products, productPage.getNumber(), productPage.getSize());
+            return new Summary(products, productPage.getNumber(), productPage.getSize());
         }
 
-        public static Search empty() {
-            return new Search(Collections.emptyList(), 0, 0);
+        public static Summary empty() {
+            return new Summary(Collections.emptyList(), 0, 0);
         }
     }
 }

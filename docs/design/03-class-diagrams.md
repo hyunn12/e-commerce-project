@@ -15,8 +15,8 @@ classDiagram
         -Long userId
         -int point
         
-        +addPoint()
-        +usePoint()
+        +add()
+        +use()
     }
     
     class PointHistory {
@@ -63,12 +63,13 @@ classDiagram
         -Long id
         -Long user
         -int totalAmount
+        -int discountAmount
         -OrderStatus status
         
-        +create()
         +addItem()
         +markSuccess()
         +markCancel()
+        +markFail()
     }
     
     class OrderItem {
@@ -92,17 +93,51 @@ classDiagram
         +markCancel()
     }
     
+    class Coupon {
+        -Long id
+        -String name
+        -int maxCount
+        -int issuedCount
+        -DiscountType type
+        -int discountValue
+        -int minAmount
+        -int maxDiscountAmount
+        
+        +isUnderMinAmount()
+    }
+    
+    class UserCoupon {
+        -Long id
+        -Long couponId
+        -Long userId
+        -CouponStatus status
+        -DateTime usedAt
+        -DateTime expiredAt        
+        
+        +isUsed()
+        +isExpired()
+        +isUsable()
+        +use()
+    }
+    
+    class CouponUsageHistory {
+        -Long id
+        -Long userId
+        -Long userCouponId
+    }
+    
     %% 관계
     User "1" --> "1" Point : has
     Point "1" --> "*" PointHistory : contains
     User "1" --> "*" Like : has
     Like "*" --> "1" Product : refers_to
     Brand "1" --> "*" Product : has
-    Product "1" --> "1" Stock : has
+    Stock "1" --> "1" Product : refers_to
     User "1" --> "*" Order : has
     Order "1" --> "*" OrderItem : contains
     OrderItem "*" --> "1" Product : refers_to
-    Order "1" --> "1" Payment : has
-    User "1" --> "1" Payment : has
+    Order "1" --> "1" Payment : refers_to
+    User "1" --> "*" Payment : has
+    UserCoupon "*" --> "1" Coupon : refers_to
 
 ```

@@ -11,4 +11,4 @@ Content-Type: application/json
 
 ### 회원 정보 조회
 GET {{commerce-api}}/api/v1/users/me
-X-USER-ID: test123
+X-USER-ID: 1

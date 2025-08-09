@@ -13,6 +13,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 
+import static com.loopers.support.constants.HeaderConstants.USER_USER_ID_HEADER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -69,7 +70,7 @@ class PointControllerE2ETest {
 
                 PointDto.ChargeRequest requestBody = new PointDto.ChargeRequest(amount);
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", user.getId().toString());
+                headers.add(USER_USER_ID_HEADER, user.getId().toString());
 
                 // act
                 ParameterizedTypeReference<ApiResponse<PointDto.PointResponse>> responseType = new ParameterizedTypeReference<>() {};
@@ -94,7 +95,7 @@ class PointControllerE2ETest {
                 // arrange
                 PointDto.ChargeRequest requestBody = new PointDto.ChargeRequest(1000);
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", String.valueOf(1L));
+                headers.add(USER_USER_ID_HEADER, String.valueOf(1L));
 
                 // act
                 ParameterizedTypeReference<ApiResponse<PointDto.PointResponse>> responseType = new ParameterizedTypeReference<>() {};
@@ -139,7 +140,7 @@ class PointControllerE2ETest {
                 System.out.println(pointJpaRepository.findById(point.getId()).get());
 
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("X-USER-ID", user.getId().toString());
+                headers.add(USER_USER_ID_HEADER, user.getId().toString());
 
                 // act
                 ParameterizedTypeReference<ApiResponse<PointDto.PointResponse>> responseType = new ParameterizedTypeReference<>() {};
