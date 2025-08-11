@@ -13,23 +13,23 @@ import static com.loopers.support.constants.HeaderConstants.USER_USER_ID_HEADER;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/points")
-public class PointController {
+public class PointV1Controller {
 
     private final PointFacade pointFacade;
 
     @GetMapping
-    public ApiResponse<PointDto.PointResponse> getPoint(
+    public ApiResponse<PointV1Dto.PointResponse> getPoint(
             HttpServletRequest httpServletRequest
     ) {
         Long userId = (Long) httpServletRequest.getAttribute(USER_USER_ID_ATTR);
-        return ApiResponse.success(PointDto.PointResponse.from(pointFacade.getDetail(userId)));
+        return ApiResponse.success(PointV1Dto.PointResponse.from(pointFacade.getDetail(userId)));
     }
 
     @PostMapping("/charge")
-    public ApiResponse<PointDto.PointResponse> charge(
+    public ApiResponse<PointV1Dto.PointResponse> charge(
             @RequestHeader(USER_USER_ID_HEADER) Long userId,
-            @RequestBody @Valid PointDto.ChargeRequest request
+            @RequestBody @Valid PointV1Dto.ChargeRequest request
     ) {
-        return ApiResponse.success(PointDto.PointResponse.from(pointFacade.charge(request.toCommand(userId))));
+        return ApiResponse.success(PointV1Dto.PointResponse.from(pointFacade.charge(request.toCommand(userId))));
     }
 }

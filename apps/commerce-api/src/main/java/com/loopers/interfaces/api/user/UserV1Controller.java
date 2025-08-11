@@ -11,22 +11,22 @@ import static com.loopers.support.constants.HeaderConstants.USER_USER_ID_HEADER;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
-public class UserController {
+public class UserV1Controller {
 
     private final UserFacade userFacade;
 
     @PostMapping
-    public ApiResponse<UserDto.UserResponse> joinUser(
-            @RequestBody @Valid UserDto.JoinRequest request
+    public ApiResponse<UserV1Dto.UserResponse> joinUser(
+            @RequestBody @Valid UserV1Dto.JoinRequest request
     ) {
-        return ApiResponse.success(UserDto.UserResponse.from(userFacade.join(request.toCommand())));
+        return ApiResponse.success(UserV1Dto.UserResponse.from(userFacade.join(request.toCommand())));
     }
 
     @GetMapping("/me")
-    public ApiResponse<UserDto.UserResponse> getUserInfo(
+    public ApiResponse<UserV1Dto.UserResponse> getUserInfo(
             @RequestHeader(USER_USER_ID_HEADER) Long userId
     ) {
-        return ApiResponse.success(UserDto.UserResponse.from(userFacade.getDetail(userId)));
+        return ApiResponse.success(UserV1Dto.UserResponse.from(userFacade.getDetail(userId)));
     }
 
 }

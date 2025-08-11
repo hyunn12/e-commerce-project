@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Pattern;
 import static com.loopers.support.utils.Validation.Pattern.*;
 import static com.loopers.support.utils.Validation.Message.*;
 
-public class UserDto {
+public class UserV1Dto {
 
     public record JoinRequest(
             @NotNull @Pattern(regexp = PATTERN_LOGIN_ID, message = MESSAGE_USER_LOGIN_ID)

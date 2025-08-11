@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserControllerE2ETest {
+class UserV1ControllerE2ETest {
 
     private final TestRestTemplate testRestTemplate;
     private final DatabaseCleanUp databaseCleanUp;
     private final UserJpaRepository userJpaRepository;
 
     @Autowired
-    public UserControllerE2ETest(
+    public UserV1ControllerE2ETest(
             TestRestTemplate testRestTemplate,
             DatabaseCleanUp databaseCleanUp,
             UserJpaRepository userJpaRepository
@@ -52,7 +52,7 @@ class UserControllerE2ETest {
             @Test
             void 회원_가입에_성공한다면() {
                 // arrange
-                UserDto.JoinRequest requestBody = new UserDto.JoinRequest(
+                UserV1Dto.JoinRequest requestBody = new UserV1Dto.JoinRequest(
                         "test123",
                         "test@test.com",
                         "F",
@@ -60,8 +60,8 @@ class UserControllerE2ETest {
                 );
 
                 // act
-                ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
-                ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
+                ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
+                ResponseEntity<ApiResponse<UserV1Dto.UserResponse>> response =
                         testRestTemplate.exchange(requestUrl, HttpMethod.POST, new HttpEntity<>(requestBody), responseType);
 
                 // assert
@@ -83,7 +83,7 @@ class UserControllerE2ETest {
             @Test
             void 성별이_없다면() {
                 // arrange
-                UserDto.JoinRequest requestBody = new UserDto.JoinRequest(
+                UserV1Dto.JoinRequest requestBody = new UserV1Dto.JoinRequest(
                         "test123",
                         "test@test.com",
                         null,
@@ -91,8 +91,8 @@ class UserControllerE2ETest {
                 );
 
                 // act
-                ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
-                ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
+                ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
+                ResponseEntity<ApiResponse<UserV1Dto.UserResponse>> response =
                         testRestTemplate.exchange(requestUrl, HttpMethod.POST, new HttpEntity<>(requestBody), responseType);
 
                 // assert
@@ -134,8 +134,8 @@ class UserControllerE2ETest {
                 headers.add(USER_USER_ID_HEADER, userId.toString());
 
                 // act
-                ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
-                ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
+                ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
+                ResponseEntity<ApiResponse<UserV1Dto.UserResponse>> response =
                         testRestTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity<>(headers), responseType);
 
                 // assert
@@ -158,8 +158,8 @@ class UserControllerE2ETest {
                 headers.add(USER_USER_ID_HEADER, Long.toString(Long.MAX_VALUE));
 
                 // act
-                ParameterizedTypeReference<ApiResponse<UserDto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
-                ResponseEntity<ApiResponse<UserDto.UserResponse>> response =
+                ParameterizedTypeReference<ApiResponse<UserV1Dto.UserResponse>> responseType = new ParameterizedTypeReference<>() {};
+                ResponseEntity<ApiResponse<UserV1Dto.UserResponse>> response =
                         testRestTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity<>(headers), responseType);
 
                 // assert
