@@ -5,32 +5,24 @@ import com.loopers.interfaces.api.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
-public class ProductV1Controller {
+public class ProductV1Controller implements ProductV1ApiSpec {
 
     private final ProductFacade productFacade;
 
-    // 상품 목록 조회
     @GetMapping
     public ApiResponse<ProductV1Dto.ProductResponse.Summary> getList(
-//         @RequestParam ProductV1Dto.ProductRequest.Summary command
+         ProductV1Dto.ProductRequest.Summary request
     ) {
-        return ApiResponse.success(
-                new ProductV1Dto.ProductResponse.Summary(List.of(), 1,20)
-        );
+        return ApiResponse.success(ProductV1Dto.ProductResponse.Summary.from(productFacade.getList(request.toCommand())));
     }
 
-    // 상품 상세 조회
     @GetMapping("/{productId}")
     public ApiResponse<ProductV1Dto.ProductResponse.Detail> getDetail(
-            @PathVariable String productId
+            @PathVariable Long productId
     ) {
-        return ApiResponse.success(
-                new ProductV1Dto.ProductResponse.Detail(1L, "브랜드명", 10000, 10, "브랜드명", "브랜드설명", 100)
-        );
+        return ApiResponse.success(ProductV1Dto.ProductResponse.Detail.from(productFacade.getDetail(productId)));
     }
 }

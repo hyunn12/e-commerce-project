@@ -3,8 +3,13 @@ package com.loopers.interfaces.api.product;
 import com.loopers.application.product.ProductCommand;
 import com.loopers.application.product.ProductInfo;
 import com.loopers.domain.product.ProductSortType;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import java.util.List;
+
+import static com.loopers.support.utils.Validation.Message.MESSAGE_PAGINATION_PAGE;
+import static com.loopers.support.utils.Validation.Message.MESSAGE_PAGINATION_SIZE;
 
 public class ProductV1Dto {
 
@@ -13,7 +18,10 @@ public class ProductV1Dto {
         public record Summary(
                 Long brandId,
                 ProductSortType sort,
+                @Min(value = 0, message = MESSAGE_PAGINATION_PAGE)
                 int page,
+                @Min(value = 10, message = MESSAGE_PAGINATION_SIZE)
+                @Max(value = 50, message = MESSAGE_PAGINATION_SIZE)
                 int size
         ) {
             public ProductCommand.Search toCommand() {
