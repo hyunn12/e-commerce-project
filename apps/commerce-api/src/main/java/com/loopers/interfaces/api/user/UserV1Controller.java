@@ -11,7 +11,7 @@ import static com.loopers.support.constants.HeaderConstants.USER_USER_ID_HEADER;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
-public class UserV1Controller {
+public class UserV1Controller implements UserV1ApiSpec {
 
     private final UserFacade userFacade;
 
@@ -28,5 +28,4 @@ public class UserV1Controller {
     ) {
         return ApiResponse.success(UserV1Dto.UserResponse.from(userFacade.getDetail(userId)));
     }
-
 }
