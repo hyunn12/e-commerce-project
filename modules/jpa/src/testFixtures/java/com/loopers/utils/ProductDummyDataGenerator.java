@@ -9,22 +9,19 @@ import java.util.concurrent.*;
 import java.util.function.Supplier;
 
 /**
- * ===============================================
- * ProductDummyDataGenerator
- * -----------------------------------------------
- * Author: ChatGPT (OpenAI)
- * Purpose: 브랜드(Brand), 상품(Product), 재고(Stock) 더미 데이터를 대량 생성하여 병렬로 Insert 하는 유틸
- * Features:
- *   - Brand → Product (1:N), Product → Stock (1:1) 관계 반영
- *   - Brand ID는 α=2.2의 Skewed Distribution (편중 분포)로 할당
- *   - 가격은 85%-10%-5% 구간별로 랜덤 생성 (천 단위)
- *   - 좋아요 수는 지수 분포 기반 랜덤 생성
- *   - 재고는 10% 품절, 나머지는 Normal 근사 분포(1~200개)
- *   - Multi-thread + Batch Insert로 대용량 데이터 삽입 속도 최적화
- * Usage:
- *   - Standalone 실행: main() 메서드 실행 후 DB URL/계정정보 수정
- *   - 테스트 코드 내: seedAll() 호출 시 DataSource로부터 Connection 주입
- * ===============================================
+ * 상품 더미데이터 생성 유틸 <p>
+ * Author: ChatGPT (OpenAI)<p>
+ * Purpose: 브랜드(Brand), 상품(Product), 재고(Stock) 더미 데이터를 대량 생성하여 병렬로 Insert 하는 유틸<p>
+ * Features:<p>
+ *   - Brand → Product (1:N), Product → Stock (1:1) 관계 반영<p>
+ *   - Brand ID는 α=2.2의 Skewed Distribution (편중 분포)로 할당<p>
+ *   - 가격은 85%-10%-5% 구간별로 랜덤 생성 (천 단위)<p>
+ *   - 좋아요 수는 지수 분포 기반 랜덤 생성<p>
+ *   - 재고는 10% 품절, 나머지는 Normal 근사 분포(1~200개)<p>
+ *   - Multi-thread + Batch Insert로 대용량 데이터 삽입 속도 최적화<p>
+ * Usage:<p>
+ *   - Standalone 실행: main() 메서드 실행 후 DB URL/계정정보 수정<p>
+ *   - 테스트 코드 내: seedAll() 호출 시 DataSource로부터 Connection 주입<p>
  */
 public class ProductDummyDataGenerator {
 
