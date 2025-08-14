@@ -25,4 +25,7 @@ dependencies {
 
     // aspects
     implementation("org.springframework:spring-aspects")
+
+    // redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
 }

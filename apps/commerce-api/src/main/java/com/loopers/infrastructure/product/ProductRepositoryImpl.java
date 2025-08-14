@@ -30,6 +30,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public List<Product> findTopListByBrandId(Long brandId) {
+        return productQueryDslRepository.findTopListByBrandId(brandId);
+    }
+
+    @Override
     public Stock findStockByProductId(Long productId) {
         return stockJpaRepository.findByProductId(productId).orElse(null);
     }

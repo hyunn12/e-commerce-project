@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static com.loopers.config.redis.CacheConstants.PRODUCT_CACHE_LIMIT;
+
 @Component
 @RequiredArgsConstructor
 public class ProductQueryDslRepository {
@@ -50,5 +52,18 @@ public class ProductQueryDslRepository {
                 .fetchOne();
 
         return new PageImpl<>(products, pageable, total != null ? total : 0);
+    }
+
+    public List<Product> findTopListByBrandId(Long brandId) {
+        QProduct product = QProduct.product;
+
+        BooleanBuilder builder = new BooleanBuilder()
+                .and(product.brand.id.eq(brandId));
+
+        return jpaQueryFactory.selectFrom(product)
+                .where(builder)
+                .orderBy(product.createdAt.desc())
+                .limit(PRODUCT_CACHE_LIMIT)
+                .fetch();
     }
 }

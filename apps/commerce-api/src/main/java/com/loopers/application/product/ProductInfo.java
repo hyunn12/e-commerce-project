@@ -1,5 +1,6 @@
 package com.loopers.application.product;
 
+import com.loopers.application.brand.BrandInfo;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.Stock;
@@ -20,6 +21,7 @@ public class ProductInfo {
 
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED) // Jackson 역직렬화용
     public static class Main {
         private Long id;
         private String name;
@@ -40,6 +42,19 @@ public class ProductInfo {
                     brand.getName(),
                     brand.getDescription(),
                     stock != null ? stock.getQuantity() : 0
+            );
+        }
+
+        public static ProductInfo.Main from(Product product, BrandInfo brandInfo) {
+            return new ProductInfo.Main(
+                    product.getId(),
+                    product.getName(),
+                    product.getPrice(),
+                    product.getLikeCount(),
+                    product.getStatus().name(),
+                    brandInfo.getName(),
+                    brandInfo.getDescription(),
+                    0
             );
         }
     }
@@ -64,6 +79,10 @@ public class ProductInfo {
                     .toList();
 
             return new Summary(products, productPage.getNumber(), productPage.getSize());
+        }
+
+        public static Summary from(List<Main> cachedProducts, int page, int size) {
+            return new Summary(cachedProducts, page, size);
         }
 
         public static Summary empty() {
