@@ -1,6 +1,12 @@
 import { check } from "k6";
 import { ProductV1ApiClient } from "../openapi-to-k6-generate/product-v1-api.ts";
 
+/**
+ * 상품 목록 조회 API 부하 테스트
+ * - API 성능 한계 및 응답 구조 검증
+ * - 점진적 부하 상황에서 응답 시간 및 안정성 측정
+ * - 대량 더미데이터(DummyDataGenerator) 기반 환경에서 실행
+ */
 export const options = {
     stages: [
         { duration: "30s", target: 10 },
@@ -18,9 +24,8 @@ export default function () {
     });
 
     const BRAND_IDS = [1, 2, 3, 4, 5];
-    const SORTS = ["LATEST", "PRICE_ASC", "LIKES_DESC"];
+    const sort = "LIKES_DESC";
     const brandId = BRAND_IDS[Math.floor(Math.random() * BRAND_IDS.length)];
-    const sort = SORTS[Math.floor(Math.random() * SORTS.length)];
     const page = Math.floor(Math.random() * 50);
     const size = 20;
 

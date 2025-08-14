@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  */
 public class DummyDataGenerator {
 
-    // ---- TARGET COUNTS (원하는 규모로 조정하세요) ----
+    // ---- TARGET COUNTS ----
     public static final int BRAND_COUNT = 1_000;
     public static final int PRODUCT_COUNT = 1_000_000;
     public static final int STOCK_COUNT = PRODUCT_COUNT;
@@ -99,7 +99,6 @@ public class DummyDataGenerator {
             futures.add(es.submit(() -> insertUsersRange(cs, r[0], r[1])));
         }
         waitAll(es, futures);
-        System.out.println("✅ seedUsers inserted: " + count);
     }
 
     private static void insertUsersRange(Supplier<Connection> cs, int start, int end) {

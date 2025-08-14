@@ -1,6 +1,6 @@
 ### 상품 목록 조회
 
-GET {{commerce-api}}/api/v1/products
+GET {{commerce-api}}/api/v1/products?brandId=1&sort=LIKES_DESC&page=0&size=20
 
 
 ### 상품 상세 조회
