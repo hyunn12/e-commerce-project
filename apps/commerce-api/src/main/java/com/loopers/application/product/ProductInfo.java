@@ -25,6 +25,7 @@ public class ProductInfo {
         private String name;
         private int price;
         private int likeCount;
+        private String status;
         private String brandName;
         private String brandDesc;
         private int quantity;
@@ -35,6 +36,7 @@ public class ProductInfo {
                     product.getName(),
                     product.getPrice(),
                     product.getLikeCount(),
+                    product.getStatus().name(),
                     brand.getName(),
                     brand.getDescription(),
                     stock != null ? stock.getQuantity() : 0
@@ -49,18 +51,15 @@ public class ProductInfo {
         private int page;
         private int size;
 
-        public static Summary from(Page<Product> productPage, List<Brand> brands, List<Stock> stocks) {
+        public static Summary from(Page<Product> productPage, List<Brand> brands) {
             Map<Long, Brand> brandMap = brands.stream()
                 .collect(Collectors.toMap(Brand::getId, Function.identity()));
-
-            Map<Long, Stock> stockMap = stocks.stream()
-                    .collect(Collectors.toMap(stock -> stock.getProduct().getId(), Function.identity()));
 
             List<Main> products = productPage.getContent().stream()
                     .map(product -> Main.from(
                             product,
                             brandMap.get(product.getBrand().getId()),
-                            stockMap.get(product.getId())
+                            null
                     ))
                     .toList();
 

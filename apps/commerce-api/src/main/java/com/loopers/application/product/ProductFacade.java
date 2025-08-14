@@ -1,6 +1,5 @@
 package com.loopers.application.product;
 
-import com.loopers.domain.BaseEntity;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandService;
 import com.loopers.domain.product.Product;
@@ -29,14 +28,10 @@ public class ProductFacade {
             return ProductInfo.Summary.empty();
         }
 
-        List<Long> productIds = products.stream().map(BaseEntity::getId).toList();
-
         List<Long> brandIds = products.stream().map(product -> product.getBrand().getId()).distinct().toList();
         List<Brand> brands = brandService.getListByIds(brandIds);
 
-        List<Stock> stocks = productService.getStocksByProductIds(productIds);
-
-        return ProductInfo.Summary.from(products, brands, stocks);
+        return ProductInfo.Summary.from(products, brands);
     }
 
     public ProductInfo.Main getDetail(Long productId) {

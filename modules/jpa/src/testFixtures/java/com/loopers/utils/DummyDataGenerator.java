@@ -150,7 +150,7 @@ public class DummyDataGenerator {
     }
 
     private static void insertProductsRange(Supplier<Connection> cs, int start, int end, int brandCount) {
-        final String sql = "INSERT INTO product (id, brand_id, name, price, like_count, created_at, updated_at) VALUES (?,?,?,?,?,?,?)";
+        final String sql = "INSERT INTO product (id, brand_id, name, price, like_count, status, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)";
         try (Connection conn = cs.get();
              PreparedStatement ps = conn.prepareStatement(sql)
         ) {
@@ -163,10 +163,11 @@ public class DummyDataGenerator {
                 ps.setString(3, "상품 " + i);
                 ps.setInt(4, samplePrice());
                 ps.setInt(5, 0);
+                ps.setString(6, SalesStatus.ACTIVE.name());
 
                 LocalDateTime[] ts = recentSkewed(365, 2.3);
-                ps.setTimestamp(6, Timestamp.valueOf(ts[0]));
-                ps.setTimestamp(7, Timestamp.valueOf(ts[1]));
+                ps.setTimestamp(7, Timestamp.valueOf(ts[0]));
+                ps.setTimestamp(8, Timestamp.valueOf(ts[1]));
 
                 ps.addBatch();
                 if (i % BATCH_SIZE == 0) {
@@ -180,6 +181,9 @@ public class DummyDataGenerator {
         } catch (SQLException e) {
             throw new RuntimeException("insertProductsRange failed [" + start + "~" + end + "]", e);
         }
+    }
+    enum SalesStatus {
+        ACTIVE
     }
 
     // ---------- STOCK (parallel, 1:1 with product) ----------

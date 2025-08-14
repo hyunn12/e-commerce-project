@@ -50,10 +50,8 @@ class ProductFacadeIntegrationTest {
         void returnProductInfo_whenProductsExist() {
             // arrange
             Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("설명").build());
-            Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
-            Product product2 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품2").price(20000).build());
-            Stock stock1 = stockJpaRepository.save(Stock.builder().product(product1).quantity(5).build());
-            Stock stock2 = stockJpaRepository.save(Stock.builder().product(product2).quantity(10).build());
+            productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
+            productJpaRepository.save(Product.createBuilder().brand(brand).name("상품2").price(20000).build());
 
             ProductCommand.Search command = new ProductCommand.Search(null, LATEST, 0, 10);
 
@@ -65,9 +63,6 @@ class ProductFacadeIntegrationTest {
             assertThat(result.getProducts())
                     .extracting(ProductInfo.Main::getBrandName)
                     .containsOnly(brand.getName());
-            assertThat(result.getProducts())
-                    .extracting(ProductInfo.Main::getQuantity)
-                    .containsExactlyInAnyOrder(stock1.getQuantity(), stock2.getQuantity());
         }
 
         @DisplayName("상품이 없으면 빈 목록을 반환한다.")
@@ -91,8 +86,6 @@ class ProductFacadeIntegrationTest {
             Brand brand2 = brandJpaRepository.save(Brand.builder().name("브랜드2").description("설명").build());
             Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand1).name("상품1").price(10000).build());
             Product product2 = productJpaRepository.save(Product.createBuilder().brand(brand2).name("상품2").price(20000).build());
-            stockJpaRepository.save(Stock.builder().product(product1).quantity(3).build());
-            stockJpaRepository.save(Stock.builder().product(product2).quantity(7).build());
 
             ProductCommand.Search command = new ProductCommand.Search(null, LATEST, 0, 10);
 

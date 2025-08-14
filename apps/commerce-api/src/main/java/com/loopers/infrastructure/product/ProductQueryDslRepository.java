@@ -27,6 +27,7 @@ public class ProductQueryDslRepository {
         if (brandId != null) {
             builder.and(product.brand.id.eq(brandId));
         }
+        builder.and(product.deletedAt.isNull());
 
         OrderSpecifier<?> orderSpecifier = switch (sortType) {
             case LATEST -> product.createdAt.desc();
