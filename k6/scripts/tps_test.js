@@ -16,8 +16,9 @@ export const options = {
 
 export default function () {
     const brandId = [1, 2, 3, 4, 5][Math.floor(Math.random() * 5)]; // 가장 상품이 많은 상위 5개
-    const sort = "LIKES_DESC"; // 좋아요순 정렬
-    const page = Math.floor(Math.random() * 10);
+    // const sort = "LIKES_DESC"; // 좋아요순 정렬
+    const sort = "LATEST"; // 최신순 정렬
+    const page = Math.floor(Math.random() * 4);
     const size = 20;
 
     http.get(
