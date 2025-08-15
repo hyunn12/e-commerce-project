@@ -21,7 +21,7 @@ public class Stock extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(nullable = false)
+    @Column(name = "quantity", nullable = false)
     private int quantity;
 
     public void decrease(int amount) {

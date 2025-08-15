@@ -12,6 +12,7 @@ import java.util.List;
 public class BrandRepositoryImpl implements BrandRepository {
 
     private final BrandJpaRepository brandJpaRepository;
+    private final BrandQueryDslRepository brandQueryDslRepository;
 
     @Override
     public Brand findById(Long id) {
@@ -21,5 +22,10 @@ public class BrandRepositoryImpl implements BrandRepository {
     @Override
     public List<Brand> findAllByIds(List<Long> ids) {
         return brandJpaRepository.findAllById(ids);
+    }
+
+    @Override
+    public List<Brand> findTopList(int limit) {
+        return brandQueryDslRepository.findTopList(limit);
     }
 }

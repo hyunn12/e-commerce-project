@@ -42,6 +42,7 @@ public class ProductV1Dto {
                 String name,
                 int price,
                 int likeCount,
+                String status,
                 String brandName,
                 String brandDesc,
                 int quantity
@@ -52,6 +53,7 @@ public class ProductV1Dto {
                         info.getName(),
                         info.getPrice(),
                         info.getLikeCount(),
+                        info.getStatus(),
                         info.getBrandName(),
                         info.getBrandDesc(),
                         info.getQuantity()
