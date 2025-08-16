@@ -66,8 +66,6 @@ public class RedisConfig {
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)
-//                .withCacheConfiguration("products", config.entryTtl(PRODUCTS_CACHE_TTL))
-//                .withCacheConfiguration("brands", config.entryTtl(BRANDS_CACHE_TTL))
                 .build();
     }
 }
