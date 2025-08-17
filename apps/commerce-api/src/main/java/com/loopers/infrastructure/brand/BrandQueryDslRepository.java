@@ -10,13 +10,15 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+import static com.loopers.config.redis.CacheConstants.BRAND_CACHE_LIMIT;
+
 @Component
 @RequiredArgsConstructor
 public class BrandQueryDslRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<Brand> findTopList(int limit) {
+    public List<Brand> findTopList() {
         QBrand brand = QBrand.brand;
         QProduct product = QProduct.product;
 
@@ -31,7 +33,7 @@ public class BrandQueryDslRepository {
                 .where(builder)
                 .groupBy(product.brand)
                 .orderBy(product.count().desc())
-                .limit(limit)
+                .limit(BRAND_CACHE_LIMIT)
                 .fetch();
     }
 }

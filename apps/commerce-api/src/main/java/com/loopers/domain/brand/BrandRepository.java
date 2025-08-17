@@ -11,5 +11,5 @@ public interface BrandRepository {
 
     List<Brand> findAllByIds(List<Long> ids);
 
-    List<Brand> findTopList(int limit);
+    List<Brand> findTopList();
 }

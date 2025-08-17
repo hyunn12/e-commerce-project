@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
 import java.util.List;
@@ -81,8 +82,8 @@ public class ProductInfo {
             return new Summary(products, productPage.getNumber(), productPage.getSize());
         }
 
-        public static Summary from(List<Main> cachedProducts, int page, int size) {
-            return new Summary(cachedProducts, page, size);
+        public static Summary from(List<Main> cachedProducts, Pageable pageable) {
+            return new Summary(cachedProducts, pageable.getPageNumber(), pageable.getPageSize());
         }
 
         public static Summary empty() {

@@ -2,14 +2,19 @@ package com.loopers.application.brand;
 
 import com.loopers.domain.brand.BrandService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static com.loopers.config.redis.CacheConstants.BRANDS_CACHE_KEY;
 import static com.loopers.config.redis.CacheConstants.BRANDS_CACHE_TTL;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BrandCacheService {
@@ -17,24 +22,32 @@ public class BrandCacheService {
     private final BrandService brandService;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public List<BrandInfo> getCachedBrands(int limit) {
-        // 캐시 조회
-        BrandInfoList cachedBrands = (BrandInfoList) redisTemplate.opsForValue().get(BRANDS_CACHE_KEY);
-        if (cachedBrands != null) {
-            return cachedBrands.getBrandInfos();
-        }
+    // 단건 조회
+    public BrandInfo getCachedBrand(Long brandId) {
+        BrandInfo cachedInfo = (BrandInfo) redisTemplate.opsForHash().get(BRANDS_CACHE_KEY, brandId.toString());
+        if (cachedInfo != null) return cachedInfo;
 
-        // DB 조회
-        List<BrandInfo> topBrands = brandService.getTopList(limit)
-                .stream()
-                .map(BrandInfo::from)
-                .toList();
-        BrandInfoList list = BrandInfoList.of(topBrands);
+        refreshBrandsCache();
 
-        // 캐시 저장
-        redisTemplate.opsForValue().set(BRANDS_CACHE_KEY, list, BRANDS_CACHE_TTL);
-
-        return topBrands;
+        return (BrandInfo) redisTemplate.opsForHash().get(BRANDS_CACHE_KEY, brandId.toString());
     }
 
+    // 브랜드 목록 HSET 저장
+    public void refreshBrandsCache() {
+        List<BrandInfo> topBrands = brandService.getTopList().stream()
+                .map(BrandInfo::from)
+                .toList();
+
+        Map<String, BrandInfo> brandInfoMap = topBrands.stream()
+                .collect(Collectors.toMap(brandInfo -> brandInfo.getId().toString(), Function.identity()));
+
+        redisTemplate.opsForHash().putAll(BRANDS_CACHE_KEY, brandInfoMap);
+        redisTemplate.expire(BRANDS_CACHE_KEY, BRANDS_CACHE_TTL);
+    }
+
+    // 단건 갱신
+    public void upsertBrand(BrandInfo info) {
+        redisTemplate.opsForHash().put(BRANDS_CACHE_KEY, info.getId().toString(), info);
+        redisTemplate.expire(BRANDS_CACHE_KEY, BRANDS_CACHE_TTL);
+    }
 }

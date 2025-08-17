@@ -25,7 +25,7 @@ public class BrandRepositoryImpl implements BrandRepository {
     }
 
     @Override
-    public List<Brand> findTopList(int limit) {
-        return brandQueryDslRepository.findTopList(limit);
+    public List<Brand> findTopList() {
+        return brandQueryDslRepository.findTopList();
     }
 }

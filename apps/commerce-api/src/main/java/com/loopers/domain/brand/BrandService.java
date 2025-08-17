@@ -19,7 +19,7 @@ public class BrandService {
         return brandRepository.findAllByIds(ids);
     }
 
-    public List<Brand> getTopList(int limit) {
-        return brandRepository.findTopList(limit);
+    public List<Brand> getTopList() {
+        return brandRepository.findTopList();
     }
 }

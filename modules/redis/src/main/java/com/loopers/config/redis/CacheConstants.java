@@ -8,9 +8,6 @@ public final class CacheConstants {
     public static final int BRAND_CACHE_LIMIT = 50;
     public static final int PRODUCT_CACHE_LIMIT = 100;
 
-    public static final String BRANDS_CACHE_NAME = "brands";
-    public static final String PRODUCTS_CACHE_NAME = "products";
-
     public static final Duration BRANDS_CACHE_TTL = Duration.ofDays(1);
     public static final Duration PRODUCTS_CACHE_TTL = Duration.ofHours(1);
 

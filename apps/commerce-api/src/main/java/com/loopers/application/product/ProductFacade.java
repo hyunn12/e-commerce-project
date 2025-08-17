@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.loopers.config.redis.CacheConstants.BRAND_CACHE_LIMIT;
 import static com.loopers.config.redis.CacheConstants.PRODUCT_CACHE_LIMIT;
 import static com.loopers.support.utils.Validation.Message.*;
 
@@ -41,14 +40,11 @@ public class ProductFacade {
         boolean isCachedRange = pageable.getOffset() < PRODUCT_CACHE_LIMIT;
 
         if (isBrandIdExists && isLatestSort && isCachedRange) {
-            List<BrandInfo> topBrands = brandCacheService.getCachedBrands(BRAND_CACHE_LIMIT);
+            BrandInfo brandInfo = brandCacheService.getCachedBrand(command.getBrandId());
 
-            return topBrands.stream()
-                    .filter(b -> b.getId().equals(command.getBrandId()))
-                    .findFirst()
-                    .map(productCacheService::getCachedProducts)
-                    .map(products -> ProductInfo.Summary.from(products, pageable.getPageNumber(), pageable.getPageSize()))
-                    .orElseGet(() -> getFromDb(command, pageable));
+            List<ProductInfo.Main> productInfos = productCacheService.getCachedProducts(brandInfo);
+
+            return ProductInfo.Summary.from(productInfos, pageable);
         }
 
         // DB 조회
