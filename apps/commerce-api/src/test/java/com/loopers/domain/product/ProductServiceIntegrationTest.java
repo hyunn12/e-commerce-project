@@ -2,7 +2,9 @@ package com.loopers.domain.product;
 
 import com.loopers.application.product.ProductCommand;
 import com.loopers.domain.brand.Brand;
+import com.loopers.domain.like.Like;
 import com.loopers.infrastructure.brand.BrandJpaRepository;
+import com.loopers.infrastructure.like.LikeJpaRepository;
 import com.loopers.infrastructure.product.ProductJpaRepository;
 import com.loopers.infrastructure.product.StockJpaRepository;
 import com.loopers.support.error.CoreException;
@@ -27,6 +29,8 @@ class ProductServiceIntegrationTest {
     private BrandJpaRepository brandJpaRepository;
     @Autowired
     private StockJpaRepository stockJpaRepository;
+    @Autowired
+    private LikeJpaRepository likeJpaRepository;
     @Autowired
     private DatabaseCleanUp databaseCleanUp;
 
@@ -150,6 +154,31 @@ class ProductServiceIntegrationTest {
                         .containsExactly(product2.getName(), product3.getName(), product1.getName());
             }
 
+            @DisplayName("좋아요 내림차순 정렬로 조회한 경우")
+            @Test
+            void whenSortIsLikeDesc() {
+                // arrange
+                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("설명").build());
+                Product product1 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(50000).build());
+                Product product2 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품2").price(10000).build());
+                Product product3 = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품3").price(30000).build());
+                likeJpaRepository.save(Like.of(1L, product1.getId()));
+                likeJpaRepository.save(Like.of(1L, product1.getId()));
+                likeJpaRepository.save(Like.of(1L, product1.getId()));
+                likeJpaRepository.save(Like.of(1L, product2.getId()));
+                likeJpaRepository.save(Like.of(1L, product2.getId()));
+                likeJpaRepository.save(Like.of(1L, product3.getId()));
+
+                ProductCommand.Search search = new ProductCommand.Search(brand.getId(), ProductSortType.LIKES_DESC, 0, 10);
+
+                // act
+                Page<Product> result = productService.getList(search.getBrandId(), search.toPageable(), search.getSort());
+
+                // assert
+                assertThat(result.getContent())
+                        .extracting(Product::getName)
+                        .containsExactly(product1.getName(), product2.getName(), product3.getName());
+            }
         }
 
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)

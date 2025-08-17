@@ -11,6 +11,9 @@ public class Validation {
     }
 
     public static final class Message {
+        public static final String MESSAGE_PAGINATION_PAGE = "페이지 번호는 0 이상이어야 합니다.";
+        public static final String MESSAGE_PAGINATION_SIZE = "페이지 크기는 최소 10, 최대 50까지 가능합니다.";
+
         public static final String MESSAGE_USER_LOGIN_ID = "아이디는 영문 및 숫자 10자 이내로만 작성해야 합니다.";
         public static final String MESSAGE_USER_LOGIN_ID_EXIST = "이미 존재하는 아이디 입니다.";
         public static final String MESSAGE_USER_EMAIL = "이메일은 xx@yy.zz 형식으로 작성해야 합니다.";

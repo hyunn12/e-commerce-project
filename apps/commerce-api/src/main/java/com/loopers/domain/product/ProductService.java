@@ -27,6 +27,10 @@ public class ProductService {
         return productRepository.search(brandId, pageable, sortType);
     }
 
+    public List<Product> getTopListByBrandId(Long brandId) {
+        return productRepository.findTopListByBrandId(brandId);
+    }
+
     @Transactional
     public void increaseLike(Long productId) {
         Product product = getDetail(productId);

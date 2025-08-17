@@ -1,5 +1,7 @@
 package com.loopers;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,6 +10,12 @@ import org.springframework.retry.annotation.EnableRetry;
 
 import java.util.TimeZone;
 
+@OpenAPIDefinition(
+        info = @Info(
+                title = "이커머스 플랫폼 API",
+                description = "쇼핑·주문·결제 기능을 제공하는 이커머스 플랫폼 API"
+        )
+)
 @EnableRetry
 @ConfigurationPropertiesScan
 @SpringBootApplication

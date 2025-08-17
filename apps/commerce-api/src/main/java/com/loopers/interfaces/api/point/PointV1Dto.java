@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 import static com.loopers.support.utils.Validation.Message.MESSAGE_POINT_CHARGE;
 
-public class PointDto {
+public class PointV1Dto {
 
     public record ChargeRequest(
             @NotNull @Min(value = 1, message = MESSAGE_POINT_CHARGE)

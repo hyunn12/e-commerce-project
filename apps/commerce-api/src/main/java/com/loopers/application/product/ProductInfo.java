@@ -1,5 +1,6 @@
 package com.loopers.application.product;
 
+import com.loopers.application.brand.BrandInfo;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.Stock;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,11 +22,13 @@ public class ProductInfo {
 
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED) // Jackson 역직렬화용
     public static class Main {
         private Long id;
         private String name;
         private int price;
         private int likeCount;
+        private String status;
         private String brandName;
         private String brandDesc;
         private int quantity;
@@ -35,9 +39,23 @@ public class ProductInfo {
                     product.getName(),
                     product.getPrice(),
                     product.getLikeCount(),
+                    product.getStatus().name(),
                     brand.getName(),
                     brand.getDescription(),
                     stock != null ? stock.getQuantity() : 0
+            );
+        }
+
+        public static ProductInfo.Main from(Product product, BrandInfo brandInfo) {
+            return new ProductInfo.Main(
+                    product.getId(),
+                    product.getName(),
+                    product.getPrice(),
+                    product.getLikeCount(),
+                    product.getStatus().name(),
+                    brandInfo.getName(),
+                    brandInfo.getDescription(),
+                    0
             );
         }
     }
@@ -49,22 +67,23 @@ public class ProductInfo {
         private int page;
         private int size;
 
-        public static Summary from(Page<Product> productPage, List<Brand> brands, List<Stock> stocks) {
+        public static Summary from(Page<Product> productPage, List<Brand> brands) {
             Map<Long, Brand> brandMap = brands.stream()
                 .collect(Collectors.toMap(Brand::getId, Function.identity()));
-
-            Map<Long, Stock> stockMap = stocks.stream()
-                    .collect(Collectors.toMap(stock -> stock.getProduct().getId(), Function.identity()));
 
             List<Main> products = productPage.getContent().stream()
                     .map(product -> Main.from(
                             product,
                             brandMap.get(product.getBrand().getId()),
-                            stockMap.get(product.getId())
+                            null
                     ))
                     .toList();
 
             return new Summary(products, productPage.getNumber(), productPage.getSize());
+        }
+
+        public static Summary from(List<Main> cachedProducts, Pageable pageable) {
+            return new Summary(cachedProducts, pageable.getPageNumber(), pageable.getPageSize());
         }
 
         public static Summary empty() {

@@ -15,14 +15,18 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(nullable = false)
+    @Column(name = "like_count", nullable = false)
     private int likeCount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status",nullable = false)
+    private SalesStatus status;
 
     @Builder(builderMethodName = "createBuilder")
     public Product(Brand brand, String name, int price) {
@@ -30,6 +34,7 @@ public class Product extends BaseEntity {
         this.name = name;
         this.price = price;
         this.likeCount = 0;
+        this.status = SalesStatus.ACTIVE;
     }
 
     public void increaseLike() {

@@ -1,19 +1,24 @@
 package com.loopers.application.product;
 
-import com.loopers.domain.BaseEntity;
+import com.loopers.application.brand.BrandCacheService;
+import com.loopers.application.brand.BrandInfo;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandService;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
+import com.loopers.domain.product.ProductSortType;
 import com.loopers.domain.product.Stock;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.loopers.config.redis.CacheConstants.PRODUCT_CACHE_LIMIT;
 import static com.loopers.support.utils.Validation.Message.*;
 
 @Component
@@ -22,21 +27,41 @@ public class ProductFacade {
 
     private final BrandService brandService;
     private final ProductService productService;
+    private final ProductCacheService productCacheService;
+    private final BrandCacheService brandCacheService;
 
+    @Transactional(readOnly = true)
     public ProductInfo.Summary getList(ProductCommand.Search command) {
-        Page<Product> products = productService.getList(command.getBrandId(), command.toPageable(), command.getSort());
+
+        Pageable pageable = command.toPageable();
+
+        boolean isBrandIdExists = command.getBrandId() != null;
+        boolean isLatestSort = command.getSort() == ProductSortType.LATEST;
+        boolean isCachedRange = pageable.getOffset() < PRODUCT_CACHE_LIMIT;
+
+        // 캐시 조회
+        if (isBrandIdExists && isLatestSort && isCachedRange) {
+            BrandInfo brandInfo = brandCacheService.getCachedBrand(command.getBrandId());
+
+            List<ProductInfo.Main> productInfos = productCacheService.getCachedProductsSlice(brandInfo, pageable);
+
+            return ProductInfo.Summary.from(productInfos, pageable);
+        }
+
+        return getFromDb(command, pageable);
+    }
+
+    // DB 조회
+    private ProductInfo.Summary getFromDb(ProductCommand.Search command, Pageable pageable) {
+        Page<Product> products = productService.getList(command.getBrandId(), pageable, command.getSort());
         if (products.isEmpty()) {
             return ProductInfo.Summary.empty();
         }
 
-        List<Long> productIds = products.stream().map(BaseEntity::getId).toList();
-
         List<Long> brandIds = products.stream().map(product -> product.getBrand().getId()).distinct().toList();
         List<Brand> brands = brandService.getListByIds(brandIds);
 
-        List<Stock> stocks = productService.getStocksByProductIds(productIds);
-
-        return ProductInfo.Summary.from(products, brands, stocks);
+        return ProductInfo.Summary.from(products, brands);
     }
 
     public ProductInfo.Main getDetail(Long productId) {
