@@ -39,18 +39,19 @@ public class ProductFacade {
         boolean isLatestSort = command.getSort() == ProductSortType.LATEST;
         boolean isCachedRange = pageable.getOffset() < PRODUCT_CACHE_LIMIT;
 
+        // 캐시 조회
         if (isBrandIdExists && isLatestSort && isCachedRange) {
             BrandInfo brandInfo = brandCacheService.getCachedBrand(command.getBrandId());
 
-            List<ProductInfo.Main> productInfos = productCacheService.getCachedProducts(brandInfo);
+            List<ProductInfo.Main> productInfos = productCacheService.getCachedProductsSlice(brandInfo, pageable);
 
             return ProductInfo.Summary.from(productInfos, pageable);
         }
 
-        // DB 조회
         return getFromDb(command, pageable);
     }
 
+    // DB 조회
     private ProductInfo.Summary getFromDb(ProductCommand.Search command, Pageable pageable) {
         Page<Product> products = productService.getList(command.getBrandId(), pageable, command.getSort());
         if (products.isEmpty()) {

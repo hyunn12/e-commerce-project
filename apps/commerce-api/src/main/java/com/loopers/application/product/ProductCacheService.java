@@ -4,6 +4,7 @@ import com.loopers.application.brand.BrandInfo;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -40,5 +41,15 @@ public class ProductCacheService {
         redisTemplate.opsForValue().set(key, list, PRODUCTS_CACHE_TTL);
 
         return productInfos;
+    }
+
+    // 캐시 데이터 페이징 적용
+    public List<ProductInfo.Main> getCachedProductsSlice(BrandInfo brandInfo, Pageable pageable) {
+        List<ProductInfo.Main> products = getCachedProducts(brandInfo);
+
+        long offset = pageable.getOffset();
+        int end = (int) Math.min(offset + pageable.getPageSize(), products.size());
+
+        return List.copyOf(products.subList((int) offset, end));
     }
 }
