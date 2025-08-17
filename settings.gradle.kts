@@ -2,6 +2,7 @@ rootProject.name = "e-commerce-project"
 
 include(
     ":apps:commerce-api",
+    ":apps:pg-simulator",
     ":modules:jpa",
     ":modules:redis",
     ":supports:jackson",
