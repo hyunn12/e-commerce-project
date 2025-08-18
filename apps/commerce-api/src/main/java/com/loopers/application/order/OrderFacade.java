@@ -5,7 +5,6 @@ import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
 import com.loopers.domain.order.OrderStatus;
 import com.loopers.domain.payment.PaymentService;
-import com.loopers.domain.product.ProductService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +17,6 @@ public class OrderFacade {
     private final OrderService orderService;
     private final CouponUseService couponUseService;
     private final StockDecreaseService stockDecreaseService;
-    private final ProductService productService;
     private final PointUseService pointUseService;
     private final PaymentService paymentService;
     private final ExternalOrderSender externalOrderSender;
@@ -43,7 +41,7 @@ public class OrderFacade {
         }
 
         // 포인트 조회 및 차감
-        pointUseService.use(command.getUserId(), finalAmount);
+        pointUseService.useWithLock(command.getUserId(), command.getPoint(), order.getId());
 
         // 결제내역 저장
         paymentService.save(command.getUserId(), finalAmount);

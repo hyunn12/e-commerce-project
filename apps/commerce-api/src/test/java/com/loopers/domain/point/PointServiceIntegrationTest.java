@@ -167,7 +167,7 @@ class PointServiceIntegrationTest {
                 pointJpaRepository.save(point);
 
                 // act
-                pointService.use(user.getId(), amount);
+                pointService.use(user.getId(), amount, 1L);
 
                 // assert
                 Optional<Point> saved = pointJpaRepository.findByUserId(user.getId());
@@ -189,7 +189,7 @@ class PointServiceIntegrationTest {
             void 존재하지_않는_유저_아이디라면() {
                 // act
                 CoreException exception = assertThrows(CoreException.class, () ->
-                        pointService.use(1L, 10000)
+                        pointService.use(1L, 10000, 1L)
                 );
 
                 // assert

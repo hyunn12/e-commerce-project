@@ -21,6 +21,7 @@ public class OrderCommand {
         private Long userId;
         private List<Item> items;
         private Long userCouponId;
+        private int point;
 
         public Order toOrderDomain() {
             List<OrderItem> orderItems = items.stream()

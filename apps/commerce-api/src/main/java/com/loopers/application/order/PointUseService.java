@@ -23,12 +23,12 @@ public class PointUseService {
             backoff = @Backoff(delay = 50)
     )
     @Transactional
-    public void use(Long userId, int amount) {
-        pointService.use(userId, amount);
+    public void use(Long userId, int amount, Long orderId) {
+        pointService.use(userId, amount, orderId);
     }
 
     @Transactional
-    public void useWithLock(Long userId, int amount) {
-        pointService.useWithLock(userId, amount);
+    public void useWithLock(Long userId, int amount, Long orderId) {
+        pointService.useWithLock(userId, amount, orderId);
     }
 }

@@ -35,7 +35,7 @@ public class PointService {
         Point currentPoint = getDetailByUserId(point.getUserId());
         currentPoint.add(point.getPoint());
 
-        PointHistory history = PointHistory.create(point.getUserId(), point.getPoint(), PointType.CHARGE);
+        PointHistory history = PointHistory.charge(point.getUserId(), point.getPoint());
         pointRepository.saveHistory(history);
 
         return currentPoint;
@@ -46,20 +46,20 @@ public class PointService {
     }
 
     @Transactional
-    public void use(Long userId, int amount) {
+    public void use(Long userId, int amount, Long orderId) {
         Point point = getDetailByUserId(userId);
         point.use(amount);
 
-        PointHistory history = PointHistory.create(point.getUserId(), amount, PointType.USE);
+        PointHistory history = PointHistory.use(point.getUserId(), amount, orderId);
         saveHistory(history);
     }
 
     @Transactional
-    public void useWithLock(Long userId, int amount) {
+    public void useWithLock(Long userId, int amount, Long orderId) {
         Point point = getDetailByUserIdWithLock(userId);
         point.use(amount);
 
-        PointHistory history = PointHistory.create(point.getUserId(), amount, PointType.USE);
+        PointHistory history = PointHistory.use(point.getUserId(), amount, orderId);
         saveHistory(history);
     }
 
