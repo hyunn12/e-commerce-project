@@ -21,6 +21,9 @@ public class Order extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Embedded
+    private OrderNo orderNo;
+
     @Column(name = "user_coupon_id")
     private Long userCouponId;
 
@@ -45,6 +48,7 @@ public class Order extends BaseEntity {
         }
 
         this.userId = userId;
+        this.orderNo = OrderNo.create();
         this.userCouponId = userCouponId;
         this.totalAmount = totalAmount;
         this.status = OrderStatus.INIT;
