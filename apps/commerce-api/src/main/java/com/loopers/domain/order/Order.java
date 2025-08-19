@@ -34,6 +34,10 @@ public class Order extends BaseEntity {
     @Column(name = "discount_amount", nullable = false)
     private int discountAmount;
 
+    @Setter
+    @Column(name = "point_amount", nullable = false)
+    private int pointAmount;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private OrderStatus status;
@@ -73,6 +77,14 @@ public class Order extends BaseEntity {
     public void addItem(OrderItem item) {
         item.setOrder(this);
         this.orderItems.add(item);
+    }
+
+    public int getPaymentAmount() {
+        int paymentAmount = this.totalAmount - this.discountAmount - this.pointAmount;
+        if (paymentAmount < 0) {
+            throw new IllegalStateException("결제 금액은 0보다 작을 수 없습니다. 결제 금액: " + paymentAmount);
+        }
+        return paymentAmount;
     }
 
     public void markWaiting() {

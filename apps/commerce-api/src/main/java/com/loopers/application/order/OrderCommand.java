@@ -48,6 +48,7 @@ public class OrderCommand {
     @Getter
     @Builder
     public static class Detail {
+        private Long userId;
         private Long orderId;
     }
 

@@ -27,7 +27,6 @@ import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -35,9 +34,6 @@ import java.util.List;
 import static com.loopers.domain.coupon.DiscountType.PRICE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 class OrderFacadeIntegrationTest {
@@ -67,9 +63,6 @@ class OrderFacadeIntegrationTest {
     @Autowired
     private OrderFacade orderFacade;
 
-    @MockitoSpyBean
-    private ExternalOrderSender externalOrderSender;
-
     @AfterEach
     void tearDown() {
         databaseCleanUp.truncateAllTables();
@@ -92,9 +85,10 @@ class OrderFacadeIntegrationTest {
                 final int initQuantity = 10;
                 final int decreaseQuantity = 2;
                 final int initPoint = 50000;
+                final int usePoint = 10000;
                 final int price = 20000;
                 final int discountAmount = 3000;
-                final int totalAmount = (decreaseQuantity * price) - discountAmount;
+                final int totalAmount = (decreaseQuantity * price) - discountAmount - usePoint;
 
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
                 Product product = productJpaRepository.save(Product.createBuilder().name("상품").price(price).brand(brand).build());
@@ -111,6 +105,7 @@ class OrderFacadeIntegrationTest {
                                 .amount(product.getPrice())
                                 .build()))
                         .userCouponId(userCoupon.getId())
+                        .point(usePoint)
                         .build();
 
                 // act
@@ -118,16 +113,15 @@ class OrderFacadeIntegrationTest {
 
                 // assert
                 Order order = orderJpaRepository.findById(result.getId()).get();
-                assertThat(order.getStatus()).isEqualTo(OrderStatus.SUCCESS);
+                assertThat(order.getStatus()).isEqualTo(OrderStatus.INIT);
                 assertThat(order.getDiscountAmount()).isEqualTo(discountAmount);
-
-                verify(externalOrderSender, times(1)).send(any(Order.class));
+                assertThat(order.getPointAmount()).isEqualTo(usePoint);
 
                 Stock stock = stockJpaRepository.findByProductId(product.getId()).get();
                 assertThat(stock.getQuantity()).isEqualTo(initQuantity-decreaseQuantity);
 
                 Point point = pointJpaRepository.findByUserId(userId).get();
-                assertThat(point.getPoint()).isEqualTo(initPoint-totalAmount);
+                assertThat(point.getPoint()).isEqualTo(initPoint-usePoint);
 
                 List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(userId);
                 assertThat(histories).hasSize(1);
@@ -218,6 +212,7 @@ class OrderFacadeIntegrationTest {
                 final int initQuantity = 10;
                 final int decreaseQuantity = 2;
                 final int initPoint = 10000;
+                final int usePoint = 20000;
                 final int price = 20000;
 
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
@@ -233,6 +228,7 @@ class OrderFacadeIntegrationTest {
                                 .amount(product.getPrice())
                                 .build()))
                         .userCouponId(null)
+                        .point(usePoint)
                         .build();
 
                 // act
@@ -294,9 +290,7 @@ class OrderFacadeIntegrationTest {
             orderJpaRepository.save(order);
 
             // act
-            OrderInfo.Main result = orderFacade.getDetail(OrderCommand.Detail.builder()
-                    .orderId(order.getId())
-                    .build());
+            OrderInfo.Main result = orderFacade.getDetail(order.getId());
 
             // assert
             assertThat(result.getId()).isEqualTo(order.getId());
@@ -309,9 +303,7 @@ class OrderFacadeIntegrationTest {
         @Test
         void throwNotFoundException_whenInvalidOrderId() {
             // act
-            CoreException exception = assertThrows(CoreException.class, () -> orderFacade.getDetail(OrderCommand.Detail.builder()
-                    .orderId(999L)
-                    .build()));
+            CoreException exception = assertThrows(CoreException.class, () -> orderFacade.getDetail(999L));
 
             // assert
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);

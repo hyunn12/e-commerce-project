@@ -3,7 +3,6 @@ package com.loopers.application.order;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
-import com.loopers.domain.order.OrderStatus;
 import com.loopers.domain.payment.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,6 @@ public class OrderFacade {
     private final StockDecreaseService stockDecreaseService;
     private final PointUseService pointUseService;
     private final PaymentService paymentService;
-    private final ExternalOrderSender externalOrderSender;
 
     @Transactional
     public OrderInfo.Main create(OrderCommand.Create command) {
@@ -31,8 +29,6 @@ public class OrderFacade {
         if (command.getUserCouponId() != null) {
             discountAmount = couponUseService.use(command.getUserCouponId(), command.getUserId(), order.getTotalAmount());
         }
-
-        int finalAmount = order.getTotalAmount() - discountAmount;
         order.setDiscountAmount(discountAmount);
 
         // 상품 재고 조회 및 차감
@@ -42,15 +38,10 @@ public class OrderFacade {
 
         // 포인트 조회 및 차감
         pointUseService.useWithLock(command.getUserId(), command.getPoint(), order.getId());
+        order.setPointAmount(command.getPoint());
 
         // 결제내역 저장
-        paymentService.save(command.getUserId(), finalAmount);
-
-        // 주문 정보 전달
-        externalOrderSender.send(order);
-
-        // 주문 상태 변경
-        orderService.markStatus(order, OrderStatus.SUCCESS);
+        paymentService.create(command.getUserId(), order.getPaymentAmount());
 
         return OrderInfo.Main.from(order);
     }
@@ -61,7 +52,7 @@ public class OrderFacade {
         return OrderInfo.Summary.from(orders);
     }
 
-    public OrderInfo.Main getDetail(OrderCommand.Detail command) {
-        return OrderInfo.Main.from(orderService.getDetail(command.getOrderId()));
+    public OrderInfo.Main getDetail(Long orderId) {
+        return OrderInfo.Main.from(orderService.getDetail(orderId));
     }
 }
