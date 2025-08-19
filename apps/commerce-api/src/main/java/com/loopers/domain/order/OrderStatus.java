@@ -1,5 +1,5 @@
 package com.loopers.domain.order;
 
 public enum OrderStatus {
-    INIT, SUCCESS, CANCEL, FAIL
+    INIT, WAITING, SUCCESS, FAIL, CANCEL
 }

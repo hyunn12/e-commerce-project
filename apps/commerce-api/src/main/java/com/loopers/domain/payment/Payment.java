@@ -34,6 +34,14 @@ public class Payment extends BaseEntity {
         }
         this.userId = userId;
         this.paymentAmount = paymentAmount;
+        this.status = PaymentStatus.INIT;
+    }
+
+    public void markWaiting() {
+        this.status = PaymentStatus.WAITING;
+    }
+
+    public void markSuccess() {
         this.status = PaymentStatus.SUCCESS;
     }
 

@@ -11,7 +11,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
 
     @Transactional
-    public Payment save(Long userId, int paymentAmount) {
+    public Payment create(Long userId, int paymentAmount) {
         Payment payment = Payment.createBuilder()
                 .userId(userId)
                 .paymentAmount(paymentAmount)
@@ -20,14 +20,12 @@ public class PaymentService {
     }
 
     @Transactional
-    public Payment markFail(Payment payment) {
-        payment.markFail();
-        return paymentRepository.save(payment);
-    }
-
-    @Transactional
-    public Payment markCancel(Payment payment) {
-        payment.markCancel();
-        return paymentRepository.save(payment);
+    public void markStatus(Payment payment, PaymentStatus status) {
+        switch (status) {
+            case WAITING -> payment.markWaiting();
+            case SUCCESS -> payment.markSuccess();
+            case CANCEL -> payment.markCancel();
+            case FAIL -> payment.markFail();
+        }
     }
 }

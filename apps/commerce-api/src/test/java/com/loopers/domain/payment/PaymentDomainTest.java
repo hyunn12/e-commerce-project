@@ -46,36 +46,4 @@ class PaymentDomainTest {
         // assert
         assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
     }
-
-    @DisplayName("markFail 호출한다면 상태가 FAIL 로 변경된다.")
-    @Test
-    void changeStatusFAIL_whenMarkFailCalled() {
-        // arrange
-        Payment payment = Payment.createBuilder()
-                .userId(1L)
-                .paymentAmount(10000)
-                .build();
-
-        // act
-        payment.markFail();
-
-        // assert
-        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.FAIL);
-    }
-
-    @DisplayName("markCancel 호출한다면 상태가 CANCEL 로 변경된다.")
-    @Test
-    void changeStatusCANCEL_whenMarkCancelCalled() {
-        // arrange
-        Payment payment = Payment.createBuilder()
-                .userId(1L)
-                .paymentAmount(10000)
-                .build();
-
-        // act
-        payment.markCancel();
-
-        // assert
-        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.CANCEL);
-    }
 }

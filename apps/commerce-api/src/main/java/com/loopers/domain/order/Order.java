@@ -75,6 +75,10 @@ public class Order extends BaseEntity {
         this.orderItems.add(item);
     }
 
+    public void markWaiting() {
+        this.status = OrderStatus.WAITING;
+    }
+
     public void markSuccess() {
         this.status = OrderStatus.SUCCESS;
     }

@@ -32,9 +32,9 @@ class PaymentServiceIntegrationTest {
 
     @DisplayName("결제 정보가 정상적으로 저장된다.")
     @Test
-    void savePayment() {
+    void createPayment() {
         // act
-        Payment point = paymentService.save(userId, amount);
+        Payment point = paymentService.create(userId, amount);
 
         // assert
         Payment result = paymentJpaRepository.findById(point.getId()).get();
@@ -47,12 +47,13 @@ class PaymentServiceIntegrationTest {
     @Test
     void markFail() {
         // arrange
-        Payment payment = paymentService.save(userId, amount);
+        Payment payment = paymentService.create(userId, amount);
 
         // act
-        Payment result = paymentService.markFail(payment);
+        paymentService.markStatus(payment, PaymentStatus.FAIL);
 
         // assert
+        Payment result = paymentJpaRepository.findById(payment.getId()).get();
         assertThat(result.getStatus()).isEqualTo(PaymentStatus.FAIL);
     }
 
@@ -60,12 +61,13 @@ class PaymentServiceIntegrationTest {
     @Test
     void markCancel() {
         // arrange
-        Payment payment = paymentService.save(userId, amount);
+        Payment payment = paymentService.create(userId, amount);
 
         // act
-        Payment result = paymentService.markCancel(payment);
+        paymentService.markStatus(payment, PaymentStatus.CANCEL);
 
         // assert
+        Payment result = paymentJpaRepository.findById(payment.getId()).get();
         assertThat(result.getStatus()).isEqualTo(PaymentStatus.CANCEL);
     }
 }

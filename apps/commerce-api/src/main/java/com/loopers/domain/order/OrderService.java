@@ -24,6 +24,7 @@ public class OrderService {
     @Transactional
     public void markStatus(Order order, OrderStatus status) {
         switch (status) {
+            case WAITING -> order.markWaiting();
             case SUCCESS -> order.markSuccess();
             case CANCEL -> order.markCancel();
             case FAIL -> order.markFail();
