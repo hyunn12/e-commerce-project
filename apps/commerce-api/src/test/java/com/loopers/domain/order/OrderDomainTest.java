@@ -40,7 +40,7 @@ class OrderDomainTest {
             Order order = Order.create(1L, 1L, List.of(item));
 
             // assert
-            assertThat(order.getStatus()).isEqualTo(OrderStatus.INIT);
+            assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
         }
 
         @DisplayName("Order 에 OrderItem 이 연결된다.")

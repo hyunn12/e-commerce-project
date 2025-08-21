@@ -62,25 +62,6 @@ class OrderServiceIntegrationTest {
 
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
-    class 주문_상태_변경_시 {
-
-        @DisplayName("상태가 정상적으로 변경된다.")
-        @Test
-        void markSuccess_whenCalled() {
-            // arrange
-            OrderItem item = OrderItem.of(1L, 2, 10000);
-            Order order = orderJpaRepository.save(Order.create(userId, 1L, List.of(item)));
-
-            // act
-            orderService.markStatus(order, OrderStatus.SUCCESS);
-
-            // assert
-            assertThat(order.getStatus()).isEqualTo(OrderStatus.SUCCESS);
-        }
-    }
-
-    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-    @Nested
     class 주문_목록_조회_시 {
 
         @DisplayName("status 가 없다면 유저의 전체 주문을 반환한다.")
@@ -111,19 +92,19 @@ class OrderServiceIntegrationTest {
 
             OrderItem item2 = OrderItem.of(2L, 3, 20000);
             Order order = Order.create(userId, 1L, List.of(item2));
-            order.markCancel();
+            order.markCanceled();
             orderJpaRepository.save(order);
 
             Pageable pageable = PageRequest.of(0, 10);
 
             // act
-            Page<Order> result = orderService.getList(userId, OrderStatus.CANCEL, pageable);
+            Page<Order> result = orderService.getList(userId, OrderStatus.CANCELED, pageable);
 
             // assert
             assertThat(result.getTotalElements()).isEqualTo(1);
             assertThat(result.getContent())
                     .extracting(Order::getStatus)
-                    .containsOnly(OrderStatus.CANCEL);
+                    .containsOnly(OrderStatus.CANCELED);
         }
     }
 

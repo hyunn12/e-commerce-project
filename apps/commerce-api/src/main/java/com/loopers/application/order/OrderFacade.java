@@ -1,47 +1,31 @@
 package com.loopers.application.order;
 
 import com.loopers.domain.order.Order;
-import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderService;
-import com.loopers.domain.payment.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OrderFacade {
 
     private final OrderService orderService;
-    private final CouponUseService couponUseService;
-    private final StockDecreaseService stockDecreaseService;
-    private final PointUseService pointUseService;
-    private final PaymentService paymentService;
+    private final OrderProcessor orderProcessor;
 
     @Transactional
     public OrderInfo.Main create(OrderCommand.Create command) {
-        // 주문 생성
-        Order order = orderService.create(command.toOrderDomain());
+        Order order = orderService.create(command.toDomain());
 
-        // 쿠폰 조회 및 사용
-        int discountAmount = 0;
-        if (command.getUserCouponId() != null) {
-            discountAmount = couponUseService.use(command.getUserCouponId(), command.getUserId(), order.getTotalAmount());
+        try {
+            orderProcessor.process(command, order);
+        } catch (Exception ex) {
+            log.error("주문 처리 중 예외 발생: {}", ex.getLocalizedMessage());
+            order.markOrderFailed();
         }
-        order.setDiscountAmount(discountAmount);
-
-        // 상품 재고 조회 및 차감
-        for (OrderItem item : order.getOrderItems()) {
-            stockDecreaseService.decrease(item.getProductId(), item.getQuantity());
-        }
-
-        // 포인트 조회 및 차감
-        pointUseService.useWithLock(command.getUserId(), command.getPoint(), order.getId());
-        order.setPointAmount(command.getPoint());
-
-        // 결제내역 저장
-        paymentService.create(command.getUserId(), order.getPaymentAmount());
 
         return OrderInfo.Main.from(order);
     }

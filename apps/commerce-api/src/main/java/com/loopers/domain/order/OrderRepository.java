@@ -9,11 +9,9 @@ public interface OrderRepository {
 
     Order save(Order order);
 
-    OrderItem saveItem(OrderItem orderItem);
+    Order getDetail(Long orderId);
 
-    Order findById(Long orderId);
+    Page<Order> getListByUserId(Long userId, Pageable pageable);
 
-    Page<Order> findAllByUserId(Long userId, Pageable pageable);
-
-    Page<Order> findAllByUserIdAndStatus(Long userId, OrderStatus status, Pageable pageable);
+    Page<Order> getListByUserIdAndStatus(Long userId, OrderStatus status, Pageable pageable);
 }

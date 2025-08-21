@@ -21,18 +21,8 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    @Transactional
-    public void markStatus(Order order, OrderStatus status) {
-        switch (status) {
-            case WAITING -> order.markWaiting();
-            case SUCCESS -> order.markSuccess();
-            case CANCEL -> order.markCancel();
-            case FAIL -> order.markFail();
-        }
-    }
-
     public Order getDetail(Long orderId) {
-        Order order = orderRepository.findById(orderId);
+        Order order = orderRepository.getDetail(orderId);
         if (order == null) {
             throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_ORDER_NOT_FOUND);
         }
@@ -41,8 +31,17 @@ public class OrderService {
 
     public Page<Order> getList(Long userId, OrderStatus status, Pageable pageable) {
         if (status == null) {
-            return orderRepository.findAllByUserId(userId, pageable);
+            return orderRepository.getListByUserId(userId, pageable);
         }
-        return orderRepository.findAllByUserIdAndStatus(userId, status, pageable);
+        return orderRepository.getListByUserIdAndStatus(userId, status, pageable);
+    }
+
+    public void checkInitOrder(Order order, Long userId) {
+        if (!order.getUserId().equals(userId)) {
+            throw new IllegalStateException("사용자 정보가 일치하지 않습니다.");
+        }
+        if (order.getStatus() != OrderStatus.CREATED) {
+            throw new IllegalStateException("주문 상태가 대기중이 아닙니다. status: " + order.getStatus());
+        }
     }
 }

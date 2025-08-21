@@ -113,7 +113,7 @@ class OrderFacadeIntegrationTest {
 
                 // assert
                 Order order = orderJpaRepository.findById(result.getId()).get();
-                assertThat(order.getStatus()).isEqualTo(OrderStatus.INIT);
+                assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
                 assertThat(order.getDiscountAmount()).isEqualTo(discountAmount);
                 assertThat(order.getPointAmount()).isEqualTo(usePoint);
 
@@ -255,7 +255,7 @@ class OrderFacadeIntegrationTest {
                 OrderItem item2 = OrderItem.of(2L, 3, 20000);
                 List<OrderItem> items = List.of(item1, item2);
                 Order order = Order.create(userId, 1L, items);
-                order.markSuccess();
+                order.markPaid();
                 orderJpaRepository.save(order);
             }
 
@@ -286,7 +286,7 @@ class OrderFacadeIntegrationTest {
 
             int quantity = 2;
             Order order = Order.create(userId, 1L, List.of(OrderItem.of(product.getId(), quantity, quantity*product.getPrice())));
-            order.markSuccess();
+            order.markPaid();
             orderJpaRepository.save(order);
 
             // act
@@ -294,7 +294,7 @@ class OrderFacadeIntegrationTest {
 
             // assert
             assertThat(result.getId()).isEqualTo(order.getId());
-            assertThat(result.getStatus()).isEqualTo(OrderStatus.SUCCESS);
+            assertThat(result.getStatus()).isEqualTo(OrderStatus.PAID);
             assertThat(result.getTotalAmount()).isEqualTo(order.getTotalAmount());
             assertThat(result.getItems()).hasSize(1);
         }

@@ -23,7 +23,7 @@ public class OrderCommand {
         private Long userCouponId;
         private int point;
 
-        public Order toOrderDomain() {
+        public Order toDomain() {
             List<OrderItem> orderItems = items.stream()
                     .map(item -> OrderItem.of(item.getProductId(), item.getQuantity(), item.getAmount()))
                     .toList();

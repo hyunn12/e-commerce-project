@@ -55,7 +55,7 @@ public class Order extends BaseEntity {
         this.orderNo = OrderNo.create();
         this.userCouponId = userCouponId;
         this.totalAmount = totalAmount;
-        this.status = OrderStatus.INIT;
+        this.status = OrderStatus.CREATED;
     }
 
     public static Order create(Long userId, Long userCouponId, List<OrderItem> items) {
@@ -80,26 +80,26 @@ public class Order extends BaseEntity {
     }
 
     public int getPaymentAmount() {
-        int paymentAmount = this.totalAmount - this.discountAmount - this.pointAmount;
-        if (paymentAmount < 0) {
-            throw new IllegalStateException("결제 금액은 0보다 작을 수 없습니다. 결제 금액: " + paymentAmount);
-        }
-        return paymentAmount;
+        return this.totalAmount - this.discountAmount - this.pointAmount;
     }
 
-    public void markWaiting() {
-        this.status = OrderStatus.WAITING;
+    public void markWaitingPayment() {
+        this.status = OrderStatus.WAITING_PAYMENT;
     }
 
-    public void markSuccess() {
-        this.status = OrderStatus.SUCCESS;
+    public void markPaid() {
+        this.status = OrderStatus.PAID;
     }
 
-    public void markCancel() {
-        this.status = OrderStatus.CANCEL;
+    public void markPaymentFailed() {
+        this.status = OrderStatus.PAYMENT_FAILED;
     }
 
-    public void markFail() {
-        this.status = OrderStatus.FAIL;
+    public void markOrderFailed() {
+        this.status = OrderStatus.ORDER_FAILED;
+    }
+
+    public void markCanceled() {
+        this.status = OrderStatus.CANCELED;
     }
 }
