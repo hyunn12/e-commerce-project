@@ -2,6 +2,9 @@ package com.loopers.domain.payment;
 
 import com.loopers.application.payment.PaymentGateway;
 import com.loopers.application.payment.PaymentProcessor;
+import com.loopers.application.payment.PaymentRestoreService;
+import com.loopers.domain.order.Order;
+import com.loopers.domain.order.OrderService;
 import com.loopers.domain.payment.dto.PaymentRequest;
 import com.loopers.domain.payment.dto.PaymentResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -20,6 +23,8 @@ public class CardPaymentProcessor implements PaymentProcessor {
 
     private final PaymentGateway paymentGateway;
     private final PaymentService paymentService;
+    private final OrderService orderService;
+    private final PaymentRestoreService paymentRestoreService;
 
     @Value("${client.pg-simulator.callback-url.ver-1}")
     private String callbackUrl;
@@ -41,6 +46,15 @@ public class CardPaymentProcessor implements PaymentProcessor {
     }
 
     public PaymentResponse fallback(PaymentRequest request, Throwable throwable) {
+        Payment payment = paymentService.getDetail(request.getPaymentId());
+        Order order = orderService.getDetail(payment.getOrderId());
+
+        payment.setPaymentFailed("PG 결제 요청이 실패했습니다.");
+        order.markPaymentFailed();
+        paymentRestoreService.restore(order);
+
+        log.error("결제 요청 실패 fallback: orderId={} paymentId={} message={}", order.getId(), payment.getId(), throwable.getLocalizedMessage());
+
         return PaymentResponse.fail("결제에 실패했습니다." + throwable.getLocalizedMessage());
     }
 }
