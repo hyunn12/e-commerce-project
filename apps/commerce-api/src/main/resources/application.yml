@@ -45,11 +45,11 @@ resilience4j:
           - feign.RetryableException
           - java.net.SocketTimeoutException
           - java.io.IOException
-        fail-after-max-attempts: true # 재시도 무시할
+        fail-after-max-attempts: true # 최대 재시도 횟수 초과 시 명시적으로 예외 던짐
   circuitbreaker:
     instances:
       pgCircuit:
-        sliding-window-size: 10
+        sliding-window-size: 10          # 최근 n회 호출 결과 기준으로 실패율 계산
         failure-rate-threshold: 50       # 실패율이 50% 넘으면 Open
         wait-duration-in-open-state: 10s # Open 상태 유지 시간
         permitted-number-of-calls-in-half-open-state: 2
