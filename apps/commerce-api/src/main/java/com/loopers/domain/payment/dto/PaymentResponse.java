@@ -24,6 +24,10 @@ public class PaymentResponse {
         );
     }
 
+    public static PaymentResponse fail(String reason) {
+        return new PaymentResponse(null, null, "FAIL", reason);
+    }
+
     @Override
     public String toString() {
         return "PaymentResponse{" +

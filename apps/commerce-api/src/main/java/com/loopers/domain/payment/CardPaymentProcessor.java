@@ -3,9 +3,7 @@ package com.loopers.domain.payment;
 import com.loopers.application.payment.PaymentProcessor;
 import com.loopers.domain.payment.dto.PaymentRequest;
 import com.loopers.domain.payment.dto.PaymentResponse;
-import com.loopers.infrastructure.client.pg.PgClient;
-import com.loopers.infrastructure.client.pg.PgClientDto;
-import com.loopers.interfaces.api.ApiResponse;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,30 +16,26 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CardPaymentProcessor implements PaymentProcessor {
 
-    private final PgClient pgClient;
+    private final PgPaymentGateway pgPaymentGateway;
     private final PaymentService paymentService;
 
     @Value("${client.pg-simulator.callback-url.ver-1}")
     private String callbackUrl;
 
-    @Value("${client.pg-simulator.x-user-id}")
-    private Long userId;
-
+    @Retry(name = "pgRetry", fallbackMethod = "fallback")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public void process(PaymentRequest request) {
         Payment payment = paymentService.getDetail(request.getPaymentId());
 
         // 결제 API 호출
-        ApiResponse<PgClientDto.PgResponse> apiResponse = pgClient.request(request.toPgRequest(callbackUrl), userId);
-        log.info("결제 요청 결과: {}", apiResponse.meta().result());
-
-        if (apiResponse.meta().result().equals(ApiResponse.Metadata.Result.FAIL)) {
-            log.error("결제 요청 실패: errorCode={}, message={}", apiResponse.meta().errorCode(), apiResponse.meta().message());
-            payment.setPaymentFailed(apiResponse.meta().message());
-            return;
+        PaymentResponse response = pgPaymentGateway.requestPayment(request, callbackUrl);
+        if (response.getStatus().equals("SUCCESS")) {
+            payment.setPaymentPending(response.getTransactionKey());
         }
-        PaymentResponse response = PaymentResponse.from(apiResponse.data());
-        payment.setPaymentPending(response.getTransactionKey());
+    }
+
+    public PaymentResponse fallback(PaymentRequest request, Throwable throwable) {
+        return PaymentResponse.fail("결제에 실패했습니다." + throwable.getLocalizedMessage());
     }
 }

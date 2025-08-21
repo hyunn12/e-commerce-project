@@ -5,6 +5,8 @@ import com.loopers.domain.order.OrderService;
 import com.loopers.domain.payment.Payment;
 import com.loopers.domain.payment.PaymentMethod;
 import com.loopers.domain.payment.PaymentService;
+import com.loopers.domain.payment.PgPaymentGateway;
+import com.loopers.domain.payment.dto.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,7 @@ public class PaymentFacade {
     private final OrderService orderService;
     private final PaymentService paymentService;
     private final PaymentProcessor paymentProcessor;
+    private final PgPaymentGateway pgPaymentGateway;
     private final PaymentRestoreService paymentRestoreService;
 
     @Transactional
@@ -33,13 +36,15 @@ public class PaymentFacade {
         // PG 결제 요청
         paymentProcessor.process(command.toRequest(order, payment));
 
-        Payment result = paymentService.getDetail(payment.getId());
-        return PaymentInfo.Main.from(result);
+        return PaymentInfo.Main.from(payment);
     }
 
     public PaymentInfo.Callback paymentCallback(PaymentCommand.Modify command) {
         try {
-            // TODO PG 결제 상태 조회 추가
+            PaymentResponse response = pgPaymentGateway.getTransaction(command.getTransactionKey());
+            if (response.getStatus().equals("FAIL")) {
+                return PaymentInfo.Callback.from("FAIL", response.getReason());
+            }
 
             Payment payment = paymentService.getDetailByKey(command.getTransactionKey());
             paymentService.checkPendingPayment(payment);

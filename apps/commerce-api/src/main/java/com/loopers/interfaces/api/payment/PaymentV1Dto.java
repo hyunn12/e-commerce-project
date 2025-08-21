@@ -66,13 +66,11 @@ public class PaymentV1Dto {
         }
 
         public record Callback(
-                Long id,
                 String result,
                 String message
         ) {
             public static PaymentResponse.Callback from(PaymentInfo.Callback main) {
                 return new PaymentResponse.Callback(
-                        main.getId(),
                         main.getResult(),
                         main.getMessage()
                 );

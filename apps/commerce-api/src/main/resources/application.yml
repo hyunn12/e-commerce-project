@@ -39,11 +39,13 @@ resilience4j:
   retry:
     instances:
       pgRetry:
-        max-attempts: 3
-        wait-duration: 1s
-        retry-exceptions:
+        max-attempts: 3               # 최대 재시도 횟수
+        wait-duration: 1s             # 재시도 간 대기 시간
+        retry-exceptions:             # 재시도 할 예외 클래스
           - feign.RetryableException
-        fail-after-max-attempts: true
+          - java.net.SocketTimeoutException
+          - java.io.IOException
+        fail-after-max-attempts: true # 재시도 무시할
   circuitbreaker:
     instances:
       pgCircuit:

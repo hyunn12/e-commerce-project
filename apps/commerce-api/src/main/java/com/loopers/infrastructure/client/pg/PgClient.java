@@ -2,9 +2,7 @@ package com.loopers.infrastructure.client.pg;
 
 import com.loopers.interfaces.api.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 import static com.loopers.support.constants.HeaderConstants.PG_HEADER;
 
@@ -14,6 +12,12 @@ public interface PgClient {
     @PostMapping("/payments")
     ApiResponse<PgClientDto.PgResponse> request(
             @RequestBody PgClientDto.PgRequest request,
+            @RequestHeader(PG_HEADER) Long userId
+    );
+
+    @GetMapping("/payments/{transactionKey}")
+    ApiResponse<PgClientDto.PgResponse> getTransaction(
+            @PathVariable("transactionKey") String transactionKey,
             @RequestHeader(PG_HEADER) Long userId
     );
 }
