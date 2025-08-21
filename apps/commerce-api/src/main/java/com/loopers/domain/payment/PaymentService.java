@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZonedDateTime;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
@@ -48,5 +51,10 @@ public class PaymentService {
         if (payment.getStatus() == PaymentStatus.PENDING) {
             throw new IllegalStateException("결제 상태가 대기중이 아닙니다. status: " + payment.getStatus());
         }
+    }
+
+    public List<Payment> getListPendingPayments() {
+        ZonedDateTime before = ZonedDateTime.now().minusMinutes(5);
+        return paymentRepository.getListPendingPayments(PaymentMethod.CARD, PaymentStatus.PENDING, before);
     }
 }

@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class PaymentFacade {
     private final PaymentProcessor paymentProcessor;
     private final PgPaymentGateway pgPaymentGateway;
     private final PaymentRestoreService paymentRestoreService;
+    private final PaymentRetryService paymentRetryService;
 
     @Transactional
     public PaymentInfo.Main payment(PaymentCommand.Create command) {
@@ -64,6 +67,13 @@ public class PaymentFacade {
             return PaymentInfo.Callback.from("SUCCESS", null);
         } catch (Exception e) {
             return PaymentInfo.Callback.from("FAIL", e.getLocalizedMessage());
+        }
+    }
+
+    public void retryPendingPayments() {
+        List<Payment> pendingPayments = paymentService.getListPendingPayments();
+        for (Payment payment : pendingPayments) {
+            paymentRetryService.processPaymentStatus(payment);
         }
     }
 }
