@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 public class OrderProcessor {
 
     private final CouponUseService couponUseService;
-    private final StockDecreaseService stockDecreaseService;
-    private final PointUseService pointUseService;
+    private final StockService stockService;
+    private final PointProcessor pointProcessor;
 
     public void process(OrderCommand.Create command, Order order) {
         // 쿠폰 조회 및 사용
@@ -23,11 +23,11 @@ public class OrderProcessor {
 
         // 상품 재고 조회 및 차감
         for (OrderItem item : order.getOrderItems()) {
-            stockDecreaseService.decrease(item.getProductId(), item.getQuantity());
+            stockService.decrease(item.getProductId(), item.getQuantity());
         }
 
         // 포인트 조회 및 차감
-        pointUseService.useWithLock(command.getUserId(), command.getPoint(), order.getId());
+        pointProcessor.useWithLock(command.getUserId(), command.getPoint(), order.getId());
         order.setPointAmount(command.getPoint());
     }
 }

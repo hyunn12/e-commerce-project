@@ -38,10 +38,10 @@ public class CardPaymentProcessor implements PaymentProcessor {
 
         if (apiResponse.meta().result().equals(ApiResponse.Metadata.Result.FAIL)) {
             log.error("결제 요청 실패: errorCode={}, message={}", apiResponse.meta().errorCode(), apiResponse.meta().message());
-            payment.setPaymentResponse(PaymentStatus.FAILED, null, apiResponse.meta().message());
+            payment.setPaymentFailed(apiResponse.meta().message());
             return;
         }
         PaymentResponse response = PaymentResponse.from(apiResponse.data());
-        payment.setPaymentResponse(PaymentStatus.PENDING, response.getTransactionKey(), null);
+        payment.setPaymentPending(response.getTransactionKey());
     }
 }

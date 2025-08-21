@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class PointUseService {
+public class PointProcessor {
 
     private final PointService pointService;
 
@@ -30,5 +30,10 @@ public class PointUseService {
     @Transactional
     public void useWithLock(Long userId, int amount, Long orderId) {
         pointService.useWithLock(userId, amount, orderId);
+    }
+
+    @Transactional
+    public void restoreWithLock(Long userId, int amount, Long orderId) {
+        pointService.restoreWithLock(userId, amount, orderId);
     }
 }

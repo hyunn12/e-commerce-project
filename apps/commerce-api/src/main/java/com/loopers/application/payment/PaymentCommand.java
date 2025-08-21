@@ -17,11 +17,9 @@ public class PaymentCommand {
     public static class Create {
         private Long userId;
         private Long orderId;
-        private Long paymentId;
         private CardType cardType;
         private String cardNo;
         private int paymentAmount;
-        private String callbackUrl;
 
         public PaymentRequest toRequest(Order order, Payment payment) {
             return PaymentRequest.create(
@@ -34,5 +32,14 @@ public class PaymentCommand {
                     userId
             );
         }
+    }
+
+    @Getter
+    @Builder
+    public static class Modify {
+        private String orderNo;
+        private String transactionKey;
+        private String status;
+        private String reason;
     }
 }

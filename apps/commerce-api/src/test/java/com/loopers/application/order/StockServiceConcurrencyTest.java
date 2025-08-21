@@ -22,10 +22,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("재고 차감에 비관적 락 적용 시")
 @SpringBootTest
-class StockDecreaseServiceConcurrencyTest {
+class StockServiceConcurrencyTest {
     // sut --
     @Autowired
-    private StockDecreaseService stockDecreaseService;
+    private StockService stockService;
 
     // orm --
     @Autowired
@@ -65,7 +65,7 @@ class StockDecreaseServiceConcurrencyTest {
         for (int i = 0; i < requestCount; i++) {
             executor.submit(() -> {
                 try {
-                    stockDecreaseService.decrease(product.getId(), decreaseStock);
+                    stockService.decrease(product.getId(), decreaseStock);
                     successCount.incrementAndGet();
                 } catch (Exception e) {
                     System.out.println("[FAIL]: "+e.getMessage());
@@ -112,7 +112,7 @@ class StockDecreaseServiceConcurrencyTest {
         for (int i = 0; i < requestCount; i++) {
             executor.submit(() -> {
                 try {
-                    stockDecreaseService.decrease(product.getId(), decreaseStock);
+                    stockService.decrease(product.getId(), decreaseStock);
                     successCount.incrementAndGet();
                 } catch (Exception e) {
                     System.out.println("[FAIL]: "+e.getMessage());
@@ -158,7 +158,7 @@ class StockDecreaseServiceConcurrencyTest {
         for (int i = 0; i < requestCount; i++) {
             executor.submit(() -> {
                 try {
-                    stockDecreaseService.decrease(product.getId(), decreaseStock);
+                    stockService.decrease(product.getId(), decreaseStock);
                     successCount.incrementAndGet();
                 } catch (Exception e) {
                     System.out.println("[FAIL]: "+e.getMessage());

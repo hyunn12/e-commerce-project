@@ -44,4 +44,10 @@ public class OrderService {
             throw new IllegalStateException("주문 상태가 대기중이 아닙니다. status: " + order.getStatus());
         }
     }
+
+    public void checkWaitingOrder(Order order) {
+        if (order.getStatus() != OrderStatus.WAITING_PAYMENT) {
+            throw new IllegalStateException("주문 상태가 결제 대기중이 아닙니다. status: " + order.getStatus());
+        }
+    }
 }

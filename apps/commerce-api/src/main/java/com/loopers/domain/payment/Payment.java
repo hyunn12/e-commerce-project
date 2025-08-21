@@ -51,25 +51,18 @@ public class Payment extends BaseEntity {
         this.method = method;
     }
 
-    public void setPaymentResponse(PaymentStatus status, String transactionKey, String reason) {
-        this.status = status;
-        this.transactionKey = transactionKey;
+    public void setPaymentFailed(String reason) {
+        this.status = PaymentStatus.FAILED;
         this.reason = reason;
     }
 
-    public void markPending() {
+    public void setPaymentPending(String transactionKey) {
         this.status = PaymentStatus.PENDING;
+        this.transactionKey = transactionKey;
     }
 
-    public void markSuccess() {
+    public void setPaymentSuccess(String reason) {
         this.status = PaymentStatus.SUCCESS;
-    }
-
-    public void markFailed() {
-        this.status = PaymentStatus.FAILED;
-    }
-
-    public void markCanceled() {
-        this.status = PaymentStatus.CANCELED;
+        this.reason = reason;
     }
 }

@@ -63,6 +63,15 @@ public class PointService {
         saveHistory(history);
     }
 
+    @Transactional
+    public void restoreWithLock(Long userId, int amount, Long orderId) {
+        Point point = getDetailByUserIdWithLock(userId);
+        point.add(amount);
+
+        PointHistory history = PointHistory.restore(point.getUserId(), amount, orderId);
+        saveHistory(history);
+    }
+
     public void saveHistory(PointHistory history) {
         pointRepository.saveHistory(history);
     }
