@@ -3,7 +3,6 @@ package com.loopers.application.payment;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
 import com.loopers.domain.payment.Payment;
-import com.loopers.domain.payment.PgPaymentGateway;
 import com.loopers.domain.payment.dto.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,7 @@ public class PaymentRetryService {
 
     private final OrderService orderService;
     private final PaymentRestoreService paymentRestoreService;
-    private final PgPaymentGateway pgPaymentGateway;
+    private final PaymentGateway paymentGateway;
 
     @Transactional
     public void processPaymentStatus(Payment payment) {
@@ -27,7 +26,7 @@ public class PaymentRetryService {
             Order order = orderService.getDetail(payment.getOrderId());
             orderService.checkWaitingOrder(order);
 
-            PaymentResponse response = pgPaymentGateway.getTransaction(payment.getTransactionKey());
+            PaymentResponse response = paymentGateway.getTransaction(payment.getTransactionKey());
 
             String status = response.getStatus();
             switch (status) {

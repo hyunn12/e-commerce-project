@@ -1,5 +1,6 @@
 package com.loopers.domain.payment;
 
+import com.loopers.application.payment.PaymentGateway;
 import com.loopers.application.payment.PaymentProcessor;
 import com.loopers.domain.payment.dto.PaymentRequest;
 import com.loopers.domain.payment.dto.PaymentResponse;
@@ -17,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CardPaymentProcessor implements PaymentProcessor {
 
-    private final PgPaymentGateway pgPaymentGateway;
+    private final PaymentGateway paymentGateway;
     private final PaymentService paymentService;
 
     @Value("${client.pg-simulator.callback-url.ver-1}")
@@ -31,7 +32,7 @@ public class CardPaymentProcessor implements PaymentProcessor {
         Payment payment = paymentService.getDetail(request.getPaymentId());
 
         // 결제 API 호출
-        PaymentResponse response = pgPaymentGateway.requestPayment(request, callbackUrl);
+        PaymentResponse response = paymentGateway.requestPayment(request, callbackUrl);
         if (response.getStatus().equals("SUCCESS")) {
             payment.setPaymentPending(response.getTransactionKey());
         }

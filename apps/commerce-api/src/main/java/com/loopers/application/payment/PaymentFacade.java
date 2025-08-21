@@ -5,7 +5,6 @@ import com.loopers.domain.order.OrderService;
 import com.loopers.domain.payment.Payment;
 import com.loopers.domain.payment.PaymentMethod;
 import com.loopers.domain.payment.PaymentService;
-import com.loopers.domain.payment.PgPaymentGateway;
 import com.loopers.domain.payment.dto.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,7 @@ public class PaymentFacade {
     private final OrderService orderService;
     private final PaymentService paymentService;
     private final PaymentProcessor paymentProcessor;
-    private final PgPaymentGateway pgPaymentGateway;
+    private final PaymentGateway paymentGateway;
     private final PaymentRestoreService paymentRestoreService;
     private final PaymentRetryService paymentRetryService;
 
@@ -44,7 +43,7 @@ public class PaymentFacade {
 
     public PaymentInfo.Callback paymentCallback(PaymentCommand.Modify command) {
         try {
-            PaymentResponse response = pgPaymentGateway.getTransaction(command.getTransactionKey());
+            PaymentResponse response = paymentGateway.getTransaction(command.getTransactionKey());
             if (response.getStatus().equals("FAIL")) {
                 return PaymentInfo.Callback.from("FAIL", response.getReason());
             }
