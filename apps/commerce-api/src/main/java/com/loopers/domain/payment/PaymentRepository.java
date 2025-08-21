@@ -7,4 +7,7 @@ public interface PaymentRepository {
 
     Payment save(Payment payment);
 
+    Payment getDetail(Long id);
+
+    Payment getDetailByKey(String transactionKey);
 }
