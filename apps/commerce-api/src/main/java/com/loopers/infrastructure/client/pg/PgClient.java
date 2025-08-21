@@ -20,4 +20,10 @@ public interface PgClient {
             @PathVariable("transactionKey") String transactionKey,
             @RequestHeader(PG_HEADER) Long userId
     );
+
+    @GetMapping("/payments")
+    ApiResponse<PgClientDto.OrderResponse> getTransactionsByOrder(
+            @RequestParam("orderId") String orderId,
+            @RequestHeader(PG_HEADER) Long userId
+    );
 }

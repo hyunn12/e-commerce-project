@@ -4,6 +4,8 @@ import com.loopers.domain.payment.dto.PaymentRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PgClientDto {
 
@@ -31,4 +33,9 @@ public class PgClientDto {
             String status,
             String reason
     ) { }
+
+    public record OrderResponse(
+            String orderId,
+            List<PgResponse> transactions
+    ) {}
 }

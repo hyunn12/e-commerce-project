@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -22,6 +24,12 @@ public class PaymentResponse {
                 response.status(),
                 response.reason()
         );
+    }
+
+    public static List<PaymentResponse> from(PgClientDto.OrderResponse response) {
+        return response.transactions().stream()
+                .map(PaymentResponse::from)
+                .toList();
     }
 
     public static PaymentResponse fail(String reason) {
