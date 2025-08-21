@@ -67,6 +67,14 @@ springdoc:
     path: /api-docs
   packages-to-scan: com.loopers.interfaces.api
 
+client:
+  pg-simulator:
+    x-user-id: 960412
+    url:
+      ver-1: http://localhost:8082/api/v1
+    callback-url:
+      ver-1: http://localhost:8080/api/v1/payments/callback
+
 ---
 spring:
   config:

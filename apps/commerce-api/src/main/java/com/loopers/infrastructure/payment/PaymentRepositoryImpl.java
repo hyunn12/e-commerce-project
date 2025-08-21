@@ -15,4 +15,14 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     public Payment save(Payment payment) {
         return paymentJpaRepository.save(payment);
     }
+
+    @Override
+    public Payment getDetail(Long id) {
+        return paymentJpaRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Payment getDetailByKey(String transactionKey) {
+        return paymentJpaRepository.findByTransactionKey(transactionKey).orElse(null);
+    }
 }

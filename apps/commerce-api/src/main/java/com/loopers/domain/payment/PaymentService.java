@@ -11,21 +11,25 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
 
     @Transactional
-    public Payment create(Long userId, int paymentAmount) {
+    public Payment create(Long userId, Long orderId, int paymentAmount, PaymentMethod method) {
         Payment payment = Payment.createBuilder()
                 .userId(userId)
+                .orderId(orderId)
                 .paymentAmount(paymentAmount)
+                .method(method)
                 .build();
         return paymentRepository.save(payment);
     }
 
-    @Transactional
-    public void markStatus(Payment payment, PaymentStatus status) {
-        switch (status) {
-            case WAITING -> payment.markWaiting();
-            case SUCCESS -> payment.markSuccess();
-            case CANCEL -> payment.markCancel();
-            case FAIL -> payment.markFail();
+    public Payment getDetail(Long paymentId) {
+        Payment payment = paymentRepository.getDetail(paymentId);
+        if (payment == null) {
+            throw new IllegalStateException("결제 정보를 찾을 수 없습니다.");
         }
+        return payment;
+    }
+
+    public Payment getDetailByKey(String transactionKey) {
+        return paymentRepository.getDetailByKey(transactionKey);
     }
 }
