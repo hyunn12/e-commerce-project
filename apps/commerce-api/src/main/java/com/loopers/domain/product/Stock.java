@@ -35,5 +35,13 @@ public class Stock extends BaseEntity {
 
         this.quantity -= amount;
     }
+
+    public void increase(int amount) {
+        if (amount <= 0) {
+            throw new CoreException(ErrorType.BAD_REQUEST, MESSAGE_STOCK_INVALID_AMOUNT);
+        }
+
+        this.quantity += amount;
+    }
 }
 

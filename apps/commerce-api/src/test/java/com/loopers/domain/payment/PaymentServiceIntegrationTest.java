@@ -32,40 +32,14 @@ class PaymentServiceIntegrationTest {
 
     @DisplayName("결제 정보가 정상적으로 저장된다.")
     @Test
-    void savePayment() {
+    void createPayment() {
         // act
-        Payment point = paymentService.save(userId, amount);
+        Payment point = paymentService.create(userId, 1L, amount, PaymentMethod.CARD);
 
         // assert
         Payment result = paymentJpaRepository.findById(point.getId()).get();
         assertThat(result.getUserId()).isEqualTo(userId);
         assertThat(result.getPaymentAmount()).isEqualTo(amount);
-        assertThat(result.getStatus()).isEqualTo(PaymentStatus.SUCCESS);
-    }
-
-    @DisplayName("결제 실패 처리한다면 상태가 FAIL 로 변경된다.")
-    @Test
-    void markFail() {
-        // arrange
-        Payment payment = paymentService.save(userId, amount);
-
-        // act
-        Payment result = paymentService.markFail(payment);
-
-        // assert
-        assertThat(result.getStatus()).isEqualTo(PaymentStatus.FAIL);
-    }
-
-    @DisplayName("결제 취소 처리한다면 상태가 CANCEL 로 변경된다.")
-    @Test
-    void markCancel() {
-        // arrange
-        Payment payment = paymentService.save(userId, amount);
-
-        // act
-        Payment result = paymentService.markCancel(payment);
-
-        // assert
-        assertThat(result.getStatus()).isEqualTo(PaymentStatus.CANCEL);
+        assertThat(result.getStatus()).isEqualTo(PaymentStatus.INIT);
     }
 }

@@ -21,6 +21,9 @@ public class Order extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Embedded
+    private OrderNo orderNo;
+
     @Column(name = "user_coupon_id")
     private Long userCouponId;
 
@@ -30,6 +33,10 @@ public class Order extends BaseEntity {
     @Setter
     @Column(name = "discount_amount", nullable = false)
     private int discountAmount;
+
+    @Setter
+    @Column(name = "point_amount", nullable = false)
+    private int pointAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -45,9 +52,10 @@ public class Order extends BaseEntity {
         }
 
         this.userId = userId;
+        this.orderNo = OrderNo.create();
         this.userCouponId = userCouponId;
         this.totalAmount = totalAmount;
-        this.status = OrderStatus.INIT;
+        this.status = OrderStatus.CREATED;
     }
 
     public static Order create(Long userId, Long userCouponId, List<OrderItem> items) {
@@ -71,15 +79,27 @@ public class Order extends BaseEntity {
         this.orderItems.add(item);
     }
 
-    public void markSuccess() {
-        this.status = OrderStatus.SUCCESS;
+    public int getPaymentAmount() {
+        return this.totalAmount - this.discountAmount - this.pointAmount;
     }
 
-    public void markCancel() {
-        this.status = OrderStatus.CANCEL;
+    public void markWaitingPayment() {
+        this.status = OrderStatus.WAITING_PAYMENT;
     }
 
-    public void markFail() {
-        this.status = OrderStatus.FAIL;
+    public void markPaid() {
+        this.status = OrderStatus.PAID;
+    }
+
+    public void markPaymentFailed() {
+        this.status = OrderStatus.PAYMENT_FAILED;
+    }
+
+    public void markOrderFailed() {
+        this.status = OrderStatus.ORDER_FAILED;
+    }
+
+    public void markCanceled() {
+        this.status = OrderStatus.CANCELED;
     }
 }

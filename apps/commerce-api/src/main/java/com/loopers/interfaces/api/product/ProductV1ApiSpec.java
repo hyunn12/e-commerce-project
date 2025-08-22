@@ -4,6 +4,7 @@ import com.loopers.interfaces.api.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +16,7 @@ public interface ProductV1ApiSpec {
     @Operation(summary = "상품 목록 조회", description = "브랜드 ID, 정렬, 페이징 조건으로 상품 목록 조회")
     ApiResponse<ProductV1Dto.ProductResponse.Summary> getList(
             @ParameterObject
-            ProductV1Dto.ProductRequest.Summary request
+            @Valid ProductV1Dto.ProductRequest.Summary request
     );
 
     @GetMapping("/{productId}")

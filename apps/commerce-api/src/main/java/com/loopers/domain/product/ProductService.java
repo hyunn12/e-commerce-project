@@ -80,4 +80,10 @@ public class ProductService {
         Stock stock = getStockByProductIdWithLock(productId);
         stock.decrease(quantity);
     }
+
+    @Transactional
+    public void increaseStockWithLock(Long productId, int quantity) {
+        Stock stock = getStockByProductIdWithLock(productId);
+        stock.increase(quantity);
+    }
 }

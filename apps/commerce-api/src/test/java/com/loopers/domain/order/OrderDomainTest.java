@@ -2,7 +2,6 @@ package com.loopers.domain.order;
 
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
-import org.instancio.Instancio;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
@@ -41,7 +40,7 @@ class OrderDomainTest {
             Order order = Order.create(1L, 1L, List.of(item));
 
             // assert
-            assertThat(order.getStatus()).isEqualTo(OrderStatus.INIT);
+            assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
         }
 
         @DisplayName("Order 에 OrderItem 이 연결된다.")
@@ -71,50 +70,6 @@ class OrderDomainTest {
 
             // assert
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
-        }
-    }
-
-    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-    @Nested
-    class 상태_변경_시 {
-
-        @DisplayName("상태가 SUCCESS 로 변경된다.")
-        @Test
-        void changeStatusSUCCESS() {
-            // arrange
-            Order order = Instancio.create(Order.class);
-
-            // act
-            order.markSuccess();
-
-            // assert
-            assertThat(order.getStatus()).isEqualTo(OrderStatus.SUCCESS);
-        }
-
-        @DisplayName("상태가 CANCEL 로 변경된다.")
-        @Test
-        void changeStatusCANCEL() {
-            // arrange
-            Order order = Instancio.create(Order.class);
-
-            // act
-            order.markCancel();
-
-            // assert
-            assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCEL);
-        }
-
-        @DisplayName("상태가 FAIL 로 변경된다.")
-        @Test
-        void changeStatusFAIL() {
-            // arrange
-            Order order = Instancio.create(Order.class);
-
-            // act
-            order.markFail();
-
-            // assert
-            assertThat(order.getStatus()).isEqualTo(OrderStatus.FAIL);
         }
     }
 }

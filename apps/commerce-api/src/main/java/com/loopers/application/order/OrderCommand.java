@@ -21,8 +21,9 @@ public class OrderCommand {
         private Long userId;
         private List<Item> items;
         private Long userCouponId;
+        private int point;
 
-        public Order toOrderDomain() {
+        public Order toDomain() {
             List<OrderItem> orderItems = items.stream()
                     .map(item -> OrderItem.of(item.getProductId(), item.getQuantity(), item.getAmount()))
                     .toList();
@@ -47,6 +48,7 @@ public class OrderCommand {
     @Getter
     @Builder
     public static class Detail {
+        private Long userId;
         private Long orderId;
     }
 
