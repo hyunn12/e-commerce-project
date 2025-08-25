@@ -45,7 +45,7 @@ public class CardPaymentProcessor implements PaymentProcessor {
         return response;
     }
 
-    public PaymentResponse fallback(PaymentRequest request, Throwable throwable) {
+    public void fallback(PaymentRequest request, Throwable throwable) {
         Payment payment = paymentService.getDetail(request.getPaymentId());
         Order order = orderService.getDetail(payment.getOrderId());
 
@@ -54,7 +54,5 @@ public class CardPaymentProcessor implements PaymentProcessor {
         paymentRestoreService.restore(order);
 
         log.error("결제 요청 실패 fallback: orderId={} paymentId={} message={}", order.getId(), payment.getId(), throwable.getLocalizedMessage());
-
-        return PaymentResponse.fail("결제에 실패했습니다." + throwable.getLocalizedMessage());
     }
 }
