@@ -40,6 +40,6 @@ class PaymentServiceIntegrationTest {
         Payment result = paymentJpaRepository.findById(point.getId()).get();
         assertThat(result.getUserId()).isEqualTo(userId);
         assertThat(result.getPaymentAmount()).isEqualTo(amount);
-        assertThat(result.getStatus()).isEqualTo(PaymentStatus.INIT);
+        assertThat(result.getStatus()).isEqualTo(PaymentStatus.CREATED);
     }
 }

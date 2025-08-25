@@ -1,7 +1,7 @@
 package com.loopers.domain.payment;
 
 public enum PaymentStatus {
-    INIT,
+    CREATED,
     PENDING,
     SUCCESS,
     FAILED,

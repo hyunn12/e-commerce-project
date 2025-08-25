@@ -47,7 +47,7 @@ public class Payment extends BaseEntity {
         this.userId = userId;
         this.orderId = orderId;
         this.paymentAmount = paymentAmount;
-        this.status = PaymentStatus.INIT;
+        this.status = PaymentStatus.CREATED;
         this.method = method;
     }
 
