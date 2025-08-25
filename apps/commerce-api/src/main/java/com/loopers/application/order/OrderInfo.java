@@ -19,7 +19,10 @@ public class OrderInfo {
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Main {
         private Long id;
+        private String orderNo;
         private int totalAmount;
+        private int discountAmount;
+        private int pointAmount;
         private OrderStatus status;
         private List<Item> items;
 
@@ -30,7 +33,10 @@ public class OrderInfo {
 
             return new Main(
                     order.getId(),
+                    order.getOrderNo().toString(),
                     order.getTotalAmount(),
+                    order.getDiscountAmount(),
+                    order.getPointAmount(),
                     order.getStatus(),
                     items
             );
@@ -39,7 +45,7 @@ public class OrderInfo {
 
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    protected static class Item {
+    public static class Item {
         private Long productId;
         private int quantity;
         private int amount;
