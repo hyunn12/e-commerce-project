@@ -32,6 +32,11 @@ public class PaymentRepositoryImpl implements PaymentRepository {
     }
 
     @Override
+    public Payment getDetailByKeyWithLock(String transactionKey) {
+        return paymentJpaRepository.findByTransactionKeyWithLock(transactionKey).orElse(null);
+    }
+
+    @Override
     public List<Payment> getListPendingPayments(PaymentMethod method, PaymentStatus status, ZonedDateTime createdAt) {
         return paymentJpaRepository.findByMethodAndStatusAndCreatedAtBefore(method, status, createdAt);
     }

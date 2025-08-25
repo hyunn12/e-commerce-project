@@ -26,6 +26,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public Order getDetailWithLock(Long orderId) {
+        return orderJpaRepository.findByIdWithLock(orderId).orElse(null);
+    }
+
+    @Override
     public Page<Order> getListByUserId(Long userId, Pageable pageable) {
         return orderJpaRepository.findAllByUserId(userId, pageable);
     }

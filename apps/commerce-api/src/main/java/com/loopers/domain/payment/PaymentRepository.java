@@ -14,5 +14,7 @@ public interface PaymentRepository {
 
     Payment getDetailByKey(String transactionKey);
 
+    Payment getDetailByKeyWithLock(String transactionKey);
+
     List<Payment> getListPendingPayments(PaymentMethod method, PaymentStatus status, ZonedDateTime createdAt);
 }

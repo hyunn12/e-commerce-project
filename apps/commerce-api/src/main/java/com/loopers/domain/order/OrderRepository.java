@@ -11,6 +11,8 @@ public interface OrderRepository {
 
     Order getDetail(Long orderId);
 
+    Order getDetailWithLock(Long orderId);
+
     Page<Order> getListByUserId(Long userId, Pageable pageable);
 
     Page<Order> getListByUserIdAndStatus(Long userId, OrderStatus status, Pageable pageable);

@@ -29,6 +29,14 @@ public class OrderService {
         return order;
     }
 
+    public Order getDetailWithLock(Long orderId) {
+        Order order = orderRepository.getDetailWithLock(orderId);
+        if (order == null) {
+            throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_ORDER_NOT_FOUND);
+        }
+        return order;
+    }
+
     public Page<Order> getList(Long userId, OrderStatus status, Pageable pageable) {
         if (status == null) {
             return orderRepository.getListByUserId(userId, pageable);

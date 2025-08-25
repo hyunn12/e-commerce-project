@@ -1,5 +1,6 @@
 package com.loopers.application.payment;
 
+import com.loopers.application.order.ExternalOrderSender;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
 import com.loopers.domain.payment.Payment;
@@ -24,11 +25,12 @@ public class PaymentFacade {
     private final PaymentGateway paymentGateway;
     private final PaymentRestoreService paymentRestoreService;
     private final PaymentRetryService paymentRetryService;
+    private final ExternalOrderSender externalOrderSender;
 
     @Transactional
     public PaymentInfo.Main payment(PaymentCommand.Create command) {
         // 주문 상태 조회
-        Order order = orderService.getDetail(command.getOrderId());
+        Order order = orderService.getDetailWithLock(command.getOrderId());
         orderService.checkInitOrder(order, command.getUserId());
         order.markWaitingPayment();
 
@@ -48,15 +50,16 @@ public class PaymentFacade {
                 return PaymentInfo.Callback.from("FAIL", response.getReason());
             }
 
-            Payment payment = paymentService.getDetailByKey(command.getTransactionKey());
+            Payment payment = paymentService.getDetailByKeyWithLock(command.getTransactionKey());
             paymentService.checkPendingPayment(payment);
 
-            Order order = orderService.getDetail(payment.getOrderId());
+            Order order = orderService.getDetailWithLock(payment.getOrderId());
             orderService.checkWaitingOrder(order);
 
             if (command.getStatus().equals("SUCCESS")) {
                 payment.setPaymentSuccess(command.getReason());
                 order.markPaid();
+                externalOrderSender.send(order);
             } else {
                 payment.setPaymentFailed(command.getReason());
                 order.markPaymentFailed();

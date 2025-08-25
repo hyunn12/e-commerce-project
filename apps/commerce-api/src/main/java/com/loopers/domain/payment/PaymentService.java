@@ -40,6 +40,14 @@ public class PaymentService {
         return payment;
     }
 
+    public Payment getDetailByKeyWithLock(String transactionKey) {
+        Payment payment = paymentRepository.getDetailByKeyWithLock(transactionKey);
+        if (payment == null) {
+            throw new IllegalStateException("결제 정보를 찾을 수 없습니다.");
+        }
+        return payment;
+    }
+
     public void checkPendingPayment(Payment payment) {
         Payment checkPayment = paymentRepository.getDetail(payment.getId());
         if (checkPayment == null) {
