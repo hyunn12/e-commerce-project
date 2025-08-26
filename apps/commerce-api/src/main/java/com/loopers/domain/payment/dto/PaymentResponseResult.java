@@ -1,5 +1,5 @@
 package com.loopers.domain.payment.dto;
 
-public enum PaymentResult {
+public enum PaymentResponseResult {
     SUCCESS, FAIL, PENDING
 }

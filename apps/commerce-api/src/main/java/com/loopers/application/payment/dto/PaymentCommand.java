@@ -5,11 +5,8 @@ import com.loopers.domain.payment.Payment;
 import com.loopers.domain.payment.PaymentMethod;
 import com.loopers.domain.payment.dto.CardType;
 import com.loopers.domain.payment.dto.PaymentRequest;
-import com.loopers.domain.payment.dto.PaymentResult;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.loopers.domain.payment.dto.PaymentResponseResult;
+import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PaymentCommand {
@@ -42,7 +39,7 @@ public class PaymentCommand {
     public static class Callback {
         private String orderNo;
         private String transactionKey;
-        private PaymentResult result;
+        private PaymentResponseResult result;
         private String reason;
     }
 }
