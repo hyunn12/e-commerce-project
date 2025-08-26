@@ -19,10 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("포인트 사용에 락 적용 시")
 @SpringBootTest
-class PointProcessorConcurrencyTest {
+class PointUseServiceConcurrencyTest {
     // sut --
     @Autowired
-    private PointProcessor pointProcessor;
+    private PointUseService pointUseService;
 
     // orm--
     @Autowired
@@ -64,7 +64,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.use(1L, usePoint, 1L);
+                        pointUseService.use(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
@@ -109,7 +109,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.use(1L, usePoint, 1L);
+                        pointUseService.use(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
@@ -162,7 +162,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.use(1L, usePoint, 1L);
+                        pointUseService.use(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
@@ -220,7 +220,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.useWithLock(1L, usePoint, 1L);
+                        pointUseService.useWithLock(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
@@ -272,7 +272,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.useWithLock(1L, usePoint, 1L);
+                        pointUseService.useWithLock(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
@@ -325,7 +325,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.useWithLock(1L, usePoint, 1L);
+                        pointUseService.useWithLock(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
