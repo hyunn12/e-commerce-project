@@ -5,6 +5,8 @@ import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -14,6 +16,7 @@ public class OrderValidationService {
     private final StockService stockService;
     private final PointUseService pointUseService;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void validate(OrderCommand.Create command, Order order) {
         // 쿠폰 조회 및 사용
         int discountAmount = 0;
