@@ -1,7 +1,7 @@
 package com.loopers.interfaces.api.payment;
 
-import com.loopers.application.payment.PaymentCommand;
-import com.loopers.application.payment.PaymentInfo;
+import com.loopers.application.payment.dto.PaymentCommand;
+import com.loopers.application.payment.dto.PaymentInfo;
 import com.loopers.domain.payment.dto.CardType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -61,18 +61,6 @@ public class PaymentV1Dto {
                         info.getPaymentAmount(),
                         info.getStatus().toString(),
                         info.getTransactionKey()
-                );
-            }
-        }
-
-        public record Callback(
-                String result,
-                String message
-        ) {
-            public static PaymentResponse.Callback from(PaymentInfo.Callback main) {
-                return new PaymentResponse.Callback(
-                        main.getResult(),
-                        main.getMessage()
                 );
             }
         }

@@ -1,4 +1,4 @@
-package com.loopers.application.payment;
+package com.loopers.application.payment.dto;
 
 import com.loopers.domain.payment.Payment;
 import com.loopers.domain.payment.PaymentStatus;

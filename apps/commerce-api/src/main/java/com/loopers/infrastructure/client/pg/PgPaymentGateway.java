@@ -1,6 +1,6 @@
 package com.loopers.infrastructure.client.pg;
 
-import com.loopers.application.payment.PaymentGateway;
+import com.loopers.domain.payment.PaymentGateway;
 import com.loopers.domain.payment.dto.PaymentRequest;
 import com.loopers.domain.payment.dto.PaymentResponse;
 import com.loopers.interfaces.api.ApiResponse;
@@ -48,8 +48,8 @@ public class PgPaymentGateway implements PaymentGateway {
     }
 
     @Override
-    public List<PaymentResponse> getTransactionsByOrder(String orderId) {
-        ApiResponse<PgClientDto.OrderResponse> apiResponse = pgClient.getTransactionsByOrder(orderId, userId);
+    public List<PaymentResponse> getTransactionsByOrder(String orderNo) {
+        ApiResponse<PgClientDto.OrderResponse> apiResponse = pgClient.getTransactionsByOrder(orderNo, userId);
         log.info("주문 전체 결제 조회 결과: {}", apiResponse.meta().result());
 
         if (apiResponse.meta().result().equals(ApiResponse.Metadata.Result.FAIL)) {
