@@ -1,7 +1,8 @@
-package com.loopers.application.payment;
+package com.loopers.application.payment.dto;
 
 import com.loopers.domain.payment.Payment;
 import com.loopers.domain.payment.PaymentStatus;
+import com.loopers.domain.payment.dto.PaymentResponseResult;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,11 +34,11 @@ public class PaymentInfo {
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Callback {
-        private String result;
+        private PaymentResponseResult result;
         private String message;
 
-        public static Callback from(String result, String message) {
-            return new Callback(result, message);
+        public static PaymentInfo.Callback from(PaymentResponseResult result, String message) {
+            return new PaymentInfo.Callback(result, message);
         }
     }
 }

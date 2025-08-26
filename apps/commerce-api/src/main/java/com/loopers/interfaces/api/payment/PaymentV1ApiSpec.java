@@ -58,6 +58,6 @@ public interface PaymentV1ApiSpec {
                             )
                     )
             )
-            @RequestBody PaymentV1Dto.PaymentRequest.Modify request
+            @RequestBody PaymentV1Dto.PaymentRequest.Callback request
     );
 }

@@ -1,4 +1,4 @@
-package com.loopers.application.payment;
+package com.loopers.domain.payment;
 
 import com.loopers.domain.payment.dto.PaymentRequest;
 import com.loopers.domain.payment.dto.PaymentResponse;
@@ -11,6 +11,5 @@ public interface PaymentGateway {
 
     PaymentResponse getTransaction(String transactionKey);
 
-    List<PaymentResponse> getTransactionsByOrder(String orderId);
-
+    List<PaymentResponse> getTransactionsByOrder(String orderNo);
 }

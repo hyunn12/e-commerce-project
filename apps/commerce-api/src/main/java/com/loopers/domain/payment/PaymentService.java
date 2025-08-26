@@ -56,7 +56,7 @@ public class PaymentService {
         if (!checkPayment.getTransactionKey().equals(payment.getTransactionKey())) {
             throw new IllegalStateException("Transaction Key가 일치하지 않습니다.");
         }
-        if (payment.getStatus() == PaymentStatus.PENDING) {
+        if (payment.getStatus() != PaymentStatus.PENDING) {
             throw new IllegalStateException("결제 상태가 대기중이 아닙니다. status: " + payment.getStatus());
         }
     }

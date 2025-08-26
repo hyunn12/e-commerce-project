@@ -1,5 +1,7 @@
 package com.loopers.application.order;
 
+import com.loopers.application.order.dto.OrderCommand;
+import com.loopers.application.order.dto.OrderInfo;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
 import jakarta.transaction.Transactional;
@@ -14,14 +16,14 @@ import org.springframework.stereotype.Component;
 public class OrderFacade {
 
     private final OrderService orderService;
-    private final OrderProcessor orderProcessor;
+    private final OrderValidationService orderValidateService;
 
     @Transactional
     public OrderInfo.Main create(OrderCommand.Create command) {
         Order order = orderService.create(command.toDomain());
 
         try {
-            orderProcessor.process(command, order);
+            orderValidateService.validate(command, order);
         } catch (Exception ex) {
             log.error("주문 처리 중 예외 발생: {}", ex.getLocalizedMessage());
             order.markOrderFailed();
