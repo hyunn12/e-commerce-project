@@ -8,6 +8,7 @@ import com.loopers.domain.payment.PaymentGateway;
 import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.payment.dto.PaymentRequest;
 import com.loopers.domain.payment.dto.PaymentResponse;
+import com.loopers.domain.payment.dto.PaymentResult;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class PaymentGatewayService {
 
         // 결제 API 호출
         PaymentResponse response = paymentGateway.requestPayment(request, callbackUrl);
-        if (response.getStatus().equals("SUCCESS")) {
+        if (response.getStatus().equals(PaymentResult.SUCCESS)) {
             payment.setPaymentPending(response.getTransactionKey());
         }
     }
@@ -56,9 +57,9 @@ public class PaymentGatewayService {
 
     public PaymentInfo.Callback getTransaction(String transactionKey) {
         PaymentResponse response = paymentGateway.getTransaction(transactionKey);
-        if (response.getStatus().equals("FAIL")) {
-            return PaymentInfo.Callback.from("FAIL", response.getReason());
+        if (response.getStatus().equals(PaymentResult.FAIL)) {
+            return PaymentInfo.Callback.from(PaymentResult.FAIL, response.getReason());
         }
-        return PaymentInfo.Callback.from("SUCCESS", null);
+        return PaymentInfo.Callback.from(PaymentResult.SUCCESS, null);
     }
 }

@@ -25,7 +25,7 @@ public class PaymentV1Controller implements PaymentV1ApiSpec {
 
     @PostMapping("/callback")
     @Override
-    public ApiResponse<String> callback(PaymentV1Dto.PaymentRequest.Modify request) {
+    public ApiResponse<String> callback(PaymentV1Dto.PaymentRequest.Callback request) {
         paymentFacade.paymentCallback(request.toCommand());
         return ApiResponse.success("SUCCESS");
     }

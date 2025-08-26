@@ -3,6 +3,7 @@ package com.loopers.interfaces.api.payment;
 import com.loopers.application.payment.dto.PaymentCommand;
 import com.loopers.application.payment.dto.PaymentInfo;
 import com.loopers.domain.payment.dto.CardType;
+import com.loopers.domain.payment.dto.PaymentResult;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -28,17 +29,17 @@ public class PaymentV1Dto {
             }
         }
 
-        public record Modify(
+        public record Callback(
                 String orderNo,
                 String transactionKey,
-                String status,
+                PaymentResult status,
                 String reason
         ) {
-            public PaymentCommand.Modify toCommand() {
-                return PaymentCommand.Modify.builder()
+            public PaymentCommand.Callback toCommand() {
+                return PaymentCommand.Callback.builder()
                         .orderNo(orderNo)
                         .transactionKey(transactionKey)
-                        .status(status)
+                        .result(status)
                         .reason(reason)
                         .build();
             }

@@ -29,20 +29,19 @@ public class PaymentRetryService {
 
             PaymentResponse response = paymentGateway.getTransaction(payment.getTransactionKey());
 
-            String status = response.getStatus();
-            switch (status) {
-                case "SUCCESS":
-                    payment.setPaymentSuccess(status);
+            switch (response.getStatus()) {
+                case SUCCESS:
+                    payment.setPaymentSuccess(response.getReason());
                     order.markPaid();
                     log.info("결제 성공: orderId={} paymentId={}", order.getId(), payment.getId());
                     break;
-                case "FAIL":
-                    payment.setPaymentFailed(status);
+                case FAIL:
+                    payment.setPaymentFailed(response.getReason());
                     order.markPaymentFailed();
                     paymentRestoreService.restore(order);
                     log.info("결제 실패: orderId={} paymentId={}", order.getId(), payment.getId());
                     break;
-                case "PENDING":
+                case PENDING:
                     if (payment.getCreatedAt().isBefore(ZonedDateTime.now().minusMinutes(30))) {
                         payment.setPaymentFailed("결제가 지연되어 취소되었습니다.");
                         order.markPaymentFailed();

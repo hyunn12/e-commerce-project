@@ -6,8 +6,8 @@ import com.loopers.application.payment.dto.PaymentInfo;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
 import com.loopers.domain.payment.Payment;
-import com.loopers.domain.payment.PaymentMethod;
 import com.loopers.domain.payment.PaymentService;
+import com.loopers.domain.payment.dto.PaymentResult;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class PaymentFacade {
         order.markWaitingPayment();
 
         // 결제 생성
-        Payment payment = paymentService.create(command.getUserId(), order.getId(), order.getPaymentAmount(), PaymentMethod.CARD);
+        Payment payment = paymentService.create(command.getUserId(), order.getId(), order.getPaymentAmount(), command.getMethod());
 
         // PG 결제 요청
         paymentGatewayService.process(command.toRequest(order, payment));
@@ -48,11 +48,11 @@ public class PaymentFacade {
     }
 
     @Transactional
-    public void paymentCallback(PaymentCommand.Modify command) {
+    public void paymentCallback(PaymentCommand.Callback command) {
         try {
             // PG 결제 조회
             PaymentInfo.Callback info = paymentGatewayService.getTransaction(command.getTransactionKey());
-            if (info.getResult().equals("FAIL")) {
+            if (info.getResult().equals(PaymentResult.FAIL)) {
                 throw new CoreException(ErrorType.BAD_REQUEST, "결제 결과가 일치하지 않습니다.");
             }
 
@@ -62,14 +62,17 @@ public class PaymentFacade {
             Order order = orderService.getDetailWithLock(payment.getOrderId());
             orderService.checkWaitingOrder(order);
 
-            if (command.getStatus().equals("SUCCESS")) {
-                payment.setPaymentSuccess(command.getReason());
-                order.markPaid();
-                externalOrderSender.send(order);
-            } else {
-                payment.setPaymentFailed(command.getReason());
-                order.markPaymentFailed();
-                paymentRestoreService.restore(order);
+            switch (command.getResult()) {
+                case SUCCESS -> {
+                    payment.setPaymentSuccess(command.getReason());
+                    order.markPaid();
+                    externalOrderSender.send(order);
+                }
+                case FAIL -> {
+                    payment.setPaymentFailed(command.getReason());
+                    order.markPaymentFailed();
+                    paymentRestoreService.restore(order);
+                }
             }
         } catch (Exception e) {
             log.error("PG 콜백 처리 실패: command={}", command, e);
