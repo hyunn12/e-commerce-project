@@ -37,7 +37,6 @@ public class PaymentFacade {
         // 주문 상태 조회
         Order order = orderService.getDetailWithLock(command.getOrderId());
         orderService.checkInitOrder(order, command.getUserId());
-        order.markWaitingPayment();
 
         // 결제 생성
         Payment payment = paymentService.create(command.getUserId(), order.getId(), order.getPaymentAmount(), command.getMethod());
@@ -45,6 +44,7 @@ public class PaymentFacade {
         // PG 결제 요청
         PaymentResponse response = paymentGatewayService.requestPayment(command.toRequest(order, payment));
         if (response.getStatus() == PaymentResponseResult.SUCCESS) {
+            order.markWaitingPayment();
             payment.setPaymentPending(response.getTransactionKey());
         }
 
