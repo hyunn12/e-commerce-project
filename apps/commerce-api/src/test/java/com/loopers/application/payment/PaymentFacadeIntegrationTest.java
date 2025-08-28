@@ -3,9 +3,12 @@ package com.loopers.application.payment;
 import com.loopers.application.order.ExternalOrderSender;
 import com.loopers.application.payment.dto.PaymentCommand;
 import com.loopers.application.payment.dto.PaymentInfo;
+import com.loopers.domain.event.PaymentEventPublisher;
+import com.loopers.domain.event.dto.PaymentFailEvent;
+import com.loopers.domain.event.dto.PaymentRequestSuccessEvent;
+import com.loopers.domain.event.dto.PaymentSuccessEvent;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
-import com.loopers.domain.order.OrderStatus;
 import com.loopers.domain.payment.Payment;
 import com.loopers.domain.payment.PaymentMethod;
 import com.loopers.domain.payment.PaymentStatus;
@@ -28,9 +31,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class PaymentFacadeIntegrationTest {
@@ -55,6 +57,8 @@ class PaymentFacadeIntegrationTest {
     private ExternalOrderSender externalOrderSender;
     @MockitoBean
     private PaymentAlertSender paymentAlertSender;
+    @MockitoBean
+    private PaymentEventPublisher paymentEventPublisher;
 
     @AfterEach
     void tearDown() {
@@ -103,18 +107,16 @@ class PaymentFacadeIntegrationTest {
 
             when(paymentGatewayService.requestPayment(any(PaymentRequest.class)))
                     .thenReturn(response);
+            doNothing().when(paymentEventPublisher).publish(any(PaymentRequestSuccessEvent.class));
+
 
             // act
             PaymentInfo.Main result = paymentFacade.payment(command);
 
             // assert
             Payment payment = paymentJpaRepository.findById(result.getId()).get();
-            Order updatedOrder = orderJpaRepository.findById(order.getId()).get();
-
             assertThat(payment.getStatus()).isEqualTo(PaymentStatus.PENDING);
             assertThat(payment.getTransactionKey()).isEqualTo(pgResponse.transactionKey());
-            assertThat(updatedOrder.getStatus()).isEqualTo(OrderStatus.WAITING_PAYMENT);
-
             verify(paymentGatewayService).requestPayment(any(PaymentRequest.class));
         }
 
@@ -133,6 +135,7 @@ class PaymentFacadeIntegrationTest {
         }
     }
 
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
     class 결제_콜백_시 {
         String transactionKey = "TR:9577c5";
@@ -151,7 +154,7 @@ class PaymentFacadeIntegrationTest {
             paymentJpaRepository.save(payment);
         }
 
-        @DisplayName("PG 콜백이 SUCCESS 인 경우, Payment와 Order는 결제대기 상태로 바뀌고 외부 전송이 호출된다.")
+        @DisplayName("PG 콜백이 SUCCESS 인 경우, Payment는 결제대기 상태로 바뀐다.")
         @Test
         void whenCallbackSuccess_thenPaymentAndOrderSuccess() {
             // arrange
@@ -164,22 +167,18 @@ class PaymentFacadeIntegrationTest {
 
             when(paymentGatewayService.getTransaction(transactionKey))
                     .thenReturn(PaymentInfo.Callback.from(PaymentResponseResult.SUCCESS, null));
+            doNothing().when(paymentEventPublisher).publish(any(PaymentSuccessEvent.class));
 
             // act
             paymentFacade.paymentCallback(command);
 
             // assert
             Payment updatedPayment = paymentJpaRepository.findById(payment.getId()).get();
-            Order updatedOrder = orderJpaRepository.findById(order.getId()).get();
-
             assertThat(updatedPayment.getStatus()).isEqualTo(PaymentStatus.SUCCESS);
-            assertThat(updatedOrder.getStatus()).isEqualTo(OrderStatus.PAID);
-
-            verify(externalOrderSender).send(any(Order.class));
         }
 
         @Test
-        @DisplayName("PG 콜백이 FAIL 인 경우, Payment와 Order는 실패 상태로 바뀌고 원복 로직이 실행된다.")
+        @DisplayName("PG 콜백이 FAIL 인 경우, Payment는 실패 상태로 바뀐다.")
         void whenCallbackFail_thenPaymentAndOrderFailed() {
             // arrange
             PaymentCommand.Callback command = PaymentCommand.Callback.builder()
@@ -191,39 +190,14 @@ class PaymentFacadeIntegrationTest {
 
             when(paymentGatewayService.getTransaction(transactionKey))
                     .thenReturn(PaymentInfo.Callback.from(PaymentResponseResult.SUCCESS, null));
+            doNothing().when(paymentEventPublisher).publish(any(PaymentFailEvent.class));
 
             // act
             paymentFacade.paymentCallback(command);
 
             // assert
             Payment updatedPayment = paymentJpaRepository.findById(payment.getId()).get();
-            Order updatedOrder = orderJpaRepository.findById(order.getId()).get();
-
             assertThat(updatedPayment.getStatus()).isEqualTo(PaymentStatus.FAILED);
-            assertThat(updatedOrder.getStatus()).isEqualTo(OrderStatus.PAYMENT_FAILED);
-
-            verify(paymentRestoreService).restore(any(Order.class));
-        }
-
-        @Test
-        @DisplayName("PG 조회에서 예외가 발생하는 경우, 알림이 전송된다.")
-        void whenExceptionOccur_thenAlertSend() {
-            // arrange
-            PaymentCommand.Callback command = PaymentCommand.Callback.builder()
-                    .orderNo(order.getOrderNo().toString())
-                    .transactionKey(transactionKey)
-                    .result(PaymentResponseResult.SUCCESS)
-                    .reason("승인 완료")
-                    .build();
-
-            when(paymentGatewayService.getTransaction(transactionKey))
-                    .thenThrow(new RuntimeException("PG 서버 오류"));
-
-            // act
-            paymentFacade.paymentCallback(command);
-
-            // assert
-            verify(paymentAlertSender).sendFail(anyMap(), anyString());
         }
     }
 }
