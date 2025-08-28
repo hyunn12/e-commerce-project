@@ -54,7 +54,7 @@ public class PaymentGatewayService {
 
     public PaymentInfo.Callback getTransaction(String transactionKey) {
         PaymentResponse response = paymentGateway.getTransaction(transactionKey);
-        if (response.getStatus().equals(PaymentResponseResult.FAIL)) {
+        if (response.getStatus() == PaymentResponseResult.FAIL) {
             return PaymentInfo.Callback.from(PaymentResponseResult.FAIL, response.getReason());
         }
         return PaymentInfo.Callback.from(PaymentResponseResult.SUCCESS, null);
