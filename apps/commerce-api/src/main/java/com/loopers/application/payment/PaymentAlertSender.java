@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface PaymentAlertSender {
 
-    void sendFail(Map<String, Object> params, Exception e);
+    void sendFail(Map<String, Object> params, String message);
 }
