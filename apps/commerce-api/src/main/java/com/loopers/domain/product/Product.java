@@ -21,6 +21,7 @@ public class Product extends BaseEntity {
     @Column(name = "price", nullable = false)
     private int price;
 
+    @Setter
     @Column(name = "like_count", nullable = false)
     private int likeCount;
 

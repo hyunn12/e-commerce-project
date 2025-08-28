@@ -31,6 +31,10 @@ public class ProductService {
         return productRepository.findTopListByBrandId(brandId);
     }
 
+    public void updateLikeCount(Long productId, int likeCount) {
+        productRepository.updateLikeCount(productId, likeCount);
+    }
+
     @Transactional
     public void increaseLike(Long productId) {
         Product product = getDetail(productId);

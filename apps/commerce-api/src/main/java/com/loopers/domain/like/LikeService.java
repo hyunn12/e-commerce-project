@@ -9,6 +9,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class LikeService {
@@ -47,5 +49,9 @@ public class LikeService {
             return true;
         }
         return false;
+    }
+
+    public List<ProductLikeCount> countLikesGroupByProduct() {
+        return likeRepository.countLikesGroupByProduct();
     }
 }

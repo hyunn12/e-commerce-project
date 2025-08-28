@@ -15,6 +15,8 @@ public interface ProductRepository {
 
     List<Product> findTopListByBrandId(Long brandId);
 
+    void updateLikeCount(Long productId, int likeCount);
+
     Stock findStockByProductId(Long productId);
     Stock findStockByProductIdWithLock(Long productId);
 
