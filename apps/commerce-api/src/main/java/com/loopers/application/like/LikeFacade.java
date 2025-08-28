@@ -17,7 +17,7 @@ public class LikeFacade {
     public LikeInfo.Main add(LikeCommand.Main command) {
         boolean isNew = likeService.add(command.toDomain());
         if (isNew) {
-            likeEventPublisher.publish(LikeAddEvent.of(command.getProductId()));
+            likeEventPublisher.publish(LikeAddEvent.of(command.getProductId(), command.getUserId()));
         }
         return LikeInfo.Main.from(command.getProductId(), true);
     }
@@ -25,7 +25,7 @@ public class LikeFacade {
     public LikeInfo.Main delete(LikeCommand.Main command) {
         boolean isNew = likeService.delete(command.toDomain());
         if (isNew) {
-            likeEventPublisher.publish(LikeDeleteEvent.of(command.getProductId()));
+            likeEventPublisher.publish(LikeDeleteEvent.of(command.getProductId(), command.getUserId()));
         }
         return LikeInfo.Main.from(command.getProductId(), false);
     }

@@ -25,5 +25,14 @@ public class ProductCommand {
             return PageRequest.of(page, size);
         }
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Detail {
+        private Long userId;
+        private Long productId;
+    }
 }
 
