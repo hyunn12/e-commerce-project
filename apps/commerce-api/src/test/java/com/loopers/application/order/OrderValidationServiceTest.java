@@ -1,6 +1,7 @@
 package com.loopers.application.order;
 
 import com.loopers.application.order.dto.OrderCommand;
+import com.loopers.domain.event.CouponEventPublisher;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
 import org.junit.jupiter.api.DisplayName;
@@ -27,11 +28,13 @@ class OrderValidationServiceTest {
     private StockService stockService;
     @Mock
     private PointUseService pointUseService;
+    @Mock
+    private CouponEventPublisher couponEventPublisher;
 
     @InjectMocks
     private OrderValidationService orderValidationService;
 
-    @DisplayName("쿠폰/재고/포인트가 정상적으로 차사감되면 주문 엔티티에 반영된다.")
+    @DisplayName("쿠폰/재고/포인트가 정상적으로 차감되면 주문 엔티티에 반영된다.")
     @Test
     void whenValidSuccess_thenOrderUpdated() {
         // arrange
@@ -56,52 +59,19 @@ class OrderValidationServiceTest {
                         .amount(amount)
                         .build()))
                 .build();
-        when(couponUseService.use(anyLong(), anyLong(), anyInt())).thenReturn(discountAmount);
+        when(couponUseService.calculateDiscountAmount(anyLong(), anyLong(), anyInt())).thenReturn(discountAmount);
+        doNothing().when(couponEventPublisher).publish(any());
 
         // act
         orderValidationService.validate(command, order);
 
         // assert
-        verify(couponUseService).use(userCouponId, userId, order.getTotalAmount());
+        verify(couponUseService).calculateDiscountAmount(userCouponId, userId, order.getTotalAmount());
         verify(stockService).decrease(productId, quantity);
         verify(pointUseService).useWithLock(userId, usePoint, order.getId());
 
         assertThat(order.getDiscountAmount()).isEqualTo(discountAmount);
         assertThat(order.getPointAmount()).isEqualTo(usePoint);
-    }
-
-    @DisplayName("쿠폰 차감 중 예외가 발생하면 변경값이 반영되지 않는다.")
-    @Test
-    void whenCouponUseFails_thenExceptionThrown() {
-        // arrange
-        Long userId = 1L;
-        Long userCouponId = 1L;
-        Long productId = 1L;
-        int quantity = 2;
-        int amount = 5000;
-        int usePoint = 1000;
-
-        OrderItem item = OrderItem.of(productId, quantity, amount);
-        Order order = Order.create(userId, userCouponId, List.of(item));
-
-        OrderCommand.Create command = OrderCommand.Create.builder()
-                .userId(userId)
-                .userCouponId(userCouponId)
-                .point(usePoint)
-                .items(List.of(OrderCommand.Item.builder()
-                        .productId(productId)
-                        .quantity(quantity)
-                        .amount(amount)
-                        .build()))
-                .build();
-
-        when(couponUseService.use(anyLong(), anyLong(), anyInt())).thenThrow(new RuntimeException("쿠폰 차감 실패"));
-
-        // act & assert
-        assertThrows(RuntimeException.class, () -> orderValidationService.validate(command, order));
-        verify(couponUseService).use(userCouponId, userId, order.getTotalAmount());
-        verifyNoInteractions(stockService);
-        verifyNoInteractions(pointUseService);
     }
 
     @DisplayName("재고 차감 중 예외가 발생하면 변경값이 반영되지 않는다.")
@@ -130,12 +100,13 @@ class OrderValidationServiceTest {
                         .build()))
                 .build();
 
-        when(couponUseService.use(anyLong(), anyLong(), anyInt())).thenReturn(discountAmount);
+        when(couponUseService.calculateDiscountAmount(anyLong(), anyLong(), anyInt())).thenReturn(discountAmount);
         doThrow(new RuntimeException("재고 차감 실패")).when(stockService).decrease(anyLong(), anyInt());
+        doNothing().when(couponEventPublisher).publish(any());
 
         // act & assert
         assertThrows(RuntimeException.class, () -> orderValidationService.validate(command, order));
-        verify(couponUseService).use(userCouponId, userId, order.getTotalAmount());
+        verify(couponUseService).calculateDiscountAmount(userCouponId, userId, order.getTotalAmount());
         verify(stockService).decrease(productId, quantity);
         verifyNoInteractions(pointUseService);
     }
@@ -166,14 +137,14 @@ class OrderValidationServiceTest {
                         .build()))
                 .build();
 
-        when(couponUseService.use(anyLong(), anyLong(), anyInt())).thenReturn(discountAmount);
+        when(couponUseService.calculateDiscountAmount(anyLong(), anyLong(), anyInt())).thenReturn(discountAmount);
         doThrow(new RuntimeException("포인트 차감 실패")).when(pointUseService).useWithLock(anyLong(), anyInt(), anyLong());
+        doNothing().when(couponEventPublisher).publish(any());
 
         // act & assert
         assertThrows(RuntimeException.class, () -> orderValidationService.validate(command, order));
-        verify(couponUseService).use(userCouponId, userId, order.getTotalAmount());
+        verify(couponUseService).calculateDiscountAmount(userCouponId, userId, order.getTotalAmount());
         verify(stockService).decrease(productId, quantity);
         verify(pointUseService).useWithLock(userId, usePoint, order.getId());
     }
-
 }

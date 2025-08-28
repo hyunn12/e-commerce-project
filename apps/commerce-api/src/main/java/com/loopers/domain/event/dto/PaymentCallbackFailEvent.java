@@ -1,4 +1,4 @@
-package com.loopers.domain.event;
+package com.loopers.domain.event.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

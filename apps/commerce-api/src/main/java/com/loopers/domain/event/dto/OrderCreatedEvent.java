@@ -1,4 +1,4 @@
-package com.loopers.domain.event;
+package com.loopers.domain.event.dto;
 
 import com.loopers.domain.payment.PaymentMethod;
 import com.loopers.domain.payment.dto.CardType;

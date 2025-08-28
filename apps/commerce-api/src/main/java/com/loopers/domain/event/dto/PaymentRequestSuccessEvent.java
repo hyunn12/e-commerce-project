@@ -1,4 +1,4 @@
-package com.loopers.domain.event;
+package com.loopers.domain.event.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PaymentSuccessEvent {
+public class PaymentRequestSuccessEvent {
 
     private Long orderId;
 
-    public static PaymentSuccessEvent of(Long orderId) {
-        return new PaymentSuccessEvent(orderId);
+    public static PaymentRequestSuccessEvent of(Long orderId) {
+        return new PaymentRequestSuccessEvent(orderId);
     }
 }

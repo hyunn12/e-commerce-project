@@ -4,7 +4,7 @@ import com.loopers.application.order.dto.OrderCommand;
 import com.loopers.application.order.dto.OrderInfo;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
-import com.loopers.domain.event.OrderCreatedEvent;
+import com.loopers.domain.event.dto.OrderCreatedEvent;
 import com.loopers.domain.event.OrderEventPublisher;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

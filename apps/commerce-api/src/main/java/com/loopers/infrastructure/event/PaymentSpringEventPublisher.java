@@ -1,6 +1,10 @@
 package com.loopers.infrastructure.event;
 
 import com.loopers.domain.event.*;
+import com.loopers.domain.event.dto.PaymentCallbackFailEvent;
+import com.loopers.domain.event.dto.PaymentFailEvent;
+import com.loopers.domain.event.dto.PaymentRequestSuccessEvent;
+import com.loopers.domain.event.dto.PaymentSuccessEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;

@@ -3,7 +3,7 @@ package com.loopers.interfaces.event.listener;
 import com.loopers.application.order.ExternalOrderSender;
 import com.loopers.application.payment.PaymentFacade;
 import com.loopers.application.payment.dto.PaymentCommand;
-import com.loopers.domain.event.OrderCreatedEvent;
+import com.loopers.domain.event.dto.OrderCreatedEvent;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
 import lombok.RequiredArgsConstructor;
