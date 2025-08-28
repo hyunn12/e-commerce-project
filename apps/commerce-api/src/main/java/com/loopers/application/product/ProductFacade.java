@@ -4,6 +4,8 @@ import com.loopers.application.brand.BrandCacheService;
 import com.loopers.application.brand.BrandInfo;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandService;
+import com.loopers.domain.like.LikeService;
+import com.loopers.domain.like.ProductLikeCount;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.product.ProductSortType;
@@ -29,6 +31,7 @@ public class ProductFacade {
     private final ProductService productService;
     private final ProductCacheService productCacheService;
     private final BrandCacheService brandCacheService;
+    private final LikeService likeService;
 
     @Transactional(readOnly = true)
     public ProductInfo.Summary getList(ProductCommand.Search command) {
@@ -81,5 +84,13 @@ public class ProductFacade {
         }
 
         return ProductInfo.Main.from(product, brand, stock);
+    }
+
+    public void refreshLikeCounts() {
+        List<ProductLikeCount> productLikeCounts = likeService.countLikesGroupByProduct();
+
+        for (ProductLikeCount productLikeCount : productLikeCounts) {
+            productService.updateLikeCount(productLikeCount.getProductId(), productLikeCount.getLikeCount().intValue());
+        }
     }
 }
