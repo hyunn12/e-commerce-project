@@ -1,6 +1,8 @@
 package com.loopers.application.order;
 
 import com.loopers.application.order.dto.OrderCommand;
+import com.loopers.domain.event.CouponEventPublisher;
+import com.loopers.domain.event.dto.CouponUseEvent;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +17,15 @@ public class OrderValidationService {
     private final CouponUseService couponUseService;
     private final StockService stockService;
     private final PointUseService pointUseService;
+    private final CouponEventPublisher couponEventPublisher;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void validate(OrderCommand.Create command, Order order) {
         // 쿠폰 조회 및 사용
         int discountAmount = 0;
         if (command.getUserCouponId() != null) {
-            discountAmount = couponUseService.use(command.getUserCouponId(), command.getUserId(), order.getTotalAmount());
+            discountAmount = couponUseService.calculateDiscountAmount(command.getUserCouponId(), command.getUserId(), order.getTotalAmount());
+            couponEventPublisher.publish(CouponUseEvent.of(command.getUserCouponId(), command.getUserId()));
         }
         order.setDiscountAmount(discountAmount);
 

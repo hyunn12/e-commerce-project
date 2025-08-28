@@ -28,8 +28,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -224,7 +223,7 @@ class PaymentFacadeIntegrationTest {
             paymentFacade.paymentCallback(command);
 
             // assert
-            verify(paymentAlertSender).sendFail(anyMap(), any(RuntimeException.class));
+            verify(paymentAlertSender).sendFail(anyMap(), anyString());
         }
     }
 }

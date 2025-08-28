@@ -1,8 +1,12 @@
 package com.loopers.application.payment;
 
-import com.loopers.application.order.ExternalOrderSender;
 import com.loopers.application.payment.dto.PaymentCommand;
 import com.loopers.application.payment.dto.PaymentInfo;
+import com.loopers.domain.event.*;
+import com.loopers.domain.event.dto.PaymentCallbackFailEvent;
+import com.loopers.domain.event.dto.PaymentFailEvent;
+import com.loopers.domain.event.dto.PaymentRequestSuccessEvent;
+import com.loopers.domain.event.dto.PaymentSuccessEvent;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
 import com.loopers.domain.payment.Payment;
@@ -25,19 +29,16 @@ import java.util.Map;
 public class PaymentFacade {
 
     private final PaymentGatewayService paymentGatewayService;
-    private final PaymentRestoreService paymentRestoreService;
     private final PaymentRetryService paymentRetryService;
-    private final ExternalOrderSender externalOrderSender;
-    private final PaymentAlertSender paymentAlertSender;
     private final OrderService orderService;
     private final PaymentService paymentService;
+    private final PaymentEventPublisher paymentEventPublisher;
 
     @Transactional
     public PaymentInfo.Main payment(PaymentCommand.Create command) {
         // 주문 상태 조회
         Order order = orderService.getDetailWithLock(command.getOrderId());
         orderService.checkInitOrder(order, command.getUserId());
-        order.markWaitingPayment();
 
         // 결제 생성
         Payment payment = paymentService.create(command.getUserId(), order.getId(), order.getPaymentAmount(), command.getMethod());
@@ -46,6 +47,7 @@ public class PaymentFacade {
         PaymentResponse response = paymentGatewayService.requestPayment(command.toRequest(order, payment));
         if (response.getStatus() == PaymentResponseResult.SUCCESS) {
             payment.setPaymentPending(response.getTransactionKey());
+            paymentEventPublisher.publish(PaymentRequestSuccessEvent.of(order.getId()));
         }
 
         return PaymentInfo.Main.from(payment);
@@ -69,20 +71,18 @@ public class PaymentFacade {
             switch (command.getResult()) {
                 case SUCCESS -> {
                     payment.setPaymentSuccess(command.getReason());
-                    order.markPaid();
-                    externalOrderSender.send(order);
+                    paymentEventPublisher.publish(PaymentSuccessEvent.of(order.getId()));
                 }
                 case FAIL -> {
                     payment.setPaymentFailed(command.getReason());
-                    order.markPaymentFailed();
-                    paymentRestoreService.restore(order);
+                    paymentEventPublisher.publish(PaymentFailEvent.of(order.getId()));
                 }
             }
         } catch (Exception e) {
             log.error("PG 콜백 처리 실패: command={}", command, e);
 
             // 알림 전송
-            paymentAlertSender.sendFail(Map.of("transactionKey", command.getTransactionKey()), e);
+            paymentEventPublisher.publish(PaymentCallbackFailEvent.of(Map.of("transactionKey", command.getTransactionKey()), e.getLocalizedMessage()));
         }
     }
 
