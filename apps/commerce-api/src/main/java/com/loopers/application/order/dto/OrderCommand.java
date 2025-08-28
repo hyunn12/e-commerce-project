@@ -3,6 +3,8 @@ package com.loopers.application.order.dto;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderStatus;
+import com.loopers.domain.payment.PaymentMethod;
+import com.loopers.domain.payment.dto.CardType;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +24,9 @@ public class OrderCommand {
         private List<Item> items;
         private Long userCouponId;
         private int point;
+        private PaymentMethod method;
+        private CardType cardType;
+        private String cardNo;
 
         public Order toDomain() {
             List<OrderItem> orderItems = items.stream()
