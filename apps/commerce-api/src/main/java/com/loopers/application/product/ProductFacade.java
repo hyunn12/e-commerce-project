@@ -4,6 +4,8 @@ import com.loopers.application.brand.BrandCacheService;
 import com.loopers.application.brand.BrandInfo;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandService;
+import com.loopers.domain.event.ProductEventPublisher;
+import com.loopers.domain.event.dto.ProductViewEvent;
 import com.loopers.domain.like.LikeService;
 import com.loopers.domain.like.ProductLikeCount;
 import com.loopers.domain.product.Product;
@@ -32,6 +34,7 @@ public class ProductFacade {
     private final ProductCacheService productCacheService;
     private final BrandCacheService brandCacheService;
     private final LikeService likeService;
+    private final ProductEventPublisher productEventPublisher;
 
     @Transactional(readOnly = true)
     public ProductInfo.Summary getList(ProductCommand.Search command) {
@@ -67,8 +70,8 @@ public class ProductFacade {
         return ProductInfo.Summary.from(products, brands);
     }
 
-    public ProductInfo.Main getDetail(Long productId) {
-        Product product = productService.getDetail(productId);
+    public ProductInfo.Main getDetail(ProductCommand.Detail command) {
+        Product product = productService.getDetail(command.getProductId());
         if (product == null) {
             throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_PRODUCT_NOT_FOUND);
         }
@@ -82,6 +85,8 @@ public class ProductFacade {
         if (stock == null) {
             throw new CoreException(ErrorType.NOT_FOUND, MESSAGE_STOCK_NOT_FOUND);
         }
+
+        productEventPublisher.publish(ProductViewEvent.of(command.getProductId(), command.getUserId()));
 
         return ProductInfo.Main.from(product, brand, stock);
     }

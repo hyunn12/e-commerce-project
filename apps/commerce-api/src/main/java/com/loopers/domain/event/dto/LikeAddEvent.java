@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 public class LikeAddEvent {
 
     private Long productId;
+    private Long userId;
 
-    public static LikeAddEvent of(Long productId) {
-        return new LikeAddEvent(productId);
+    public static LikeAddEvent of(Long productId, Long userId) {
+        return new LikeAddEvent(productId, userId);
     }
 }

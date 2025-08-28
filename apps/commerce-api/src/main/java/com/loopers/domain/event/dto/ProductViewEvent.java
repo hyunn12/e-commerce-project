@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class LikeDeleteEvent {
+public class ProductViewEvent {
 
     private Long productId;
     private Long userId;
 
-    public static LikeDeleteEvent of(Long productId, Long userId) {
-        return new LikeDeleteEvent(productId, userId);
+    public static ProductViewEvent of(Long productId, Long userId) {
+        return new ProductViewEvent(productId, userId);
     }
 }
