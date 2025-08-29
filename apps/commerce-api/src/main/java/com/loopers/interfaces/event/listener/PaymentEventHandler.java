@@ -39,7 +39,6 @@ public class PaymentEventHandler {
     public void handle(PaymentSuccessEvent event) {
         Order order = orderService.getDetail(event.getOrderId());
         order.markPaid();
-        externalOrderSender.send(order);
     }
 
     @Async
@@ -49,6 +48,19 @@ public class PaymentEventHandler {
         Order order = orderService.getDetail(event.getOrderId());
         order.markPaymentFailed();
         paymentRestoreService.restore(order);
+    }
+
+    @Async
+    @TransactionalEventListener
+    public void handleExternalSend(PaymentSuccessEvent event) {
+        Order order = orderService.getDetail(event.getOrderId());
+        externalOrderSender.send(order);
+    }
+
+    @Async
+    @TransactionalEventListener
+    public void handleExternalSend(PaymentFailEvent event) {
+        Order order = orderService.getDetail(event.getOrderId());
         externalOrderSender.send(order);
     }
 
