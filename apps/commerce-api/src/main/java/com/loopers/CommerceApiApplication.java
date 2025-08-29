@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.TimeZone;
 
@@ -17,6 +18,7 @@ import java.util.TimeZone;
                 description = "쇼핑·주문·결제 기능을 제공하는 이커머스 플랫폼 API"
         )
 )
+@EnableAsync
 @EnableRetry
 @EnableFeignClients
 @ConfigurationPropertiesScan

@@ -8,6 +8,9 @@ import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+
+import static com.loopers.support.constants.HeaderConstants.USER_USER_ID_HEADER;
 
 @Tag(name = "Product V1 API", description = "상품 조회 API")
 public interface ProductV1ApiSpec {
@@ -23,6 +26,9 @@ public interface ProductV1ApiSpec {
     @Operation(summary = "상품 정보 조회", description = "상품 ID 로 상품 상세 정보 조회")
     ApiResponse<ProductV1Dto.ProductResponse.Detail> getDetail(
             @Parameter(description = "상품 ID", example = "1")
-            @PathVariable Long productId
+            @PathVariable Long productId,
+
+            @Parameter(description = "사용자 식별 USER_ID 헤더", example = "1")
+            @RequestHeader(value = USER_USER_ID_HEADER, required = false) Long userId
     );
 }

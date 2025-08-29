@@ -14,7 +14,7 @@ import java.util.List;
 public class PaymentResponse {
     private String transactionKey;
     private String orderNo;
-    private String status;
+    private PaymentResponseResult status;
     private String reason;
 
     public static PaymentResponse from(PgClientDto.PgResponse response) {
@@ -33,7 +33,7 @@ public class PaymentResponse {
     }
 
     public static PaymentResponse fail(String reason) {
-        return new PaymentResponse(null, null, "FAIL", reason);
+        return new PaymentResponse(null, null, PaymentResponseResult.FAIL, reason);
     }
 
     @Override

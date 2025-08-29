@@ -61,7 +61,7 @@ class CouponUseServiceConcurrencyTest {
         for (int i = 0; i < threadCount; i++) {
             executor.submit(() -> {
                 try {
-                    couponUseService.use(userCoupon.getId(), userCoupon.getUserId(), 10000);
+                    couponUseService.use(userCoupon.getId(), userCoupon.getUserId());
                     successCount.incrementAndGet();
                 } catch (Exception e) {
                     System.out.println("[FAIL]: "+e.getMessage());

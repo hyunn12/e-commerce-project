@@ -1,11 +1,12 @@
 package com.loopers.application.order;
 
+import com.loopers.application.order.dto.OrderCommand;
+import com.loopers.application.order.dto.OrderInfo;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.coupon.Coupon;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
 import com.loopers.domain.order.OrderStatus;
-import com.loopers.domain.payment.Payment;
 import com.loopers.domain.point.Point;
 import com.loopers.domain.point.PointHistory;
 import com.loopers.domain.point.PointType;
@@ -15,7 +16,6 @@ import com.loopers.domain.userCoupon.UserCoupon;
 import com.loopers.infrastructure.brand.BrandJpaRepository;
 import com.loopers.infrastructure.coupon.CouponJpaRepository;
 import com.loopers.infrastructure.order.OrderJpaRepository;
-import com.loopers.infrastructure.payment.PaymentJpaRepository;
 import com.loopers.infrastructure.point.PointHistoryJpaRepository;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.infrastructure.product.ProductJpaRepository;
@@ -51,8 +51,6 @@ class OrderFacadeIntegrationTest {
     @Autowired
     private PointHistoryJpaRepository pointHistoryJpaRepository;
     @Autowired
-    private PaymentJpaRepository paymentJpaRepository;
-    @Autowired
     private CouponJpaRepository couponJpaRepository;
     @Autowired
     private UserCouponJpaRepository userCouponJpaRepository;
@@ -80,15 +78,15 @@ class OrderFacadeIntegrationTest {
 
             @DisplayName("정상적인 파라미터가 주어진 경우")
             @Test
-            void whenValidParameter() {
+            void whenValidParameter_thenOrderCreated() {
                 // arrange
-                final int initQuantity = 10;
-                final int decreaseQuantity = 2;
-                final int initPoint = 50000;
-                final int usePoint = 10000;
-                final int price = 20000;
-                final int discountAmount = 3000;
-                final int totalAmount = (decreaseQuantity * price) - discountAmount - usePoint;
+                int initQuantity = 10;
+                int decreaseQuantity = 2;
+                int initPoint = 50000;
+                int usePoint = 10000;
+                int price = 20000;
+                int discountAmount = 3000;
+                int totalAmount = (decreaseQuantity * price) - discountAmount - usePoint;
 
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
                 Product product = productJpaRepository.save(Product.createBuilder().name("상품").price(price).brand(brand).build());
@@ -118,75 +116,38 @@ class OrderFacadeIntegrationTest {
                 assertThat(order.getPointAmount()).isEqualTo(usePoint);
 
                 Stock stock = stockJpaRepository.findByProductId(product.getId()).get();
-                assertThat(stock.getQuantity()).isEqualTo(initQuantity-decreaseQuantity);
+                assertThat(stock.getQuantity()).isEqualTo(initQuantity - decreaseQuantity);
 
                 Point point = pointJpaRepository.findByUserId(userId).get();
-                assertThat(point.getPoint()).isEqualTo(initPoint-usePoint);
+                assertThat(point.getPoint()).isEqualTo(initPoint - usePoint);
 
                 List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(userId);
                 assertThat(histories).hasSize(1);
                 assertThat(histories.get(0).getType()).isEqualTo(PointType.USE);
-
-                List<Payment> payments = paymentJpaRepository.findAll();
-                assertThat(payments).hasSize(1);
-                assertThat(payments.get(0).getPaymentAmount()).isEqualTo(totalAmount);
-                assertThat(payments.get(0).getUserId()).isEqualTo(userId);
             }
         }
 
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
         @Nested
-        class 주문_생성이_실패하고_404_Not_Found_예외가_발생한다 {
+        class 주문_생성이_실패하고_데이터가_원복된다 {
 
-            @DisplayName("사용 불가능하거나 존재하지 않는 쿠폰이라면")
+            @DisplayName("재고 부족으로 예외가 발생한 경우")
             @Test
-            void whenInvalidCoupon() {
+            void whenStockNotEnough_thenRollbackAll() {
                 // arrange
-                final int price = 20000;
-                final int quantity = 1;
-                final int initPoint = 50000;
-                Long userCouponId = 9999L;
-
-                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
-                Product product = productJpaRepository.save(Product.createBuilder().name("상품").price(price).brand(brand).build());
-                stockJpaRepository.save(new Stock(product, 10));
-                pointJpaRepository.save(new Point(userId, initPoint));
-
-                OrderCommand.Create command = OrderCommand.Create.builder()
-                        .userId(userId)
-                        .items(List.of(OrderCommand.Item.builder()
-                                .productId(product.getId())
-                                .quantity(quantity)
-                                .amount(price)
-                                .build()))
-                        .userCouponId(userCouponId)
-                        .build();
-
-                // act
-                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.create(command));
-
-                // assert
-                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
-            }
-        }
-
-        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-        @Nested
-        class 주문_생성이_실패하고_409_Conflict_예외가_발생한다 {
-
-            @DisplayName("재고가 부족하다면")
-            @Test
-            void whenStockIsNotEnough() {
-                // arrange
-                final int initQuantity = 1;
-                final int decreaseQuantity = 2;
-                final int initPoint = 50000;
-                final int price = 20000;
+                int initQuantity = 1;
+                int decreaseQuantity = 5;
+                int initPoint = 50000;
+                int usePoint = 10000;
+                int price = 20000;
+                int discountAmount = 3000;
 
                 Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
                 Product product = productJpaRepository.save(Product.createBuilder().name("상품").price(price).brand(brand).build());
                 stockJpaRepository.save(new Stock(product, initQuantity));
                 pointJpaRepository.save(new Point(userId, initPoint));
+                Coupon coupon = couponJpaRepository.save(new Coupon("3천원 할인", 100, 0, PRICE, discountAmount, null, 10000));
+                UserCoupon userCoupon = userCouponJpaRepository.save(UserCoupon.create(coupon.getId(), userId));
 
                 OrderCommand.Create command = OrderCommand.Create.builder()
                         .userId(userId)
@@ -195,47 +156,24 @@ class OrderFacadeIntegrationTest {
                                 .quantity(decreaseQuantity)
                                 .amount(product.getPrice())
                                 .build()))
-                        .userCouponId(null)
-                        .build();
-
-                // act
-                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.create(command));
-
-                // assert
-                assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);
-            }
-
-            @DisplayName("포인트가 부족하다면")
-            @Test
-            void whenPointIsNotEnough() {
-                // arrange
-                final int initQuantity = 10;
-                final int decreaseQuantity = 2;
-                final int initPoint = 10000;
-                final int usePoint = 20000;
-                final int price = 20000;
-
-                Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
-                Product product = productJpaRepository.save(Product.createBuilder().name("상품").price(price).brand(brand).build());
-                stockJpaRepository.save(new Stock(product, initQuantity));
-                pointJpaRepository.save(new Point(userId, initPoint));
-
-                OrderCommand.Create command = OrderCommand.Create.builder()
-                        .userId(userId)
-                        .items(List.of(OrderCommand.Item.builder()
-                                .productId(product.getId())
-                                .quantity(decreaseQuantity)
-                                .amount(product.getPrice())
-                                .build()))
-                        .userCouponId(null)
+                        .userCouponId(userCoupon.getId())
                         .point(usePoint)
                         .build();
 
+                int beforeStock = stockJpaRepository.findByProductId(product.getId()).get().getQuantity();
+                int beforePoint = pointJpaRepository.findByUserId(userId).get().getPoint();
+                boolean beforeCouponUsed = userCouponJpaRepository.findById(coupon.getId()).get().isUsed();
+
                 // act
-                CoreException exception = assertThrows(CoreException.class, () -> orderFacade.create(command));
+                orderFacade.create(command);
 
                 // assert
-                assertThat(exception.getErrorType()).isEqualTo(ErrorType.CONFLICT);
+                Order order = orderJpaRepository.findAll().get(0);
+                assertThat(order.getStatus()).isEqualTo(OrderStatus.ORDER_FAILED);
+
+                assertThat(stockJpaRepository.findByProductId(product.getId()).get().getQuantity()).isEqualTo(beforeStock);
+                assertThat(pointJpaRepository.findByUserId(userId).get().getPoint()).isEqualTo(beforePoint);
+                assertThat(userCouponJpaRepository.findById(userCoupon.getId()).get().isUsed()).isEqualTo(beforeCouponUsed);
             }
         }
     }

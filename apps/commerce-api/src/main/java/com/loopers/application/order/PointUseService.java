@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class PointProcessor {
+public class PointUseService {
 
     private final PointService pointService;
 

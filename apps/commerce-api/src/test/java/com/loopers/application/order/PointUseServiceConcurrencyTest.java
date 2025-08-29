@@ -1,15 +1,12 @@
 package com.loopers.application.order;
 
 import com.loopers.domain.point.Point;
-import com.loopers.domain.point.PointHistory;
-import com.loopers.infrastructure.point.PointHistoryJpaRepository;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,16 +16,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("포인트 사용에 락 적용 시")
 @SpringBootTest
-class PointProcessorConcurrencyTest {
+class PointUseServiceConcurrencyTest {
     // sut --
     @Autowired
-    private PointProcessor pointProcessor;
+    private PointUseService pointUseService;
 
     // orm--
     @Autowired
     private PointJpaRepository pointJpaRepository;
-    @Autowired
-    private PointHistoryJpaRepository pointHistoryJpaRepository;
     @Autowired
     private DatabaseCleanUp databaseCleanUp;
 
@@ -64,7 +59,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.use(1L, usePoint, 1L);
+                        pointUseService.use(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
@@ -109,7 +104,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.use(1L, usePoint, 1L);
+                        pointUseService.use(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
@@ -133,10 +128,6 @@ class PointProcessorConcurrencyTest {
             Point result = pointJpaRepository.findById(point.getId()).orElseThrow();
             System.out.println("[남은 포인트]: " + result.getPoint());
             assertThat(result.getPoint()).isEqualTo(initialPoint-(2*usePoint));
-
-            List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(1L);
-            System.out.println("[포인트 사용 이력 크기]: " + histories.size());
-            assertThat(histories).hasSize(2);
         }
 
         @DisplayName("포인트가 0이라면 모든 주문에 대해 포인트 사용이 실패한다.")
@@ -162,7 +153,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.use(1L, usePoint, 1L);
+                        pointUseService.use(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
@@ -186,10 +177,6 @@ class PointProcessorConcurrencyTest {
             Point result = pointJpaRepository.findById(point.getId()).orElseThrow();
             System.out.println("[남은 포인트]: " + result.getPoint());
             assertThat(result.getPoint()).isEqualTo(initialPoint);
-
-            List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(1L);
-            System.out.println("[포인트 사용 이력 크기]: " + histories.size());
-            assertThat(histories).hasSize(0);
         }
     }
 
@@ -220,7 +207,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.useWithLock(1L, usePoint, 1L);
+                        pointUseService.useWithLock(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
@@ -243,10 +230,6 @@ class PointProcessorConcurrencyTest {
             Point result = pointJpaRepository.findById(point.getId()).orElseThrow();
             System.out.println("[남은 포인트]: " + result.getPoint());
             assertThat(result.getPoint()).isEqualTo(initialPoint-(successCount.get()*usePoint));
-
-            List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(1L);
-            System.out.println("[포인트 사용 이력 크기]: " + histories.size());
-            assertThat(histories).hasSize(successCount.get());
         }
 
         @DisplayName("포인트가 부족하다면 포인트가 유효한 주문에 대해서만 포인트가 사용된다.")
@@ -272,7 +255,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.useWithLock(1L, usePoint, 1L);
+                        pointUseService.useWithLock(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
@@ -296,10 +279,6 @@ class PointProcessorConcurrencyTest {
             Point result = pointJpaRepository.findById(point.getId()).orElseThrow();
             System.out.println("[남은 포인트]: " + result.getPoint());
             assertThat(result.getPoint()).isEqualTo(initialPoint-(2*usePoint));
-
-            List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(1L);
-            System.out.println("[포인트 사용 이력 크기]: " + histories.size());
-            assertThat(histories).hasSize(2);
         }
 
         @DisplayName("포인트가 0이라면 모든 주문에 대해 포인트 사용이 실패한다.")
@@ -325,7 +304,7 @@ class PointProcessorConcurrencyTest {
             for (int i = 0; i < requestCount; i++) {
                 executor.submit(() -> {
                     try {
-                        pointProcessor.useWithLock(1L, usePoint, 1L);
+                        pointUseService.useWithLock(1L, usePoint, 1L);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
                         System.out.println("[FAIL]: "+e.getMessage());
@@ -349,10 +328,6 @@ class PointProcessorConcurrencyTest {
             Point result = pointJpaRepository.findById(point.getId()).orElseThrow();
             System.out.println("[남은 포인트]: " + result.getPoint());
             assertThat(result.getPoint()).isEqualTo(initialPoint);
-
-            List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(1L);
-            System.out.println("[포인트 사용 이력 크기]: " + histories.size());
-            assertThat(histories).hasSize(0);
         }
     }
 }

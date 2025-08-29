@@ -1,6 +1,7 @@
 package com.loopers.infrastructure.client.pg;
 
 import com.loopers.domain.payment.dto.PaymentRequest;
+import com.loopers.domain.payment.dto.PaymentResponseResult;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -30,7 +31,7 @@ public class PgClientDto {
     public record PgResponse(
             String transactionKey,
             String orderId,
-            String status,
+            PaymentResponseResult status,
             String reason
     ) { }
 

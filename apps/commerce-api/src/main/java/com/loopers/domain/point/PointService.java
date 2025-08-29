@@ -1,5 +1,7 @@
 package com.loopers.domain.point;
 
+import com.loopers.domain.event.PointHistoryEventPublisher;
+import com.loopers.domain.event.dto.PointHistoryEvent;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import static com.loopers.support.utils.Validation.Message.MESSAGE_POINT_NOT_FOU
 public class PointService {
 
     private final PointRepository pointRepository;
+    private final PointHistoryEventPublisher historyEventPublisher;
 
     public Point getDetailByUserId(Long userId) {
         Point point = pointRepository.getPointByUserId(userId);
@@ -35,8 +38,7 @@ public class PointService {
         Point currentPoint = getDetailByUserId(point.getUserId());
         currentPoint.add(point.getPoint());
 
-        PointHistory history = PointHistory.charge(point.getUserId(), point.getPoint());
-        pointRepository.saveHistory(history);
+        historyEventPublisher.publish(PointHistoryEvent.of(point.getUserId(), PointType.CHARGE, point.getPoint(), null));
 
         return currentPoint;
     }
@@ -50,8 +52,7 @@ public class PointService {
         Point point = getDetailByUserId(userId);
         point.use(amount);
 
-        PointHistory history = PointHistory.use(point.getUserId(), amount, orderId);
-        saveHistory(history);
+        historyEventPublisher.publish(PointHistoryEvent.of(point.getUserId(), PointType.USE, amount, orderId));
     }
 
     @Transactional
@@ -59,8 +60,7 @@ public class PointService {
         Point point = getDetailByUserIdWithLock(userId);
         point.use(amount);
 
-        PointHistory history = PointHistory.use(point.getUserId(), amount, orderId);
-        saveHistory(history);
+        historyEventPublisher.publish(PointHistoryEvent.of(point.getUserId(), PointType.USE, amount, orderId));
     }
 
     @Transactional
@@ -68,10 +68,10 @@ public class PointService {
         Point point = getDetailByUserIdWithLock(userId);
         point.add(amount);
 
-        PointHistory history = PointHistory.restore(point.getUserId(), amount, orderId);
-        saveHistory(history);
+        historyEventPublisher.publish(PointHistoryEvent.of(point.getUserId(), PointType.RESTORE, amount, orderId));
     }
 
+    @Transactional
     public void saveHistory(PointHistory history) {
         pointRepository.saveHistory(history);
     }

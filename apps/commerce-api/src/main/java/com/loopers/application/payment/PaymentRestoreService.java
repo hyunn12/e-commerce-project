@@ -1,6 +1,6 @@
 package com.loopers.application.payment;
 
-import com.loopers.application.order.PointProcessor;
+import com.loopers.application.order.PointUseService;
 import com.loopers.application.order.StockService;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderItem;
@@ -15,7 +15,7 @@ public class PaymentRestoreService {
 
     private final UserCouponService userCouponService;
     private final StockService stockService;
-    private final PointProcessor pointProcessor;
+    private final PointUseService pointUseService;
 
     public void restore(Order order) {
         // 쿠폰 원복
@@ -28,6 +28,6 @@ public class PaymentRestoreService {
         }
 
         // 포인트 원복
-        pointProcessor.restoreWithLock(order.getUserId(), order.getPointAmount(), order.getId());
+        pointUseService.restoreWithLock(order.getUserId(), order.getPointAmount(), order.getId());
     }
 }

@@ -15,16 +15,17 @@ public class CouponUseService {
     private final CouponService couponService;
     private final UserCouponService userCouponService;
 
-    @Transactional
-    public int use(Long userCouponId, Long userId, int orderAmount) {
+    @Transactional(readOnly = true)
+    public int calculateDiscountAmount(Long userCouponId, Long userId, int orderAmount) {
         UserCoupon userCoupon = userCouponService.getDetail(userCouponId, userId);
-
         Coupon coupon = couponService.getDetail(userCoupon.getCouponId());
         couponService.validateAmount(coupon, orderAmount);
-        int discountAmount = couponService.calculateDiscountAmount(coupon, orderAmount);
 
+        return couponService.calculateDiscountAmount(coupon, orderAmount);
+    }
+
+    @Transactional
+    public void use(Long userCouponId, Long userId) {
         userCouponService.use(userCouponId, userId);
-
-        return discountAmount;
     }
 }

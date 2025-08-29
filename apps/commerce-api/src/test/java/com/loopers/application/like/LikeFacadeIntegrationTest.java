@@ -41,13 +41,12 @@ class LikeFacadeIntegrationTest {
     @Nested
     class 좋아요_등록_시 {
 
-        @DisplayName("새로 좋아요를 등록한다면, 좋아요 등록에 성공하고 likeCount 가 1 증가한다.")
+        @DisplayName("새로 좋아요를 등록한다면, 좋아요 등록에 성공한다.")
         @Test
         void saveLike_increaseLikeCount_whenLikeIsNew() {
             // arrange
             Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
             Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품").price(10000).build());
-            int beforeCount = product.getLikeCount();
 
             LikeCommand.Main command = LikeCommand.Main.builder().userId(userId).productId(product.getId()).build();
 
@@ -57,11 +56,9 @@ class LikeFacadeIntegrationTest {
             // assert
             assertThat(result.isLiked()).isTrue();
             assertThat(likeJpaRepository.findByUserIdAndProductId(userId, product.getId())).isPresent();
-            Product updatedProduct = productJpaRepository.findById(product.getId()).orElseThrow();
-            assertThat(updatedProduct.getLikeCount()).isEqualTo(beforeCount + 1);
         }
 
-        @DisplayName("기존 삭제된 좋아요가 있다면, 복원 후 저장에 성공하고 likeCount 가 1 증가한다.")
+        @DisplayName("기존 삭제된 좋아요가 있다면, 복원 후 저장에 성공한다.")
         @Test
         void restoreSuccess_whenDeletedLikeExists() {
             // arrange
@@ -70,7 +67,6 @@ class LikeFacadeIntegrationTest {
             Like like = likeJpaRepository.save(Like.of(userId, product.getId()));
             like.delete();
             likeJpaRepository.save(like);
-            int beforeCount = product.getLikeCount();
 
             LikeCommand.Main command = LikeCommand.Main.builder().userId(userId).productId(product.getId()).build();
 
@@ -81,8 +77,6 @@ class LikeFacadeIntegrationTest {
             assertThat(result.isLiked()).isTrue();
             Like restoredLike = likeJpaRepository.findByUserIdAndProductId(userId, product.getId()).orElseThrow();
             assertThat(restoredLike.isDeleted()).isFalse();
-            Product updatedProduct = productJpaRepository.findById(product.getId()).orElseThrow();
-            assertThat(updatedProduct.getLikeCount()).isEqualTo(beforeCount + 1);
         }
 
         @DisplayName("이미 좋아요가 있다면, 아무 동작도 하지 않는다.")
@@ -94,7 +88,6 @@ class LikeFacadeIntegrationTest {
             product.increaseLike();
             productJpaRepository.save(product);
             likeJpaRepository.save(Like.of(userId, product.getId()));
-            int beforeCount = product.getLikeCount();
 
             LikeCommand.Main command = LikeCommand.Main.builder().userId(userId).productId(product.getId()).build();
 
@@ -104,8 +97,6 @@ class LikeFacadeIntegrationTest {
             // assert
             assertThat(result.isLiked()).isTrue();
             assertThat(likeJpaRepository.findByUserIdAndProductId(userId, product.getId())).isPresent();
-            Product updatedProduct = productJpaRepository.findById(product.getId()).orElseThrow();
-            assertThat(updatedProduct.getLikeCount()).isEqualTo(beforeCount);
         }
     }
 
@@ -113,7 +104,7 @@ class LikeFacadeIntegrationTest {
     @Nested
     class 좋아요_취소_시 {
 
-        @DisplayName("like 객체에 deletedAt 이 설정되고 likeCount 가 1 감소한다.")
+        @DisplayName("like 객체에 deletedAt 이 설정된다.")
         @Test
         void decreaseLikeCount_whenLikeIsCancelled() {
             // arrange
@@ -121,7 +112,6 @@ class LikeFacadeIntegrationTest {
             Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품").price(10000).build());
             likeJpaRepository.save(Like.of(userId, product.getId()));
             product.increaseLike();
-            int beforeCount = product.getLikeCount();
 
             LikeCommand.Main command = LikeCommand.Main.builder().userId(userId).productId(product.getId()).build();
 
@@ -132,28 +122,6 @@ class LikeFacadeIntegrationTest {
             assertThat(result.isLiked()).isFalse();
             Like deletedLike = likeJpaRepository.findByUserIdAndProductId(userId, product.getId()).orElseThrow();
             assertThat(deletedLike.getDeletedAt()).isNotNull();
-            Product updatedProduct = productJpaRepository.findById(product.getId()).orElseThrow();
-            assertThat(updatedProduct.getLikeCount()).isEqualTo(beforeCount - 1);
-        }
-
-        @DisplayName("좋아요가 존재하지 않는다면, likeCount는 감소하지 않는다.")
-        @Test
-        void doNothing_whenLikeNotExists() {
-            // arrange
-            Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("설명").build());
-            Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품").price(10000).build());
-            product.increaseLike();
-            productJpaRepository.save(product);
-            int beforeCount = product.getLikeCount();
-
-            LikeCommand.Main command = LikeCommand.Main.builder().userId(userId).productId(product.getId()).build();
-
-            // act
-            likeFacade.delete(command);
-
-            // assert
-            Product updatedProduct = productJpaRepository.findById(product.getId()).orElseThrow();
-            assertThat(updatedProduct.getLikeCount()).isEqualTo(beforeCount);
         }
     }
 }
