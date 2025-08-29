@@ -12,6 +12,8 @@ import com.loopers.domain.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
@@ -24,6 +26,7 @@ public class PaymentEventHandler {
     private final PaymentAlertSender paymentAlertSender;
 
     @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener
     public void handle(PaymentRequestSuccessEvent event) {
         Order order = orderService.getDetail(event.getOrderId());
@@ -31,19 +34,33 @@ public class PaymentEventHandler {
     }
 
     @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener
     public void handle(PaymentSuccessEvent event) {
         Order order = orderService.getDetail(event.getOrderId());
         order.markPaid();
-        externalOrderSender.send(order);
     }
 
     @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener
     public void handle(PaymentFailEvent event) {
         Order order = orderService.getDetail(event.getOrderId());
         order.markPaymentFailed();
         paymentRestoreService.restore(order);
+    }
+
+    @Async
+    @TransactionalEventListener
+    public void handleExternalSend(PaymentSuccessEvent event) {
+        Order order = orderService.getDetail(event.getOrderId());
+        externalOrderSender.send(order);
+    }
+
+    @Async
+    @TransactionalEventListener
+    public void handleExternalSend(PaymentFailEvent event) {
+        Order order = orderService.getDetail(event.getOrderId());
         externalOrderSender.send(order);
     }
 

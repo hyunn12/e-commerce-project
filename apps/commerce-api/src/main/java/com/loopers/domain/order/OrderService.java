@@ -21,6 +21,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    @Transactional(readOnly = true)
     public Order getDetail(Long orderId) {
         Order order = orderRepository.getDetail(orderId);
         if (order == null) {
@@ -29,6 +30,7 @@ public class OrderService {
         return order;
     }
 
+    @Transactional(readOnly = true)
     public Order getDetailWithLock(Long orderId) {
         Order order = orderRepository.getDetailWithLock(orderId);
         if (order == null) {
