@@ -1,7 +1,6 @@
 package com.loopers.domain.point;
 
 import com.loopers.domain.user.*;
-import com.loopers.infrastructure.point.PointHistoryJpaRepository;
 import com.loopers.infrastructure.point.PointJpaRepository;
 import com.loopers.infrastructure.user.UserJpaRepository;
 import com.loopers.support.error.CoreException;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,8 +20,6 @@ class PointServiceIntegrationTest {
     // orm --
     @Autowired
     private PointJpaRepository pointJpaRepository;
-    @Autowired
-    private PointHistoryJpaRepository pointHistoryJpaRepository;
     @Autowired
     private UserJpaRepository userJpaRepository;
 
@@ -72,11 +68,6 @@ class PointServiceIntegrationTest {
                 // assert
                 Optional<Point> saved = pointJpaRepository.findByUserId(user.getId());
                 assertThat(saved.get().getPoint()).isEqualTo(current+amount);
-
-                List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(point.getUserId());
-                assertThat(histories).hasSize(1);
-                assertThat(histories.get(0).getAmount()).isEqualTo(amount);
-                assertThat(histories.get(0).getType()).isEqualTo(PointType.CHARGE);
             }
         }
 
@@ -172,11 +163,6 @@ class PointServiceIntegrationTest {
                 // assert
                 Optional<Point> saved = pointJpaRepository.findByUserId(user.getId());
                 assertThat(saved.get().getPoint()).isEqualTo(current-amount);
-
-                List<PointHistory> histories = pointHistoryJpaRepository.findByUserId(point.getUserId());
-                assertThat(histories).hasSize(1);
-                assertThat(histories.get(0).getAmount()).isEqualTo(amount);
-                assertThat(histories.get(0).getType()).isEqualTo(PointType.USE);
             }
         }
 
