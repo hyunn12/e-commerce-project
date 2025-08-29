@@ -32,15 +32,7 @@ public class PointHistory extends BaseEntity {
         this.orderId = orderId;
     }
 
-    public static PointHistory use(Long userId, int amount, Long orderId) {
-        return new PointHistory(userId, amount, PointType.USE, orderId);
-    }
-
-    public static PointHistory charge(Long userId, int amount) {
-        return new PointHistory(userId, amount, PointType.CHARGE, null);
-    }
-
-    public static PointHistory restore(Long userId, int amount, Long orderId) {
-        return new PointHistory(userId, amount, PointType.RESTORE, orderId);
+    public static PointHistory of(Long userId, int amount, PointType type, Long orderId) {
+        return new PointHistory(userId, amount, type, orderId);
     }
 }
