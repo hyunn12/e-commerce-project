@@ -31,6 +31,7 @@ public class OrderFacade {
         } catch (Exception e) {
             log.error("주문 처리 중 예외 발생: {}", e.getLocalizedMessage());
             order.markOrderFailed();
+            return OrderInfo.Main.from(order);
         }
 
         // 주문 완료 이벤트 발행
