@@ -35,6 +35,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public void updateLikeCount(Long productId, int likeCount) {
+        productJpaRepository.updateLikeCount(productId, likeCount);
+    }
+
+    @Override
     public Stock findStockByProductId(Long productId) {
         return stockJpaRepository.findByProductId(productId).orElse(null);
     }

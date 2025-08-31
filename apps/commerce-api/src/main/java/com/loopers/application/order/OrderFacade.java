@@ -1,7 +1,11 @@
 package com.loopers.application.order;
 
+import com.loopers.application.order.dto.OrderCommand;
+import com.loopers.application.order.dto.OrderInfo;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
+import com.loopers.domain.event.dto.OrderCreatedEvent;
+import com.loopers.domain.event.OrderEventPublisher;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,18 +18,26 @@ import org.springframework.stereotype.Component;
 public class OrderFacade {
 
     private final OrderService orderService;
-    private final OrderProcessor orderProcessor;
+    private final OrderValidationService orderValidateService;
+    private final OrderEventPublisher orderEventPublisher;
 
     @Transactional
     public OrderInfo.Main create(OrderCommand.Create command) {
         Order order = orderService.create(command.toDomain());
 
         try {
-            orderProcessor.process(command, order);
-        } catch (Exception ex) {
-            log.error("주문 처리 중 예외 발생: {}", ex.getLocalizedMessage());
+            // 주문 검증
+            orderValidateService.validate(command, order);
+        } catch (Exception e) {
+            log.error("주문 처리 중 예외 발생: {}", e.getLocalizedMessage());
             order.markOrderFailed();
+            return OrderInfo.Main.from(order);
         }
+
+        // 주문 완료 이벤트 발행
+        orderEventPublisher.publish(
+                OrderCreatedEvent.of(order.getId(), order.getUserId(), order.getPaymentAmount(), command.getMethod(), command.getCardType(), command.getCardNo())
+        );
 
         return OrderInfo.Main.from(order);
     }

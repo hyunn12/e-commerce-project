@@ -1,7 +1,7 @@
 package com.loopers.interfaces.api.order;
 
-import com.loopers.application.order.OrderCommand;
-import com.loopers.application.order.OrderInfo;
+import com.loopers.application.order.dto.OrderCommand;
+import com.loopers.application.order.dto.OrderInfo;
 import com.loopers.domain.order.OrderStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

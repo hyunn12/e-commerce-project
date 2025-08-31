@@ -1,6 +1,7 @@
 package com.loopers.application.product;
 
 import com.loopers.domain.brand.Brand;
+import com.loopers.domain.event.ProductEventPublisher;
 import com.loopers.domain.product.Product;
 import com.loopers.domain.product.Stock;
 import com.loopers.infrastructure.brand.BrandJpaRepository;
@@ -12,6 +13,7 @@ import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 import static com.loopers.domain.product.ProductSortType.LATEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 
 @SpringBootTest
 class ProductFacadeIntegrationTest {
@@ -35,6 +39,8 @@ class ProductFacadeIntegrationTest {
     // sut --
     @Autowired
     private ProductFacade productFacade;
+    @MockitoBean
+    private ProductEventPublisher productEventPublisher;
 
     @AfterEach
     void tearDown() {
@@ -112,9 +118,11 @@ class ProductFacadeIntegrationTest {
             Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("설명").build());
             Product product = productJpaRepository.save(Product.createBuilder().brand(brand).name("상품1").price(10000).build());
             Stock stock = stockJpaRepository.save(Stock.builder().product(product).quantity(5).build());
+            doNothing().when(productEventPublisher).publish(any());
 
             // act
-            ProductInfo.Main result = productFacade.getDetail(product.getId());
+            ProductCommand.Detail command = ProductCommand.Detail.builder().productId(product.getId()).userId(1L).build();
+            ProductInfo.Main result = productFacade.getDetail(command);
 
             // assert
             assertThat(result)
@@ -127,7 +135,7 @@ class ProductFacadeIntegrationTest {
         void throwNotFoundException_whenProductNotExist() {
             // act
             CoreException exception = assertThrows(CoreException.class, () ->
-                    productFacade.getDetail(1L)
+                    productFacade.getDetail(ProductCommand.Detail.builder().productId(1L).userId(1L).build())
             );
 
             // assert

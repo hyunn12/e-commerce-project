@@ -21,6 +21,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    @Transactional(readOnly = true)
     public Order getDetail(Long orderId) {
         Order order = orderRepository.getDetail(orderId);
         if (order == null) {
@@ -29,6 +30,7 @@ public class OrderService {
         return order;
     }
 
+    @Transactional(readOnly = true)
     public Order getDetailWithLock(Long orderId) {
         Order order = orderRepository.getDetailWithLock(orderId);
         if (order == null) {
@@ -46,16 +48,16 @@ public class OrderService {
 
     public void checkInitOrder(Order order, Long userId) {
         if (!order.getUserId().equals(userId)) {
-            throw new IllegalStateException("사용자 정보가 일치하지 않습니다.");
+            throw new CoreException(ErrorType.CONFLICT, "사용자 정보가 일치하지 않습니다.");
         }
         if (order.getStatus() != OrderStatus.CREATED) {
-            throw new IllegalStateException("주문 상태가 대기중이 아닙니다. status: " + order.getStatus());
+            throw new CoreException(ErrorType.CONFLICT, "주문 상태가 대기중이 아닙니다. status: " + order.getStatus());
         }
     }
 
     public void checkWaitingOrder(Order order) {
         if (order.getStatus() != OrderStatus.WAITING_PAYMENT) {
-            throw new IllegalStateException("주문 상태가 결제 대기중이 아닙니다. status: " + order.getStatus());
+            throw new CoreException(ErrorType.CONFLICT, "주문 상태가 결제 대기중이 아닙니다. status: " + order.getStatus());
         }
     }
 }

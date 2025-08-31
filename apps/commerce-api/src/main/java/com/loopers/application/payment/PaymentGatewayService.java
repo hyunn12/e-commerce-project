@@ -1,12 +1,14 @@
-package com.loopers.domain.payment;
+package com.loopers.application.payment;
 
-import com.loopers.application.payment.PaymentGateway;
-import com.loopers.application.payment.PaymentProcessor;
-import com.loopers.application.payment.PaymentRestoreService;
+import com.loopers.application.payment.dto.PaymentInfo;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
+import com.loopers.domain.payment.Payment;
+import com.loopers.domain.payment.PaymentGateway;
+import com.loopers.domain.payment.PaymentService;
 import com.loopers.domain.payment.dto.PaymentRequest;
 import com.loopers.domain.payment.dto.PaymentResponse;
+import com.loopers.domain.payment.dto.PaymentResponseResult;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CardPaymentProcessor implements PaymentProcessor {
+public class PaymentGatewayService {
 
     private final PaymentGateway paymentGateway;
     private final PaymentService paymentService;
@@ -32,20 +34,12 @@ public class CardPaymentProcessor implements PaymentProcessor {
     @CircuitBreaker(name = "pgCircuit", fallbackMethod = "fallback")
     @Retry(name = "pgRetry", fallbackMethod = "fallback")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Override
-    public PaymentResponse process(PaymentRequest request) {
-        Payment payment = paymentService.getDetail(request.getPaymentId());
-
-        // 결제 API 호출
-        PaymentResponse response = paymentGateway.requestPayment(request, callbackUrl);
-        if (response.getStatus().equals("SUCCESS")) {
-            payment.setPaymentPending(response.getTransactionKey());
-        }
-
-        return response;
+    public PaymentResponse requestPayment(PaymentRequest request) {
+        return paymentGateway.requestPayment(request, callbackUrl);
     }
 
-    public void fallback(PaymentRequest request, Throwable throwable) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public PaymentResponse fallback(PaymentRequest request, Throwable throwable) {
         Payment payment = paymentService.getDetail(request.getPaymentId());
         Order order = orderService.getDetail(payment.getOrderId());
 
@@ -54,5 +48,15 @@ public class CardPaymentProcessor implements PaymentProcessor {
         paymentRestoreService.restore(order);
 
         log.error("결제 요청 실패 fallback: orderId={} paymentId={} message={}", order.getId(), payment.getId(), throwable.getLocalizedMessage());
+
+        return PaymentResponse.fail("결제에 실패했습니다." + throwable.getLocalizedMessage());
+    }
+
+    public PaymentInfo.Callback getTransaction(String transactionKey) {
+        PaymentResponse response = paymentGateway.getTransaction(transactionKey);
+        if (response.getStatus() == PaymentResponseResult.FAIL) {
+            return PaymentInfo.Callback.from(PaymentResponseResult.FAIL, response.getReason());
+        }
+        return PaymentInfo.Callback.from(PaymentResponseResult.SUCCESS, null);
     }
 }
