@@ -107,6 +107,7 @@ subprojects {
 
 // module-container(apps, modules, supports), pg-simulator 는 task 를 실행하지 않도록 한다.
 project("apps") { tasks.configureEach { enabled = false } }
+project(":apps:commerce-collector") { tasks.configureEach { enabled = false } }
 project(":apps:pg-simulator") { tasks.configureEach { enabled = false } }
 project("modules") { tasks.configureEach { enabled = false } }
 project("supports") { tasks.configureEach { enabled = false } }

@@ -26,9 +26,11 @@ supports : logging, monitoring 과 같이 부가적인 기능을 지원하는 ad
 Root
 ├── apps ( spring-applications )
 │   └── 📦 commerce-api
+│   └── 📦 commerce-collector
 │   └── 📦 pg-simulator
 ├── modules ( reusable-configurations )
 │   ├── 📦 jpa
+│   ├── 📦 kafka
 │   └── 📦 redis
 └── supports ( add-ons )
 ├── 📦 jackson
