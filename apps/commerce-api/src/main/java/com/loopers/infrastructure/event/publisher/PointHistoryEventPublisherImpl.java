@@ -1,18 +1,16 @@
-package com.loopers.infrastructure.event;
+package com.loopers.infrastructure.event.publisher;
 
 import com.loopers.domain.event.PointHistoryEventPublisher;
 import com.loopers.domain.event.dto.PointHistoryEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Primary
 @Component
 @RequiredArgsConstructor
-public class PointHistorySpringEventPublisher implements PointHistoryEventPublisher {
+public class PointHistoryEventPublisherImpl implements PointHistoryEventPublisher {
 
     private final ApplicationEventPublisher eventPublisher;
 

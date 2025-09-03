@@ -1,4 +1,4 @@
-package com.loopers.infrastructure.event;
+package com.loopers.infrastructure.event.publisher;
 
 import com.loopers.domain.event.CouponEventPublisher;
 import com.loopers.domain.event.dto.CouponUseEvent;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CouponSpringEventPublisher implements CouponEventPublisher {
+public class CouponEventPublisherImpl implements CouponEventPublisher {
 
     private final ApplicationEventPublisher eventPublisher;
 

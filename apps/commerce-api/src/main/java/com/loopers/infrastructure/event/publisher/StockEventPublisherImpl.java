@@ -1,23 +1,22 @@
-package com.loopers.infrastructure.event;
+package com.loopers.infrastructure.event.publisher;
 
-import com.loopers.domain.event.ProductEventPublisher;
-import com.loopers.domain.event.dto.ProductViewEvent;
+import com.loopers.domain.event.StockEventPublisher;
+import com.loopers.domain.event.dto.StockDecreaseEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Primary
 @Component
 @RequiredArgsConstructor
-public class ProductSpringEventPublisher implements ProductEventPublisher {
+public class StockEventPublisherImpl implements StockEventPublisher {
 
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
-    public void publish(ProductViewEvent event) {
+    public void publish(StockDecreaseEvent event) {
+        log.info("Stock Decrease Event Published: {}", event);
         eventPublisher.publishEvent(event);
     }
 }
