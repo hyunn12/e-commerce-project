@@ -81,6 +81,7 @@ client:
 kafka:
   topics:
     catalog: catalog-events
+    product: product-events
     order: order-events
     user: user-events
 

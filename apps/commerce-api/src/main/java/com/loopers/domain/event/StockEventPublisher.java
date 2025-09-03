@@ -1,8 +1,8 @@
 package com.loopers.domain.event;
 
-import com.loopers.domain.event.dto.StockDecreaseEvent;
+import com.loopers.domain.event.dto.StockEvent;
 
 public interface StockEventPublisher {
 
-    void publish(StockDecreaseEvent event);
+    void publish(StockEvent event);
 }

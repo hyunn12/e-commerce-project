@@ -1,0 +1,31 @@
+package com.loopers.interfaces.event.listener;
+
+import com.loopers.domain.event.dto.StockEvent;
+import com.loopers.interfaces.event.dto.KafkaMessage;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class StockEventHandler {
+
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    @Value("${kafka.topics.product}")
+    private String productTopic;
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void publishStockEvent(StockEvent event) {
+        KafkaMessage<StockEvent> message = KafkaMessage.of(event);
+        kafkaTemplate.send(productTopic, event.getProductId().toString(), message);
+        log.info("Published KafkaMessage: topic: {}, message={}", productTopic, message);
+    }
+}
