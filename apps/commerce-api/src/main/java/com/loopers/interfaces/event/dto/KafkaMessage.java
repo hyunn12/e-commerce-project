@@ -1,20 +1,20 @@
 package com.loopers.interfaces.event.dto;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public record KafkaMessage<T>(
-    String eventId,
-    String version,
-    LocalDateTime publishedAt,
-    T payload
+        String eventId,
+        String version,
+        ZonedDateTime publishedAt,
+        T payload
 ) {
     public static <T> KafkaMessage<T> of(T payload) {
         return new KafkaMessage<>(
-            UUID.randomUUID().toString(),
-            "v1",
-            LocalDateTime.now(),
-            payload
+                UUID.randomUUID().toString(),
+                "v1",
+                ZonedDateTime.now(),
+                payload
         );
     }
 }
