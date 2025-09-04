@@ -24,10 +24,30 @@ spring:
       - kafka.yml
       - logging.yml
       - monitoring.yml
+  kafka:
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.loopers.interfaces.dto
+        spring.json.value.default.type: com.loopers.interfaces.dto.KafkaMessage
 
 demo-kafka:
   test:
     topic-name: demo.internal.topic-v1
+
+kafka:
+  topics:
+    catalog: catalog-events
+    product: product-events
+    order: order-events
+    user: user-events
+  consumer:
+    group-id:
+      catalog: catalog-events
+      product: product-events
+      order: order-events
+      user: user-events
 
 ---
 spring:
