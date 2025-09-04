@@ -83,7 +83,7 @@ class EventLogConsumerTest {
 
         @DisplayName("예외가 발생하면, ack하지 않고 에러 로그를 남긴다.")
         @Test
-        void when_exceptionOccurs_then_logError() throws JsonProcessingException {
+        void whenExceptionOccurs_thenLogError() throws JsonProcessingException {
             // arrange
             Map<String, Object> payload = Map.of("productId", 1L, "userId", 1L);
             KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
