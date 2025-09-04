@@ -80,7 +80,7 @@ public class PaymentEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishPaymentRequestSuccessEvent(PaymentRequestSuccessEvent event) {
-        KafkaMessage<PaymentRequestSuccessEvent> message = KafkaMessage.of(event);
+        KafkaMessage<PaymentRequestSuccessEvent> message = KafkaMessage.of(event, "PAYMENT_REQUEST_SUCCESS");
         kafkaTemplate.send(orderTopic, event.getOrderId().toString(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", orderTopic, message);
     }
@@ -88,7 +88,7 @@ public class PaymentEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishPaymentSuccessEvent(PaymentSuccessEvent event) {
-        KafkaMessage<PaymentSuccessEvent> message = KafkaMessage.of(event);
+        KafkaMessage<PaymentSuccessEvent> message = KafkaMessage.of(event, "PAYMENT_SUCCESS");
         kafkaTemplate.send(orderTopic, event.getOrderId().toString(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", orderTopic, message);
     }
@@ -96,7 +96,7 @@ public class PaymentEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishPaymentFailEvent(PaymentFailEvent event) {
-        KafkaMessage<PaymentFailEvent> message = KafkaMessage.of(event);
+        KafkaMessage<PaymentFailEvent> message = KafkaMessage.of(event, "PAYMENT_FAIL");
         kafkaTemplate.send(orderTopic, event.getOrderId().toString(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", orderTopic, message);
     }
@@ -104,7 +104,7 @@ public class PaymentEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishPaymentCallbackFailEvent(PaymentCallbackFailEvent event) {
-        KafkaMessage<PaymentCallbackFailEvent> message = KafkaMessage.of(event);
+        KafkaMessage<PaymentCallbackFailEvent> message = KafkaMessage.of(event, "PAYMENT_CALLBACK_FAIL");
         kafkaTemplate.send(orderTopic, (String) event.getParams().get("transactionKey"), message);
         log.info("Published KafkaMessage: topic: {}, message={}", orderTopic, message);
     }

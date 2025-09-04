@@ -32,7 +32,7 @@ public class CouponEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishCouponUseEvent(CouponUseEvent event) {
-        KafkaMessage<CouponUseEvent> message = KafkaMessage.of(event);
+        KafkaMessage<CouponUseEvent> message = KafkaMessage.of(event, "COUPON_USE");
         kafkaTemplate.send(userTopic, event.getUserId().toString(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", userTopic, message);
     }

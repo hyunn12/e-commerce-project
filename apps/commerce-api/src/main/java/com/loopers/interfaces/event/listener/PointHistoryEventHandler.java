@@ -1,6 +1,5 @@
 package com.loopers.interfaces.event.listener;
 
-import com.loopers.domain.event.dto.PaymentCallbackFailEvent;
 import com.loopers.domain.event.dto.PointHistoryEvent;
 import com.loopers.domain.point.PointHistory;
 import com.loopers.domain.point.PointService;
@@ -35,7 +34,7 @@ public class PointHistoryEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishPointHistoryEvent(PointHistoryEvent event) {
-        KafkaMessage<PointHistoryEvent> message = KafkaMessage.of(event);
+        KafkaMessage<PointHistoryEvent> message = KafkaMessage.of(event, "POINT_HISTORY");
         kafkaTemplate.send(userTopic, event.getUserId().toString(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", userTopic, message);
     }

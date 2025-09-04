@@ -58,7 +58,7 @@ public class UserActionEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void processProductViewEvent(ProductViewEvent event) {
-        KafkaMessage<ProductViewEvent> message = KafkaMessage.of(event);
+        KafkaMessage<ProductViewEvent> message = KafkaMessage.of(event, "PRODUCT_VIEW");
         kafkaTemplate.send(catalogTopic, event.getUserId().toString(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", catalogTopic, message);
     }

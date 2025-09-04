@@ -1,6 +1,5 @@
 package com.loopers.interfaces.event.listener;
 
-import com.loopers.domain.event.dto.CouponUseEvent;
 import com.loopers.domain.event.dto.LikeAddEvent;
 import com.loopers.domain.event.dto.LikeDeleteEvent;
 import com.loopers.domain.product.ProductService;
@@ -40,7 +39,7 @@ public class LikeEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishLikeAddEvent(LikeAddEvent event) {
-        KafkaMessage<LikeAddEvent> message = KafkaMessage.of(event);
+        KafkaMessage<LikeAddEvent> message = KafkaMessage.of(event, "LIKE_ADD");
         kafkaTemplate.send(catalogTopic, event.getProductId().toString(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", catalogTopic, message);
     }
@@ -48,7 +47,7 @@ public class LikeEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishLikeDeleteEvent(LikeDeleteEvent event) {
-        KafkaMessage<LikeDeleteEvent> message = KafkaMessage.of(event);
+        KafkaMessage<LikeDeleteEvent> message = KafkaMessage.of(event, "LIKE_DELETE");
         kafkaTemplate.send(catalogTopic, event.getProductId().toString(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", catalogTopic, message);
     }

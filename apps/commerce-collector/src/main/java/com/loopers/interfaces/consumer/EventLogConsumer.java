@@ -22,7 +22,7 @@ public class EventLogConsumer {
 
     @KafkaListener(
             topics = {"${kafka.topics.catalog}", "${kafka.topics.product}", "${kafka.topics.order}", "${kafka.topics.user}"},
-            groupId = "event-log",
+            groupId = "${kafka.consumer.group-id.event}",
             containerFactory = "kafkaListenerContainerFactory"
     )
     public void consume(ConsumerRecord<String, KafkaMessage<?>> record, Acknowledgment ack) {

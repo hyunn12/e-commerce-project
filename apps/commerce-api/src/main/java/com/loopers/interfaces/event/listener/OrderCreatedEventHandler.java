@@ -3,7 +3,6 @@ package com.loopers.interfaces.event.listener;
 import com.loopers.application.order.ExternalOrderSender;
 import com.loopers.application.payment.PaymentFacade;
 import com.loopers.application.payment.dto.PaymentCommand;
-import com.loopers.domain.event.dto.LikeDeleteEvent;
 import com.loopers.domain.event.dto.OrderCreatedEvent;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
@@ -54,7 +53,7 @@ public class OrderCreatedEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishOrderCreatedEvent(OrderCreatedEvent event) {
-        KafkaMessage<OrderCreatedEvent> message = KafkaMessage.of(event);
+        KafkaMessage<OrderCreatedEvent> message = KafkaMessage.of(event, "ORDER_CREATED");
         kafkaTemplate.send(orderTopic, event.getOrderId().toString(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", orderTopic, message);
     }

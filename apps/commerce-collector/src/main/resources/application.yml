@@ -44,10 +44,9 @@ kafka:
     user: user-events
   consumer:
     group-id:
-      catalog: catalog-events
-      product: product-events
-      order: order-events
-      user: user-events
+      event: event-logs
+      metrics: product-metrics
+      cache: product-cache
 
 ---
 spring:

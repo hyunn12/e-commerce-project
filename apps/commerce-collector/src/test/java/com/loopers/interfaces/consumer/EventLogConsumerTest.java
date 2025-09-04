@@ -71,7 +71,7 @@ class EventLogConsumerTest {
     void consumeMessage_saveEventLog() {
         // arrange
         Map<String, Object> payload = Map.of("productId", 1L, "userId", 1L);
-        KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload);
+        KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
 
         // act
         kafkaTemplate.send("catalog-events", "1", message);
