@@ -84,6 +84,7 @@ kafka:
     product: product-events
     order: order-events
     user: user-events
+    cache: cache-events
 
 ---
 spring:

@@ -1,5 +1,7 @@
 package com.loopers.domain.brand;
 
+import com.loopers.domain.event.BrandEventPublisher;
+import com.loopers.domain.event.dto.BrandModifyEvent;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import java.util.List;
 public class BrandService {
 
     private final BrandRepository brandRepository;
+    private final BrandEventPublisher brandEventPublisher;
 
     public Brand getDetail(Long id) {
         Brand brand = brandRepository.findById(id);
@@ -34,6 +37,9 @@ public class BrandService {
     public Brand modify(Long id, String name, String description) {
         Brand brand = getDetail(id);
         brand.update(name, description);
+
+        brandEventPublisher.publish(BrandModifyEvent.of(brand.getId()));
+
         return brand;
     }
 }
