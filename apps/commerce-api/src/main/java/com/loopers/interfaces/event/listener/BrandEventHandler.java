@@ -24,7 +24,7 @@ public class BrandEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleBrandModify(BrandModifyEvent event) {
-        KafkaMessage<BrandModifyEvent> message = KafkaMessage.of(event, "POINT_HISTORY");
+        KafkaMessage<BrandModifyEvent> message = KafkaMessage.of(event, "BRAND_MODIFY");
         kafkaTemplate.send(cacheTopic, event.getBrandId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", cacheTopic, message);
     }
