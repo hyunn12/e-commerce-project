@@ -16,4 +16,9 @@ public interface BrandV1ApiSpec {
             @Parameter(description = "브랜드 ID", example = "1")
             @PathVariable Long brandId
     );
+
+    @Operation(summary = "브랜드 정보 수정", description = "브랜드 ID 로 해당 브랜드 정보 수정")
+    ApiResponse<BrandV1Dto.BrandResponse> modify(
+            BrandV1Dto.BrandRequest request
+    );
 }
