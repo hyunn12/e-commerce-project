@@ -13,5 +13,5 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class EventHandledId implements Serializable {
     private String eventId;
-    private String group;
+    private String groupId;
 }
