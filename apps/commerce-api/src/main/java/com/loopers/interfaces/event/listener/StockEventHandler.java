@@ -1,6 +1,7 @@
 package com.loopers.interfaces.event.listener;
 
-import com.loopers.domain.event.dto.StockEvent;
+import com.loopers.domain.event.dto.StockDecreaseEvent;
+import com.loopers.domain.event.dto.StockIncreaseEvent;
 import com.loopers.interfaces.event.dto.KafkaMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +24,16 @@ public class StockEventHandler {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void publishStockEvent(StockEvent event) {
-        KafkaMessage<StockEvent> message = KafkaMessage.of(event);
+    public void publishStockEvent(StockIncreaseEvent event) {
+        KafkaMessage<StockIncreaseEvent> message = KafkaMessage.of(event, "STOCK_INCREASE");
+        kafkaTemplate.send(productTopic, event.getProductId().toString(), message);
+        log.info("Published KafkaMessage: topic: {}, message={}", productTopic, message);
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void publishStockEvent(StockDecreaseEvent event) {
+        KafkaMessage<StockDecreaseEvent> message = KafkaMessage.of(event, "STOCK_DECREASE");
         kafkaTemplate.send(productTopic, event.getProductId().toString(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", productTopic, message);
     }

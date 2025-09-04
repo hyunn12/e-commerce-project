@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class StockEvent {
+public class StockDecreaseEvent {
 
     private Long productId;
     private int quantity;
 
-    public static StockEvent of(Long productId, int quantity) {
-        return new StockEvent(productId, quantity);
+    public static StockDecreaseEvent of(Long productId, int quantity) {
+        return new StockDecreaseEvent(productId, quantity);
     }
 }
