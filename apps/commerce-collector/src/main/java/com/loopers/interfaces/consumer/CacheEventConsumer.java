@@ -1,13 +1,16 @@
 package com.loopers.interfaces.consumer;
 
+import com.loopers.config.kafka.KafkaConfig;
 import com.loopers.domain.BrandCacheEvictService;
 import com.loopers.interfaces.dto.KafkaMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -20,16 +23,20 @@ public class CacheEventConsumer {
     @SuppressWarnings("unchecked")
     @KafkaListener(
             topics = "${kafka.topics.cache}",
-            groupId = "${kafka.consumer.group-id.brand-cache}"
+            groupId = "${kafka.consumer.group-id.brand-cache}",
+            containerFactory = KafkaConfig.BATCH_LISTENER
     )
-    public void consume(ConsumerRecord<String, KafkaMessage<?>> record) {
-        log.info("ConsumerRecord Received: {}", record.value());
-        KafkaMessage<?> message = record.value();
+    public void consume(List<ConsumerRecord<String, KafkaMessage<?>>> records, Acknowledgment ack) {
+        for (ConsumerRecord<String, KafkaMessage<?>> record : records) {
+            log.info("ConsumerRecord Received: {}", record.value());
+            KafkaMessage<?> message = record.value();
 
-        Map<String, Object> payload = (Map<String, Object>) message.payload();
-        Long brandId = ((Number) payload.get("brandId")).longValue();
-        log.info("Evict Cache Event for BrandId: {}", brandId);
+            Map<String, Object> payload = (Map<String, Object>) message.payload();
+            Long brandId = ((Number) payload.get("brandId")).longValue();
+            log.info("Evict Cache Event for BrandId: {}", brandId);
 
-        brandCacheEvictService.evict(brandId);
+            brandCacheEvictService.evict(brandId);
+        }
+        ack.acknowledge();
     }
 }
