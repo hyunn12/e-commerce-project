@@ -16,7 +16,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class BrandEventHandler {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<Object, Object> kafkaTemplate;
 
     @Value("${kafka.topics.cache}")
     private String cacheTopic;
@@ -25,7 +25,7 @@ public class BrandEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleBrandModify(BrandModifyEvent event) {
         KafkaMessage<BrandModifyEvent> message = KafkaMessage.of(event, "POINT_HISTORY");
-        kafkaTemplate.send(cacheTopic, event.getBrandId().toString(), message);
+        kafkaTemplate.send(cacheTopic, event.getBrandId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", cacheTopic, message);
     }
 }

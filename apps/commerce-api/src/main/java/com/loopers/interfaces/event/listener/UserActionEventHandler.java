@@ -22,7 +22,7 @@ import static com.loopers.domain.event.dto.UserAction.*;
 public class UserActionEventHandler {
 
     private final ExternalUserActionSender externalUserActionSender;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<Object, Object> kafkaTemplate;
 
     @Value("${kafka.topics.catalog}")
     private String catalogTopic;
@@ -59,7 +59,7 @@ public class UserActionEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void processProductViewEvent(ProductViewEvent event) {
         KafkaMessage<ProductViewEvent> message = KafkaMessage.of(event, "PRODUCT_VIEW");
-        kafkaTemplate.send(catalogTopic, event.getUserId().toString(), message);
+        kafkaTemplate.send(catalogTopic, event.getUserId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", catalogTopic, message);
     }
 }

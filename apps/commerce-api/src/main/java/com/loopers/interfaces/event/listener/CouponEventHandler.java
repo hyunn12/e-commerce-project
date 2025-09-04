@@ -18,7 +18,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class CouponEventHandler {
 
     private final CouponUseService couponUseService;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<Object, Object> kafkaTemplate;
 
     @Value("${kafka.topics.user}")
     private String userTopic;
@@ -33,7 +33,7 @@ public class CouponEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishCouponUseEvent(CouponUseEvent event) {
         KafkaMessage<CouponUseEvent> message = KafkaMessage.of(event, "COUPON_USE");
-        kafkaTemplate.send(userTopic, event.getUserId().toString(), message);
+        kafkaTemplate.send(userTopic, event.getUserId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", userTopic, message);
     }
 }

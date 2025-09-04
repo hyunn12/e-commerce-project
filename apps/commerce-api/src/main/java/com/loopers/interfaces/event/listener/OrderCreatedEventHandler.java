@@ -24,7 +24,7 @@ public class OrderCreatedEventHandler {
     private final PaymentFacade paymentFacade;
     private final ExternalOrderSender externalOrderSender;
     private final OrderService orderService;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<Object, Object> kafkaTemplate;
 
     @Value("${kafka.topics.order}")
     private String orderTopic;
@@ -54,7 +54,7 @@ public class OrderCreatedEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishOrderCreatedEvent(OrderCreatedEvent event) {
         KafkaMessage<OrderCreatedEvent> message = KafkaMessage.of(event, "ORDER_CREATED");
-        kafkaTemplate.send(orderTopic, event.getOrderId().toString(), message);
+        kafkaTemplate.send(orderTopic, event.getOrderId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", orderTopic, message);
     }
 }

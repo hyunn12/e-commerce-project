@@ -27,7 +27,7 @@ public class PaymentEventHandler {
     private final ExternalOrderSender externalOrderSender;
     private final PaymentRestoreService paymentRestoreService;
     private final PaymentAlertSender paymentAlertSender;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<Object, Object> kafkaTemplate;
 
     @Value("${kafka.topics.order}")
     private String orderTopic;
@@ -81,7 +81,7 @@ public class PaymentEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishPaymentRequestSuccessEvent(PaymentRequestSuccessEvent event) {
         KafkaMessage<PaymentRequestSuccessEvent> message = KafkaMessage.of(event, "PAYMENT_REQUEST_SUCCESS");
-        kafkaTemplate.send(orderTopic, event.getOrderId().toString(), message);
+        kafkaTemplate.send(orderTopic, event.getOrderId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", orderTopic, message);
     }
 
@@ -89,7 +89,7 @@ public class PaymentEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishPaymentSuccessEvent(PaymentSuccessEvent event) {
         KafkaMessage<PaymentSuccessEvent> message = KafkaMessage.of(event, "PAYMENT_SUCCESS");
-        kafkaTemplate.send(orderTopic, event.getOrderId().toString(), message);
+        kafkaTemplate.send(orderTopic, event.getOrderId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", orderTopic, message);
     }
 
@@ -97,7 +97,7 @@ public class PaymentEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishPaymentFailEvent(PaymentFailEvent event) {
         KafkaMessage<PaymentFailEvent> message = KafkaMessage.of(event, "PAYMENT_FAIL");
-        kafkaTemplate.send(orderTopic, event.getOrderId().toString(), message);
+        kafkaTemplate.send(orderTopic, event.getOrderId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", orderTopic, message);
     }
 

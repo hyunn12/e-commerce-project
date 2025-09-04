@@ -19,7 +19,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class LikeEventHandler {
 
     private final ProductService productService;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<Object, Object> kafkaTemplate;
 
     @Value("${kafka.topics.catalog}")
     private String catalogTopic;
@@ -40,7 +40,7 @@ public class LikeEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishLikeAddEvent(LikeAddEvent event) {
         KafkaMessage<LikeAddEvent> message = KafkaMessage.of(event, "LIKE_ADD");
-        kafkaTemplate.send(catalogTopic, event.getProductId().toString(), message);
+        kafkaTemplate.send(catalogTopic, event.getProductId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", catalogTopic, message);
     }
 
@@ -48,7 +48,7 @@ public class LikeEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishLikeDeleteEvent(LikeDeleteEvent event) {
         KafkaMessage<LikeDeleteEvent> message = KafkaMessage.of(event, "LIKE_DELETE");
-        kafkaTemplate.send(catalogTopic, event.getProductId().toString(), message);
+        kafkaTemplate.send(catalogTopic, event.getProductId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", catalogTopic, message);
     }
 }

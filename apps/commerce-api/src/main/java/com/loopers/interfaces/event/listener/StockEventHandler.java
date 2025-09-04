@@ -17,7 +17,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class StockEventHandler {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<Object, Object> kafkaTemplate;
 
     @Value("${kafka.topics.product}")
     private String productTopic;
@@ -26,7 +26,7 @@ public class StockEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishStockEvent(StockIncreaseEvent event) {
         KafkaMessage<StockIncreaseEvent> message = KafkaMessage.of(event, "STOCK_INCREASE");
-        kafkaTemplate.send(productTopic, event.getProductId().toString(), message);
+        kafkaTemplate.send(productTopic, event.getProductId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", productTopic, message);
     }
 
@@ -34,7 +34,7 @@ public class StockEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishStockEvent(StockDecreaseEvent event) {
         KafkaMessage<StockDecreaseEvent> message = KafkaMessage.of(event, "STOCK_DECREASE");
-        kafkaTemplate.send(productTopic, event.getProductId().toString(), message);
+        kafkaTemplate.send(productTopic, event.getProductId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", productTopic, message);
     }
 }

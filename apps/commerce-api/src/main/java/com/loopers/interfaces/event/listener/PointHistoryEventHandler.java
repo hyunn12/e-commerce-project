@@ -19,7 +19,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class PointHistoryEventHandler {
 
     private final PointService pointService;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<Object, Object> kafkaTemplate;
 
     @Value("${kafka.topics.user}")
     private String userTopic;
@@ -35,7 +35,7 @@ public class PointHistoryEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void publishPointHistoryEvent(PointHistoryEvent event) {
         KafkaMessage<PointHistoryEvent> message = KafkaMessage.of(event, "POINT_HISTORY");
-        kafkaTemplate.send(userTopic, event.getUserId().toString(), message);
+        kafkaTemplate.send(userTopic, event.getUserId(), message);
         log.info("Published KafkaMessage: topic: {}, message={}", userTopic, message);
     }
 }
