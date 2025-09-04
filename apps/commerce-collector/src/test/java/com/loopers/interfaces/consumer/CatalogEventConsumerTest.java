@@ -9,6 +9,7 @@ import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -68,6 +69,7 @@ class CatalogEventConsumerTest {
         databaseCleanUp.truncateAllTables();
     }
 
+    @DisplayName("좋아요 추가 이벤트를 수신하면, 해당 상품의 like_count가 증가한다.")
     @Test
     void consumeMessage_increaseLikeCount() {
         // arrange
@@ -83,8 +85,9 @@ class CatalogEventConsumerTest {
                 .pollInterval(500, TimeUnit.MILLISECONDS)
                 .atMost(10, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
-                    assertThat(productMetricsJpaRepository.existsByIdProductIdAndIdDate(productId, LocalDate.now())).isTrue();
-                    ProductMetrics productMetrics = productMetricsJpaRepository.findByIdProductIdAndIdDate(productId, LocalDate.now()).orElseThrow();
+                    LocalDate dbDate = productMetricsJpaRepository.currentDate();
+                    assertThat(productMetricsJpaRepository.existsByIdProductIdAndIdDate(productId, dbDate)).isTrue();
+                    ProductMetrics productMetrics = productMetricsJpaRepository.findByIdProductIdAndIdDate(productId, dbDate).orElseThrow();
                     assertThat(productMetrics.getLikeCount()).isEqualTo(1);
                 });
     }

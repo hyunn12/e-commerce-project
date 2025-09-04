@@ -57,4 +57,7 @@ public interface ProductMetricsJpaRepository extends JpaRepository<ProductMetric
     Optional<ProductMetrics> findByIdProductIdAndIdDate(Long productId, LocalDate date);
 
     boolean existsByIdProductIdAndIdDate(Long productId, LocalDate date);
+
+    @Query(value = "select curdate()", nativeQuery = true)
+    LocalDate currentDate();
 }
