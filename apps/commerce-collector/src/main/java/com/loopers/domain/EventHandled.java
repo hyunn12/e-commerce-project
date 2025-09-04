@@ -1,9 +1,6 @@
 package com.loopers.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,18 +13,22 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EventHandled {
 
-    @Id
-    @Column(name = "event_id")
-    private String eventId;
+    @EmbeddedId
+    private EventHandledId id;
 
-    @Column(name = "handled_at", nullable = false)
-    private ZonedDateTime handledAt = ZonedDateTime.now();
+    @Column(name = "handled_at", nullable = false, updatable = false)
+    private ZonedDateTime handledAt;
 
-    private EventHandled(String eventId) {
-        this.eventId = eventId;
+    public EventHandled(EventHandledId id) {
+        this.id = id;
     }
 
-    public static EventHandled of(String eventId) {
-        return new EventHandled(eventId);
+    public static EventHandled of(String eventId, String consumerGroup) {
+        return new EventHandled(new EventHandledId(eventId, consumerGroup));
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.handledAt = ZonedDateTime.now();
     }
 }
