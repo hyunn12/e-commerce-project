@@ -6,11 +6,17 @@ import com.loopers.application.payment.dto.PaymentCommand;
 import com.loopers.domain.event.dto.OrderCreatedEvent;
 import com.loopers.domain.order.Order;
 import com.loopers.domain.order.OrderService;
+import com.loopers.interfaces.event.dto.KafkaMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OrderCreatedEventHandler {
@@ -18,9 +24,13 @@ public class OrderCreatedEventHandler {
     private final PaymentFacade paymentFacade;
     private final ExternalOrderSender externalOrderSender;
     private final OrderService orderService;
+    private final KafkaTemplate<Object, Object> kafkaTemplate;
+
+    @Value("${kafka.topics.order}")
+    private String orderTopic;
 
     @Async
-    @TransactionalEventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handlePayment(OrderCreatedEvent event) {
         PaymentCommand.Create command = PaymentCommand.Create.builder()
                 .userId(event.getUserId())
@@ -34,9 +44,17 @@ public class OrderCreatedEventHandler {
     }
 
     @Async
-    @TransactionalEventListener
-    public void handleExternalSend(OrderCreatedEvent event) {
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleExternalOrderSend(OrderCreatedEvent event) {
         Order order = orderService.getDetail(event.getOrderId());
         externalOrderSender.send(order);
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void publishOrderCreatedEvent(OrderCreatedEvent event) {
+        KafkaMessage<OrderCreatedEvent> message = KafkaMessage.of(event, "ORDER_CREATED");
+        kafkaTemplate.send(orderTopic, event.getOrderId(), message);
+        log.info("Published KafkaMessage: topic: {}, message={}", orderTopic, message);
     }
 }

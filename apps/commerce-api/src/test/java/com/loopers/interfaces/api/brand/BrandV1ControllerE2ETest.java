@@ -71,4 +71,44 @@ class BrandV1ControllerE2ETest {
             }
         }
     }
+
+    @DisplayName("POST /api/v1/brands")
+    @Nested
+    class POST {
+        private final String requestUrl = "/api/v1/brands";
+        private Long brandId;
+
+        @BeforeEach
+        void setData() {
+            Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드").description("브랜드설명").build());
+            brandId = brand.getId();
+        }
+
+        @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+        @Nested
+        class 수정에_성공한_후_브랜드_정보를_받는다 {
+
+            @DisplayName("주어진 brandId의 브랜드가 존재하는 브랜드라면")
+            @Test
+            void returnBrandInfo_whenValidBrandId() {
+                // arrange
+                String modifyName = "변경 브랜드명";
+                String modifyDesc = "변경 브랜드설명";
+                BrandV1Dto.BrandRequest requestBody = new BrandV1Dto.BrandRequest(brandId, modifyName, modifyDesc);
+
+                // act
+                ParameterizedTypeReference<ApiResponse<BrandV1Dto.BrandResponse>> responseType = new ParameterizedTypeReference<>() {};
+                ResponseEntity<ApiResponse<BrandV1Dto.BrandResponse>> response =
+                        testRestTemplate.exchange(requestUrl, HttpMethod.POST, new HttpEntity<>(requestBody), responseType);
+
+                // assert
+                assertAll(
+                        () -> assertThat(response.getStatusCode().is2xxSuccessful()).isTrue(),
+                        () -> assertThat(response.getBody().data().id()).isEqualTo(brandId),
+                        () -> assertThat(response.getBody().data().name()).isEqualTo(modifyName),
+                        () -> assertThat(response.getBody().data().description()).isEqualTo(modifyDesc)
+                );
+            }
+        }
+    }
 }

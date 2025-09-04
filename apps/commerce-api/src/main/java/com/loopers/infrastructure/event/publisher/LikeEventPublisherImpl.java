@@ -1,4 +1,4 @@
-package com.loopers.infrastructure.event;
+package com.loopers.infrastructure.event.publisher;
 
 import com.loopers.domain.event.LikeEventPublisher;
 import com.loopers.domain.event.dto.LikeDeleteEvent;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LikeSpringEventPublisher implements LikeEventPublisher {
+public class LikeEventPublisherImpl implements LikeEventPublisher {
 
     private final ApplicationEventPublisher eventPublisher;
 
