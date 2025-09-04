@@ -1,5 +1,6 @@
 package com.loopers.interfaces.consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopers.domain.EventHandledService;
 import com.loopers.domain.EventLog;
@@ -32,25 +33,21 @@ public class EventLogConsumer {
             groupId = "${kafka.consumer.group-id.event}",
             containerFactory = "kafkaListenerContainerFactory"
     )
-    public void consume(List<ConsumerRecord<String, KafkaMessage<?>>> records, Acknowledgment ack) {
-        try {
-            for(ConsumerRecord<String, KafkaMessage<?>> record : records) {
-                log.info("ConsumerRecord Received: {}", record.value());
-                KafkaMessage<?> message = record.value();
+    public void consume(List<ConsumerRecord<String, KafkaMessage<?>>> records, Acknowledgment ack) throws JsonProcessingException {
+        for(ConsumerRecord<String, KafkaMessage<?>> record : records) {
+            log.info("ConsumerRecord Received: {}", record.value());
+            KafkaMessage<?> message = record.value();
 
-                if (!eventHandledService.markHandled(message.eventId(), groupId)) {
-                    log.info("Duplicate EventId: {}", message.eventId());
-                    continue;
-                }
-
-                String payloadJson = objectMapper.writeValueAsString(message.payload());
-                EventLog eventLog = EventLog.of(message.eventId(), payloadJson, message.version(), message.publishedAt());
-                eventLogService.save(eventLog);
+            if (!eventHandledService.markHandled(message.eventId(), groupId)) {
+                log.info("Duplicate EventId: {}", message.eventId());
+                continue;
             }
 
-            ack.acknowledge();
-        } catch (Exception e) {
-            log.error("Event Log Save Failed: {}", e.getLocalizedMessage(), e);
+            String payloadJson = objectMapper.writeValueAsString(message.payload());
+            EventLog eventLog = EventLog.of(message.eventId(), payloadJson, message.version(), message.publishedAt());
+            eventLogService.save(eventLog);
         }
+
+        ack.acknowledge();
     }
 }

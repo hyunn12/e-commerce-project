@@ -1,5 +1,6 @@
 package com.loopers.interfaces.consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopers.domain.EventHandledService;
 import com.loopers.domain.EventLog;
@@ -39,7 +40,7 @@ class EventLogConsumerTest {
 
         @DisplayName("새로운 이벤트라면, EventLog 를 저장한다.")
         @Test
-        void whenNewEvent_thenSaveEventLog() {
+        void whenNewEvent_thenSaveEventLog() throws JsonProcessingException {
             // arrange
             Map<String, Object> payload = Map.of("productId", 1L, "userId", 1L);
             KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
@@ -62,7 +63,7 @@ class EventLogConsumerTest {
 
         @DisplayName("중복 이벤트라면, EventLog 를 저장하지 않는다.")
         @Test
-        void whenDuplicateEvent_thenSkipSaveEventLog() {
+        void whenDuplicateEvent_thenSkipSaveEventLog() throws JsonProcessingException {
             // arrange
             Map<String, Object> payload = Map.of("productId", 1L, "userId", 1L);
             KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
@@ -82,7 +83,7 @@ class EventLogConsumerTest {
 
         @DisplayName("예외가 발생하면, ack하지 않고 에러 로그를 남긴다.")
         @Test
-        void when_exceptionOccurs_then_logError() {
+        void when_exceptionOccurs_then_logError() throws JsonProcessingException {
             // arrange
             Map<String, Object> payload = Map.of("productId", 1L, "userId", 1L);
             KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
