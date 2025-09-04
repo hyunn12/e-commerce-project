@@ -1,94 +1,134 @@
 package com.loopers.interfaces.consumer;
 
-import com.loopers.domain.ProductMetrics;
-import com.loopers.infrastructure.ProductMetricsJpaRepository;
+import com.loopers.domain.ProductMetricsService;
 import com.loopers.interfaces.dto.KafkaMessage;
-import com.loopers.utils.DatabaseCleanUp;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.junit.jupiter.Container;
+import org.springframework.kafka.support.Acknowledgment;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @Testcontainers
 @SpringBootTest
 class CatalogEventConsumerTest {
 
-    // test container
-    @Container
-    static final KafkaContainer KAFKA =
-            new KafkaContainer(
-                    DockerImageName.parse("confluentinc/cp-kafka:7.3.2.arm64")
-                            .asCompatibleSubstituteFor("apache/kafka"));
-    @DynamicPropertySource
-    static void overrideProps(DynamicPropertyRegistry registry) {
-        registry.add("spring.kafka.bootstrap-servers", KAFKA::getBootstrapServers);
-        registry.add("spring.kafka.consumer.bootstrap-servers", KAFKA::getBootstrapServers);
-        registry.add("spring.kafka.producer.bootstrap-servers", KAFKA::getBootstrapServers);
+    @Mock
+    private final ProductMetricsService productMetricsService = mock(ProductMetricsService.class);
+    private final Acknowledgment ack = mock(Acknowledgment.class);
+
+    private CatalogEventConsumer consumer;
+
+    @BeforeEach
+    void setUp() {
+        consumer = new CatalogEventConsumer(productMetricsService);
     }
-    @BeforeAll
-    static void setupTopics() {
-        try (AdminClient admin = AdminClient.create(Map.of(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA.getBootstrapServers()
-        ))) {
-            admin.createTopics(List.of(new NewTopic("catalog-events", 1, (short) 1)));
+
+    private ConsumerRecord<String, KafkaMessage<?>> recordOf(String type, Map<String, Object> payload) {
+        KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, type);
+        return new ConsumerRecord<>("catalog-events", 0, 0, null, message);
+    }
+
+    @Nested
+    class 이벤트_타입별_분기 {
+
+        @Test
+        @DisplayName("LIKE_ADD 이벤트면, likeCount를 증가시킨다")
+        void likeAddEvent() {
+            // arrange
+            Long productId = 1L;
+            ConsumerRecord<String, KafkaMessage<?>> record =
+                    recordOf("LIKE_ADD", Map.of("productId", productId));
+
+            // act
+            consumer.consume(List.of(record), ack);
+
+            // assert
+            verify(productMetricsService).increaseLikeCount(productId);
+            verify(ack).acknowledge();
+        }
+
+        @Test
+        @DisplayName("LIKE_DELETE 이벤트면, likeCount를 감소시킨다")
+        void likeDeleteEvent() {
+            Long productId = 2L;
+            ConsumerRecord<String, KafkaMessage<?>> record =
+                    recordOf("LIKE_DELETE", Map.of("productId", productId));
+
+            consumer.consume(List.of(record), ack);
+
+            verify(productMetricsService).decreaseLikeCount(productId);
+            verify(ack).acknowledge();
+        }
+
+        @Test
+        @DisplayName("STOCK_INCREASE 이벤트면, salesCount를 증가시킨다")
+        void stockIncreaseEvent() {
+            Long productId = 3L;
+            ConsumerRecord<String, KafkaMessage<?>> record =
+                    recordOf("STOCK_INCREASE", Map.of("productId", productId, "quantity", 5));
+
+            consumer.consume(List.of(record), ack);
+
+            verify(productMetricsService).increaseSalesCount(productId, 5);
+            verify(ack).acknowledge();
+        }
+
+        @Test
+        @DisplayName("STOCK_DECREASE 이벤트면, salesCount를 감소시킨다")
+        void stockDecreaseEvent() {
+            Long productId = 4L;
+            ConsumerRecord<String, KafkaMessage<?>> record =
+                    recordOf("STOCK_DECREASE", Map.of("productId", productId, "quantity", 2));
+
+            consumer.consume(List.of(record), ack);
+
+            verify(productMetricsService).decreaseSalesCount(productId, 2);
+            verify(ack).acknowledge();
+        }
+
+        @Test
+        @DisplayName("PRODUCT_VIEW 이벤트면, viewCount를 증가시킨다")
+        void productViewEvent() {
+            Long productId = 1L;
+            ConsumerRecord<String, KafkaMessage<?>> record =
+                    recordOf("PRODUCT_VIEW", Map.of("productId", productId));
+
+            consumer.consume(List.of(record), ack);
+
+            verify(productMetricsService).increaseViewCount(productId);
+            verify(ack).acknowledge();
         }
     }
-
-    // sut --
-    @Autowired
-    private KafkaTemplate<Object, Object> kafkaTemplate;
-
-    // orm--
-    @Autowired
-    private ProductMetricsJpaRepository productMetricsJpaRepository;
-    @Autowired
-    private DatabaseCleanUp databaseCleanUp;
-
-    @AfterEach
-    void tearDown() {
-        databaseCleanUp.truncateAllTables();
-    }
-
-    @DisplayName("좋아요 추가 이벤트를 수신하면, 해당 상품의 like_count가 증가한다.")
-    @Test
-    void consumeMessage_increaseLikeCount() {
-        // arrange
-        Long productId = 1L;
-        Map<String, Object> payload = Map.of("productId", productId, "userId", 1L);
-        KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
-
-        // act
-        kafkaTemplate.send("catalog-events", productId.toString(), message);
-
-        // assert
-        await().pollDelay(2, TimeUnit.SECONDS)
-                .pollInterval(500, TimeUnit.MILLISECONDS)
-                .atMost(10, TimeUnit.SECONDS)
-                .untilAsserted(() -> {
-                    LocalDate dbDate = productMetricsJpaRepository.currentDate();
-                    assertThat(productMetricsJpaRepository.existsByIdProductIdAndIdDate(productId, dbDate)).isTrue();
-                    ProductMetrics productMetrics = productMetricsJpaRepository.findByIdProductIdAndIdDate(productId, dbDate).orElseThrow();
-                    assertThat(productMetrics.getLikeCount()).isEqualTo(1);
-                });
-    }
+//    @Nested
+//    class 이벤트_수신_시 {
+//
+//        @Test
+//        @DisplayName("LIKE_ADD 이벤트라면, 해당 상품의 likeCount를 증가시킨다.")
+//        void consumeMessage_increaseLikeCount() {
+//            // arrange
+//            Long productId = 1L;
+//            Map<String, Object> payload = Map.of("productId", productId, "userId", 1L);
+//            KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
+//
+//            ConsumerRecord<String, KafkaMessage<?>> record =
+//                    new ConsumerRecord<>("catalog-events", 0, 0, null, message);
+//
+//            // act
+//            consumer.consume(List.of(record), ack);
+//
+//            // assert
+//            verify(productMetricsService).increaseLikeCount(productId);
+//            verify(ack).acknowledge();
+//        }
+//    }
 }

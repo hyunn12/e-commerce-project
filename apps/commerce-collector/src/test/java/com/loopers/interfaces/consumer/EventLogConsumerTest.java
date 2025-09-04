@@ -1,91 +1,103 @@
 package com.loopers.interfaces.consumer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loopers.domain.EventHandledService;
 import com.loopers.domain.EventLog;
-import com.loopers.infrastructure.EventLogJpaRepository;
+import com.loopers.domain.EventLogService;
 import com.loopers.interfaces.dto.KafkaMessage;
-import com.loopers.utils.DatabaseCleanUp;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.KafkaContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.junit.jupiter.api.*;
+import org.mockito.ArgumentCaptor;
+import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-@Testcontainers
-@SpringBootTest
 class EventLogConsumerTest {
 
-    // test container
-    @Container
-    static final KafkaContainer KAFKA =
-            new KafkaContainer(
-                    DockerImageName.parse("confluentinc/cp-kafka:7.3.2.arm64")
-                            .asCompatibleSubstituteFor("apache/kafka"));
-    @DynamicPropertySource
-    static void overrideProps(DynamicPropertyRegistry registry) {
-        registry.add("spring.kafka.bootstrap-servers", KAFKA::getBootstrapServers);
-        registry.add("spring.kafka.consumer.bootstrap-servers", KAFKA::getBootstrapServers);
-        registry.add("spring.kafka.producer.bootstrap-servers", KAFKA::getBootstrapServers);
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final EventLogService eventLogService = mock(EventLogService.class);
+    private final EventHandledService eventHandledService = mock(EventHandledService.class);
+    private final Acknowledgment ack = mock(Acknowledgment.class);
+
+    private final EventLogConsumer consumer =
+            new EventLogConsumer(objectMapper, eventLogService, eventHandledService);
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(consumer, "groupId", "event-logs");
     }
-    @BeforeAll
-    static void setupTopics() {
-        try (AdminClient admin = AdminClient.create(Map.of(
-                AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA.getBootstrapServers()
-        ))) {
-            admin.createTopics(List.of(new NewTopic("catalog-events", 1, (short) 1)));
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class 이벤트_수신_시 {
+
+        @DisplayName("새로운 이벤트라면, EventLog 를 저장한다.")
+        @Test
+        void whenNewEvent_thenSaveEventLog() {
+            // arrange
+            Map<String, Object> payload = Map.of("productId", 1L, "userId", 1L);
+            KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
+
+            ConsumerRecord<String, KafkaMessage<?>> record =
+                    new ConsumerRecord<>("catalog-events", 0, 0, null, message);
+
+            when(eventHandledService.markHandled(anyString(), anyString())).thenReturn(true);
+
+            // act
+            consumer.consume(List.of(record), ack);
+
+            // assert
+            ArgumentCaptor<EventLog> captor = ArgumentCaptor.forClass(EventLog.class);
+            verify(eventLogService).save(captor.capture());
+
+            EventLog saved = captor.getValue();
+            assertThat(saved.getEventId()).isEqualTo(message.eventId());
         }
-    }
 
-    // sut --
-    @Autowired
-    private KafkaTemplate<Object, Object> kafkaTemplate;
+        @DisplayName("중복 이벤트라면, EventLog 를 저장하지 않는다.")
+        @Test
+        void whenDuplicateEvent_thenSkipSaveEventLog() {
+            // arrange
+            Map<String, Object> payload = Map.of("productId", 1L, "userId", 1L);
+            KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
 
-    // orm--
-    @Autowired
-    private EventLogJpaRepository eventLogJpaRepository;
-    @Autowired
-    private DatabaseCleanUp databaseCleanUp;
+            ConsumerRecord<String, KafkaMessage<?>> record =
+                    new ConsumerRecord<>("topic", 0, 0, null, message);
 
-    @AfterEach
-    void tearDown() {
-        databaseCleanUp.truncateAllTables();
-    }
+            when(eventHandledService.markHandled(anyString(), anyString())).thenReturn(false);
 
-    @DisplayName("이벤트를 수신하면, 해당 이벤트에 대해 event_log 가 저장된다.")
-    @Test
-    void consumeMessage_saveEventLog() {
-        // arrange
-        Map<String, Object> payload = Map.of("productId", 1L, "userId", 1L);
-        KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
+            // act
+            consumer.consume(List.of(record), ack);
 
-        // act
-        kafkaTemplate.send("catalog-events", "1", message);
+            // assert
+            verify(eventLogService, never()).save(any());
+            verify(ack).acknowledge();
+        }
 
-        // assert
-        await().pollDelay(2, TimeUnit.SECONDS)
-                .pollInterval(500, TimeUnit.MILLISECONDS)
-                .atMost(10, TimeUnit.SECONDS)
-                .untilAsserted(() -> {
-                    assertThat(eventLogJpaRepository.existsByEventId(message.eventId())).isTrue();
-                    EventLog log = eventLogJpaRepository.findByEventId(message.eventId()).orElseThrow();
-                    assertThat(log.getPayload()).contains("productId");
-                });
+        @DisplayName("예외가 발생하면, ack하지 않고 에러 로그를 남긴다.")
+        @Test
+        void when_exceptionOccurs_then_logError() {
+            // arrange
+            Map<String, Object> payload = Map.of("productId", 1L, "userId", 1L);
+            KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
+
+            ConsumerRecord<String, KafkaMessage<?>> record =
+                    new ConsumerRecord<>("topic", 0, 0, null, message);
+
+            when(eventHandledService.markHandled(anyString(), anyString())).thenReturn(true);
+            doThrow(new RuntimeException("DB error")).when(eventLogService).save(any(EventLog.class));
+
+            // act
+            consumer.consume(List.of(record), ack);
+
+            // assert
+            verify(ack, never()).acknowledge();
+        }
     }
 }
