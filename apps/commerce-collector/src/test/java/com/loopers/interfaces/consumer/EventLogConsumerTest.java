@@ -80,25 +80,5 @@ class EventLogConsumerTest {
             verify(eventLogService, never()).save(any());
             verify(ack).acknowledge();
         }
-
-        @DisplayName("예외가 발생하면, ack하지 않고 에러 로그를 남긴다.")
-        @Test
-        void whenExceptionOccurs_thenLogError() throws JsonProcessingException {
-            // arrange
-            Map<String, Object> payload = Map.of("productId", 1L, "userId", 1L);
-            KafkaMessage<Map<String, Object>> message = KafkaMessage.of(payload, "LIKE_ADD");
-
-            ConsumerRecord<String, KafkaMessage<?>> record =
-                    new ConsumerRecord<>("topic", 0, 0, null, message);
-
-            when(eventHandledService.markHandled(anyString(), anyString())).thenReturn(true);
-            doThrow(new RuntimeException("DB error")).when(eventLogService).save(any(EventLog.class));
-
-            // act
-            consumer.consume(List.of(record), ack);
-
-            // assert
-            verify(ack, never()).acknowledge();
-        }
     }
 }

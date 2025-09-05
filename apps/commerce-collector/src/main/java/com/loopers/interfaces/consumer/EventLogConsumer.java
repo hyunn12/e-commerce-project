@@ -2,6 +2,7 @@ package com.loopers.interfaces.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loopers.config.kafka.KafkaConfig;
 import com.loopers.domain.EventHandledService;
 import com.loopers.domain.EventLog;
 import com.loopers.domain.EventLogService;
@@ -31,7 +32,7 @@ public class EventLogConsumer {
     @KafkaListener(
             topics = {"${kafka.topics.catalog}", "${kafka.topics.product}", "${kafka.topics.order}", "${kafka.topics.user}"},
             groupId = "${kafka.consumer.group-id.event}",
-            containerFactory = "kafkaListenerContainerFactory"
+            containerFactory = KafkaConfig.BATCH_LISTENER
     )
     public void consume(List<ConsumerRecord<String, KafkaMessage<?>>> records, Acknowledgment ack) throws JsonProcessingException {
         for(ConsumerRecord<String, KafkaMessage<?>> record : records) {
