@@ -1,4 +1,4 @@
-package com.loopers.config.jackson;
+package com.loopers.jackson.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;

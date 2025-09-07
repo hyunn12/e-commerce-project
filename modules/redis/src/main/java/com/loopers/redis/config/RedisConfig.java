@@ -1,4 +1,4 @@
-package com.loopers.config.redis;
+package com.loopers.redis.config;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;

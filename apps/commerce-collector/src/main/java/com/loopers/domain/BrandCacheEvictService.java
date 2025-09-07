@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.loopers.config.redis.CacheConstants.BRANDS_CACHE_KEY;
+import static com.loopers.redis.config.CacheConstants.BRANDS_CACHE_KEY;
 
 @Service
 @RequiredArgsConstructor

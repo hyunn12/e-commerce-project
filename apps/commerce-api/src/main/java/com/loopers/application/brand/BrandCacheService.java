@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.loopers.config.redis.CacheConstants.BRANDS_CACHE_KEY;
-import static com.loopers.config.redis.CacheConstants.BRANDS_CACHE_TTL;
+import static com.loopers.redis.config.CacheConstants.BRANDS_CACHE_KEY;
+import static com.loopers.redis.config.CacheConstants.BRANDS_CACHE_TTL;
 
 @Slf4j
 @Service

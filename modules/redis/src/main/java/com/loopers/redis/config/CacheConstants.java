@@ -1,4 +1,4 @@
-package com.loopers.config.redis;
+package com.loopers.redis.config;
 
 import java.time.Duration;
 

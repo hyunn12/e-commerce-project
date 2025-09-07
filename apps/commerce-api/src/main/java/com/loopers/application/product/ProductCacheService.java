@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.loopers.config.redis.CacheConstants.*;
+import static com.loopers.redis.config.CacheConstants.*;
 
 @Service
 @RequiredArgsConstructor

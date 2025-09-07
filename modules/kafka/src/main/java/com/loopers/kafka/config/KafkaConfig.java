@@ -1,9 +1,12 @@
-package com.loopers.config.kafka;
+package com.loopers.kafka.config;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loopers.kafka.dto.KafkaMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +17,8 @@ import org.springframework.kafka.core.*;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
 import org.springframework.kafka.support.converter.ByteArrayJsonMessageConverter;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.HashMap;
@@ -57,11 +60,10 @@ public class KafkaConfig {
         return new ByteArrayJsonMessageConverter(objectMapper);
     }
 
-    @Bean(name = BATCH_LISTENER)
-    public ConcurrentKafkaListenerContainerFactory<Object, Object> defaultBatchListenerContainerFactory(
+    @Bean
+    public ConsumerFactory<String, KafkaMessage<?>> kafkaMessageConsumerFactory(
             KafkaProperties kafkaProperties,
-            ByteArrayJsonMessageConverter converter,
-            DefaultErrorHandler errorHandler
+            ObjectMapper objectMapper
     ) {
         Map<String, Object> consumerConfig = new HashMap<>(kafkaProperties.buildConsumerProperties());
         consumerConfig.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, MAX_POLLING_SIZE);
@@ -71,10 +73,24 @@ public class KafkaConfig {
         consumerConfig.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, HEARTBEAT_INTERVAL_MS);
         consumerConfig.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, MAX_POLL_INTERVAL_MS);
 
-        ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(new DefaultKafkaConsumerFactory<>(consumerConfig));
+        JsonDeserializer<KafkaMessage<?>> deserializer = new JsonDeserializer<>(new TypeReference<>() {}, objectMapper);
+        deserializer.addTrustedPackages("com.loopers.kafka.dto");
+
+        return new DefaultKafkaConsumerFactory<>(
+                consumerConfig,
+                new StringDeserializer(),
+                deserializer
+        );
+    }
+
+    @Bean(name = BATCH_LISTENER)
+    public ConcurrentKafkaListenerContainerFactory<String, KafkaMessage<?>> defaultBatchListenerContainerFactory(
+            ConsumerFactory<String, KafkaMessage<?>> kafkaMessageConsumerFactory,
+            DefaultErrorHandler errorHandler
+    ) {
+        ConcurrentKafkaListenerContainerFactory<String, KafkaMessage<?>> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(kafkaMessageConsumerFactory);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL); // 수동 커밋
-        factory.setBatchMessageConverter(new BatchMessagingMessageConverter(converter));
         factory.setConcurrency(3);
         factory.setBatchListener(true);
 

@@ -1,4 +1,4 @@
-package com.loopers.config.jpa;
+package com.loopers.jpa.config;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.loopers.config.redis.CacheConstants.BRAND_CACHE_LIMIT;
+import static com.loopers.redis.config.CacheConstants.BRAND_CACHE_LIMIT;
 
 @Component
 @RequiredArgsConstructor
