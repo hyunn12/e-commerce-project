@@ -15,7 +15,7 @@ spring:
   main:
     web-application-type: servlet
   application:
-    name: commerce-api
+    name: commerce-collector
   profiles:
     active: local
   config:
@@ -24,13 +24,6 @@ spring:
       - redis.yml
       - kafka.yml
       - logging.yml
-  kafka:
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: com.loopers.interfaces.dto
-        spring.json.value.default.type: com.loopers.interfaces.dto.KafkaMessage
 
 kafka:
   topics:

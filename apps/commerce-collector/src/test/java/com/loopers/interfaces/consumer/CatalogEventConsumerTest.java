@@ -1,7 +1,7 @@
 package com.loopers.interfaces.consumer;
 
 import com.loopers.domain.ProductMetricsService;
-import com.loopers.interfaces.dto.KafkaMessage;
+import com.loopers.kafka.dto.KafkaMessage;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,4 +1,4 @@
-package com.loopers.interfaces.dto;
+package com.loopers.kafka.dto;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;

@@ -3,7 +3,7 @@ package com.loopers.interfaces.event.listener;
 import com.loopers.domain.event.dto.LikeAddEvent;
 import com.loopers.domain.event.dto.LikeDeleteEvent;
 import com.loopers.domain.product.ProductService;
-import com.loopers.interfaces.event.dto.KafkaMessage;
+import com.loopers.kafka.dto.KafkaMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

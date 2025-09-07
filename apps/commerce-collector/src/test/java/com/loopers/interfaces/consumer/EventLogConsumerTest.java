@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopers.domain.EventHandledService;
 import com.loopers.domain.EventLog;
 import com.loopers.domain.EventLogService;
-import com.loopers.interfaces.dto.KafkaMessage;
+import com.loopers.kafka.dto.KafkaMessage;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;

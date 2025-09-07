@@ -1,8 +1,8 @@
 package com.loopers.interfaces.consumer;
 
-import com.loopers.config.kafka.KafkaConfig;
 import com.loopers.domain.ProductMetricsService;
-import com.loopers.interfaces.dto.KafkaMessage;
+import com.loopers.kafka.config.KafkaConfig;
+import com.loopers.kafka.dto.KafkaMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

@@ -1,7 +1,7 @@
 package com.loopers.interfaces.event.listener;
 
 import com.loopers.domain.event.dto.BrandModifyEvent;
-import com.loopers.interfaces.event.dto.KafkaMessage;
+import com.loopers.kafka.dto.KafkaMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
