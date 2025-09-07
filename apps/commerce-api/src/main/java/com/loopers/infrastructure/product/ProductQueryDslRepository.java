@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.loopers.config.redis.CacheConstants.PRODUCT_CACHE_LIMIT;
+import static com.loopers.redis.config.CacheConstants.PRODUCT_CACHE_LIMIT;
 
 @Component
 @RequiredArgsConstructor

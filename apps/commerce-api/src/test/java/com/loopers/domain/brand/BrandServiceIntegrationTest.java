@@ -1,6 +1,8 @@
 package com.loopers.domain.brand;
 
 import com.loopers.infrastructure.brand.BrandJpaRepository;
+import com.loopers.support.error.CoreException;
+import com.loopers.support.error.ErrorType;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class BrandServiceIntegrationTest {
@@ -77,17 +80,53 @@ class BrandServiceIntegrationTest {
 
         @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
         @Nested
-        class Null을_반환한다 {
+        class Not_Fount_예외가_발생한다 {
 
             @DisplayName("브랜드가 존재하지 않는다면")
             @Test
             void whenBrandNotExists() {
                 // act
-                Brand result = brandService.getDetail(1L);
+                CoreException exception = assertThrows(CoreException.class, () -> brandService.getDetail(1L));
 
                 // assert
-                assertThat(result).isNull();
+                assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
             }
+        }
+    }
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class 브랜드_정보_수정_시 {
+
+        @DisplayName("존재하는 브랜드의 ID가 주어진다면 브랜드 정보 수정에 성공한다.")
+        @Test
+        void successModify_whenValidBrandId() {
+            // arrange
+            Brand brand = brandJpaRepository.save(Brand.builder().name("브랜드1").description("브랜드설명").build());
+            String modifyName = "변경 브랜드명";
+            String modifyDesc = "변경 브랜드설명";
+
+            // act
+            Brand result = brandService.modify(brand.getId(), modifyName, modifyDesc);
+
+            // assert
+            assertThat(result.getId()).isEqualTo(brand.getId());
+            assertThat(result.getName()).isEqualTo(modifyName);
+            assertThat(result.getDescription()).isEqualTo(modifyDesc);
+        }
+
+        @DisplayName("존재하지않는 브랜드의 ID가 주어진다면 404 Not Found 예외가 발생한다.")
+        @Test
+        void throwsNotFoundException_whenInValidBrandId() {
+            // arrange
+            String modifyName = "변경 브랜드명";
+            String modifyDesc = "변경 브랜드설명";
+
+            // act
+            CoreException exception = assertThrows(CoreException.class, () -> brandService.modify(1L, modifyName, modifyDesc));
+
+            // assert
+            assertThat(exception.getErrorType()).isEqualTo(ErrorType.NOT_FOUND);
         }
     }
 }

@@ -22,7 +22,6 @@ spring:
       - jpa.yml
       - redis.yml
       - logging.yml
-      - monitoring.yml
 
 datasource:
   mysql-jpa:
