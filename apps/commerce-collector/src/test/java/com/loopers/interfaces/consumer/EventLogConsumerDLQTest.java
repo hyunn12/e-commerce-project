@@ -1,7 +1,7 @@
 package com.loopers.interfaces.consumer;
 
-import com.loopers.domain.EventLog;
-import com.loopers.domain.EventLogService;
+import com.loopers.domain.eventLog.EventLog;
+import com.loopers.domain.eventLog.EventLogService;
 import com.loopers.kafka.dto.KafkaMessage;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;

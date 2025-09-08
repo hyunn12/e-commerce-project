@@ -1,4 +1,4 @@
-package com.loopers.domain;
+package com.loopers.domain.handled;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

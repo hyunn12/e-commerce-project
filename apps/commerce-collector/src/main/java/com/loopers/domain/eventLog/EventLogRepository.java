@@ -1,4 +1,4 @@
-package com.loopers.domain;
+package com.loopers.domain.eventLog;
 
 public interface EventLogRepository {
 

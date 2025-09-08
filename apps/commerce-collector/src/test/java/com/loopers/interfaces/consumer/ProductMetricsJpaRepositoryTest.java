@@ -1,6 +1,6 @@
 package com.loopers.interfaces.consumer;
 
-import com.loopers.domain.ProductMetrics;
+import com.loopers.domain.metrics.ProductMetrics;
 import com.loopers.infrastructure.ProductMetricsJpaRepository;
 import com.loopers.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.AfterEach;

@@ -1,9 +1,10 @@
-package com.loopers.domain;
+package com.loopers.domain.metrics;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @Embeddable
 @Getter
@@ -11,7 +12,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventHandledId implements Serializable {
-    private String eventId;
-    private String groupId;
+public class ProductMetricsId implements Serializable {
+    private Long productId;
+    private LocalDate date;
 }

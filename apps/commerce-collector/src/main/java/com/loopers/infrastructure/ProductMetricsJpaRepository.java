@@ -1,7 +1,7 @@
 package com.loopers.infrastructure;
 
-import com.loopers.domain.ProductMetrics;
-import com.loopers.domain.ProductMetricsId;
+import com.loopers.domain.metrics.ProductMetrics;
+import com.loopers.domain.metrics.ProductMetricsId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

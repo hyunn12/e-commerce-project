@@ -2,9 +2,9 @@ package com.loopers.interfaces.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopers.domain.EventHandledService;
-import com.loopers.domain.EventLog;
-import com.loopers.domain.EventLogService;
+import com.loopers.domain.handled.EventHandledService;
+import com.loopers.domain.eventLog.EventLog;
+import com.loopers.domain.eventLog.EventLogService;
 import com.loopers.kafka.config.KafkaConfig;
 import com.loopers.kafka.dto.KafkaMessage;
 import lombok.RequiredArgsConstructor;

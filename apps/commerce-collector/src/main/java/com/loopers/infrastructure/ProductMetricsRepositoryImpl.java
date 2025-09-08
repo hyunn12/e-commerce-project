@@ -1,7 +1,7 @@
 package com.loopers.infrastructure;
 
-import com.loopers.domain.ProductMetricsCount;
-import com.loopers.domain.ProductMetricsRepository;
+import com.loopers.domain.metrics.ProductMetricsCount;
+import com.loopers.domain.metrics.ProductMetricsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

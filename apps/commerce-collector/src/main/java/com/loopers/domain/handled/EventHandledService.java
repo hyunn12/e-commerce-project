@@ -1,4 +1,4 @@
-package com.loopers.domain;
+package com.loopers.domain.handled;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
