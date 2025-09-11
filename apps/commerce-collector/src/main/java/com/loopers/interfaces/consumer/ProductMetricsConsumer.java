@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.loopers.kafka.config.KafkaPayloadExtractor.getValue;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -35,11 +37,11 @@ public class ProductMetricsConsumer {
             KafkaMessage<?> message = record.value();
             Map<String, Object> payload = (Map<String, Object>) message.payload();
 
-            Long productId = ((Number) payload.get("productId")).longValue();
-            int quantity = (int) payload.getOrDefault("quantity", 0);
+            Long productId = getValue(payload, "productId", Long.class);
+            Integer quantity = getValue(payload, "quantity", Integer.class);
 
             aggregate.computeIfAbsent(productId, id -> new ProductMetricsCount())
-                    .apply(message.type(), quantity);
+                    .apply(message.type(), quantity != null ? quantity : 0);
         }
 
         if (!aggregate.isEmpty()) {
