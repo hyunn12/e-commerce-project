@@ -1,5 +1,6 @@
 package com.loopers.interfaces.consumer;
 
+import com.loopers.domain.metrics.ProductRankingCacheService;
 import com.loopers.domain.metrics.ProductMetricsCount;
 import com.loopers.domain.metrics.ProductMetricsService;
 import com.loopers.kafka.config.KafkaConfig;
@@ -23,6 +24,7 @@ import static com.loopers.kafka.config.KafkaPayloadExtractor.getValue;
 public class ProductMetricsConsumer {
 
     private final ProductMetricsService productMetricsService;
+    private final ProductRankingCacheService productRankingCacheService;
 
     @SuppressWarnings("unchecked")
     @KafkaListener(
@@ -46,6 +48,7 @@ public class ProductMetricsConsumer {
 
         if (!aggregate.isEmpty()) {
             productMetricsService.bulkUpdate(aggregate);
+            productRankingCacheService.updateRanking(aggregate);
         }
 
         ack.acknowledge();
