@@ -44,6 +44,11 @@ public class RankingService {
         return count != null ? count : 0;
     }
 
+    public Long getProductRanking(Long productId, String rankingKey) {
+        String member = RANKING_PRODUCT_CACHE_MEMBER_KEY + productId;
+        return redisTemplate.opsForZSet().reverseRank(rankingKey, member);
+    }
+
     public boolean existsRankingKey(String rankingKey) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(rankingKey));
     }
