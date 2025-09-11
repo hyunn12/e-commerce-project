@@ -1,6 +1,8 @@
 package com.loopers.domain.metrics;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.connection.StringRedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +16,6 @@ import static com.loopers.redis.config.CacheConstants.*;
 @RequiredArgsConstructor
 public class ProductRankingCacheService {
 
-
     private final StringRedisTemplate redisTemplate;
     private final ProductRankingWeightProperties weight;
 
@@ -25,18 +26,23 @@ public class ProductRankingCacheService {
 
         String key = RANKING_PRODUCT_CACHE_KEY_PREFIX + ZonedDateTime.now().format(FORMATTER);
 
-        for (Map.Entry<Long, ProductMetricsCount> entry : aggregate.entrySet()) {
-            Long productId = entry.getKey();
-            ProductMetricsCount count = entry.getValue();
+        redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
+            StringRedisConnection redisConnection = (StringRedisConnection) connection;
 
-            double score = calculateScore(count);
-            if (score <= 0) continue;
+            for (Map.Entry<Long, ProductMetricsCount> entry : aggregate.entrySet()) {
+                Long productId = entry.getKey();
+                ProductMetricsCount count = entry.getValue();
 
-            String member = RANKING_PRODUCT_CACHE_MEMBER_KEY + productId;
+                double score = calculateScore(count);
+                if (score <= 0) continue;
 
-            // score 누적
-            redisTemplate.opsForZSet().incrementScore(key, member, score);
-        }
+                String member = RANKING_PRODUCT_CACHE_MEMBER_KEY + productId;
+
+                redisConnection.zIncrBy(key, score, member);
+            }
+
+            return null;
+        });
 
         // TTL 설정
         if (!Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
@@ -44,9 +50,6 @@ public class ProductRankingCacheService {
         }
     }
 
-    /**
-     * ProductMetricsCount 기반 점수 계산
-     */
     private double calculateScore(ProductMetricsCount count) {
         double score = 0;
 
