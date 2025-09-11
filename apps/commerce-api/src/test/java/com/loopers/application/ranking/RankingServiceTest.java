@@ -168,6 +168,49 @@ class RankingServiceTest {
 
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     @Nested
+    class 특정_상품_랭킹_조회_시 {
+
+        private final String key = RANKING_PRODUCT_CACHE_KEY_PREFIX + "20250911";
+        private final Long productId = 1L;
+        private final String member = RANKING_PRODUCT_CACHE_MEMBER_KEY + productId;
+
+        @BeforeEach
+        void setUp() {
+            given(redisTemplate.opsForZSet()).willReturn(zSetOperations);
+        }
+
+        @DisplayName("상품이 랭킹에 존재하면 해당 순위를 반환한다.")
+        @Test
+        void returnRankingWhenProductExists() {
+            // arrange
+            Long rank = 4L;
+            given(zSetOperations.reverseRank(key, member)).willReturn(rank);
+
+            // act
+            Long result = rankingService.getProductRanking(productId, key);
+
+            // assert
+            assertThat(result).isEqualTo(rank);
+            verify(zSetOperations).reverseRank(key, member);
+        }
+
+        @DisplayName("상품이 랭킹에 존재하지 않으면 null을 반환한다.")
+        @Test
+        void returnNullWhenProductNotExists() {
+            // arrange
+            given(zSetOperations.reverseRank(key, member)).willReturn(null);
+
+            // act
+            Long result = rankingService.getProductRanking(productId, key);
+
+            // assert
+            assertThat(result).isNull();
+            verify(zSetOperations).reverseRank(key, member);
+        }
+    }
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
     class 랭킹_키_생성_시 {
 
         @DisplayName("날짜 문자열로 키를 생성한다.")

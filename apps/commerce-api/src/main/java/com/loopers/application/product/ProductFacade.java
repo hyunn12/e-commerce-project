@@ -2,6 +2,7 @@ package com.loopers.application.product;
 
 import com.loopers.application.brand.BrandCacheService;
 import com.loopers.application.brand.BrandInfo;
+import com.loopers.application.ranking.RankingService;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandService;
 import com.loopers.domain.event.ProductEventPublisher;
@@ -15,16 +16,19 @@ import com.loopers.domain.product.Stock;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.loopers.redis.config.CacheConstants.PRODUCT_CACHE_LIMIT;
 import static com.loopers.support.utils.Validation.Message.*;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ProductFacade {
@@ -34,6 +38,7 @@ public class ProductFacade {
     private final ProductCacheService productCacheService;
     private final BrandCacheService brandCacheService;
     private final LikeService likeService;
+    private final RankingService rankingService;
     private final ProductEventPublisher productEventPublisher;
 
     @Transactional(readOnly = true)
@@ -88,7 +93,10 @@ public class ProductFacade {
 
         productEventPublisher.publish(ProductViewEvent.of(command.getProductId(), command.getUserId()));
 
-        return ProductInfo.Main.from(product, brand, stock);
+        String key = rankingService.buildRankingKey(LocalDate.now());
+        Long rank = rankingService.getProductRanking(product.getId(), key);
+
+        return ProductInfo.Main.from(product, brand, stock, rank);
     }
 
     public void refreshLikeCounts() {

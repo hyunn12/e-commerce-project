@@ -32,8 +32,9 @@ public class ProductInfo {
         private String brandName;
         private String brandDesc;
         private int quantity;
+        private Long ranking;
 
-        public static ProductInfo.Main from(Product product, Brand brand, Stock stock) {
+        public static ProductInfo.Main from(Product product, Brand brand, Stock stock, Long ranking) {
             return new ProductInfo.Main(
                     product.getId(),
                     product.getName(),
@@ -42,7 +43,8 @@ public class ProductInfo {
                     product.getStatus().name(),
                     brand.getName(),
                     brand.getDescription(),
-                    stock != null ? stock.getQuantity() : 0
+                    stock != null ? stock.getQuantity() : 0,
+                    ranking != null ? ranking : 0
             );
         }
 
@@ -55,7 +57,8 @@ public class ProductInfo {
                     product.getStatus().name(),
                     brandInfo.getName(),
                     brandInfo.getDescription(),
-                    0
+                    0,
+                    null
             );
         }
     }
@@ -75,6 +78,7 @@ public class ProductInfo {
                     .map(product -> Main.from(
                             product,
                             brandMap.get(product.getBrand().getId()),
+                            null,
                             null
                     ))
                     .toList();
