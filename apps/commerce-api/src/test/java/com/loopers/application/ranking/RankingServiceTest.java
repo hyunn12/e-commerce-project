@@ -2,12 +2,7 @@ package com.loopers.application.ranking;
 
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.DisplayNameGeneration;
-import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,14 +12,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import static com.loopers.redis.config.CacheConstants.*;
+import static com.loopers.redis.config.CacheConstants.RANKING_PRODUCT_CACHE_KEY_PREFIX;
+import static com.loopers.redis.config.CacheConstants.RANKING_PRODUCT_CACHE_MEMBER_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class RankingServiceTest {
@@ -234,6 +232,54 @@ class RankingServiceTest {
 
             // act
             CoreException exception = assertThrows(CoreException.class, () -> rankingService.buildRankingKey(date));
+
+            // assert
+            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+        }
+    }
+
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    @Nested
+    class 날짜_파싱_시 {
+
+        @DisplayName("올바른 날짜 형식이면 LocalDate 객체를 반환한다.")
+        @Test
+        void returnLocalDateWhenValidFormat() {
+            // arrange
+            int year = 2025;
+            int month = 12;
+            int day = 25;
+            String dateString = String.format("%d%d%d", year, month, day);
+            LocalDate date = LocalDate.of(year, month, day);
+
+            // act
+            LocalDate result = rankingService.parseDate(dateString);
+
+            // assert
+            assertThat(result).isEqualTo(date);
+        }
+
+        @DisplayName("잘못된 날짜 형식이면 400 Bad Request 예외가 발생한다.")
+        @Test
+        void throwExceptionWhenInvalidFormat() {
+            // arrange
+            String date = "2025-09-11";
+
+            // act
+            CoreException exception = assertThrows(CoreException.class, () -> rankingService.parseDate(date));
+
+            // assert
+            assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);
+        }
+
+        @DisplayName("잘못된 날짜 문자열이라면 400 Bad Request 예외가 발생한다.")
+        @Test
+        void throwException_whenInvalidDateString() {
+            // arrange
+            String date = "99999999";
+
+            // act
+            CoreException exception = assertThrows(CoreException.class, () -> rankingService.parseDate(date));
 
             // assert
             assertThat(exception.getErrorType()).isEqualTo(ErrorType.BAD_REQUEST);

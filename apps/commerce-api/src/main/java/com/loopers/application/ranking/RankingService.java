@@ -4,7 +4,10 @@ import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.connection.StringRedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,9 @@ public class RankingService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(RANKING_DATE_PATTERN);
 
+    @Value("${ranking.ratio}")
+    private double ratio;
+
     public List<RankingRaw> getTopRankings(String key, Pageable pageable) {
         Set<ZSetOperations.TypedTuple<String>> tuples = redisTemplate.opsForZSet()
                 .reverseRangeWithScores(key, pageable.getOffset(), pageable.getOffset() + pageable.getPageSize() - 1);
@@ -45,7 +51,7 @@ public class RankingService {
     }
 
     public Long getProductRanking(Long productId, String rankingKey) {
-        String member = RANKING_PRODUCT_CACHE_MEMBER_KEY + productId;
+        String member = buildMemberKey(productId);
         return redisTemplate.opsForZSet().reverseRank(rankingKey, member);
     }
 
@@ -65,5 +71,34 @@ public class RankingService {
 
     public String buildRankingKey(LocalDate date) {
         return RANKING_PRODUCT_CACHE_KEY_PREFIX + date.format(FORMATTER);
+    }
+
+    public String buildMemberKey(Long productId) {
+        return RANKING_PRODUCT_CACHE_MEMBER_KEY + productId;
+    }
+
+    public LocalDate parseDate(String date) {
+        try {
+            return LocalDate.parse(date, FORMATTER);
+        } catch (DateTimeParseException e) {
+            log.error("Error parsing date: {}", date);
+            throw new CoreException(ErrorType.BAD_REQUEST, "잘못된 날짜 형식입니다.");
+        }
+    }
+
+    public void warmUpTomorrow(String tomorrowKey, List<RankingRaw> raws) {
+        redisTemplate.executePipelined((RedisCallback<Object>) connection -> {
+            StringRedisConnection redisConnection = (StringRedisConnection) connection;
+            for (RankingRaw raw : raws) {
+                if (raw.productId() == null) continue;
+                String member = buildMemberKey(raw.productId());
+                double score = raw.score() * ratio;
+                redisConnection.zAdd(tomorrowKey, score, member);
+            }
+            return null;
+        });
+
+        // TTL 설정
+        redisTemplate.expire(tomorrowKey, RANKING_CACHE_TTL);
     }
 }
