@@ -32,8 +32,8 @@ class ProductRankingCacheServiceIntegrationTest {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(RANKING_DATE_PATTERN);
 
-    @BeforeEach
-    void setUp() {
+    @AfterEach
+    void tearDown() {
         redisCleanUp.truncateAll();
     }
 

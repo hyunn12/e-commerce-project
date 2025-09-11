@@ -11,6 +11,8 @@ public interface ProductRepository {
 
     Product findById(Long id);
 
+    List<Product> findAllByIds(List<Long> ids);
+
     Page<Product> search(Long brandId, Pageable pageable, ProductSortType sortType);
 
     List<Product> findTopListByBrandId(Long brandId);

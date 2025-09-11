@@ -27,6 +27,10 @@ public class ProductService {
         return productRepository.search(brandId, pageable, sortType);
     }
 
+    public List<Product> getListByIds(List<Long> productIds) {
+        return productRepository.findAllByIds(productIds);
+    }
+
     public List<Product> getTopListByBrandId(Long brandId) {
         return productRepository.findTopListByBrandId(brandId);
     }
