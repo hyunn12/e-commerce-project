@@ -46,7 +46,7 @@ public class ProductV1Dto {
                 String brandName,
                 String brandDesc,
                 int quantity,
-                long ranking
+                Long ranking
         ) {
             public static ProductResponse.Detail from(ProductInfo.Main info) {
                 return new ProductResponse.Detail(

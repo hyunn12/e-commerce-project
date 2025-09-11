@@ -66,4 +66,13 @@ public class RankingService {
     public String buildRankingKey(LocalDate date) {
         return RANKING_PRODUCT_CACHE_KEY_PREFIX + date.format(FORMATTER);
     }
+
+    public LocalDate parseDate(String date) {
+        try {
+            return LocalDate.parse(date, FORMATTER);
+        } catch (DateTimeParseException e) {
+            log.error("Error parsing date: {}", date);
+            throw new CoreException(ErrorType.BAD_REQUEST, "잘못된 날짜 형식입니다.");
+        }
+    }
 }
