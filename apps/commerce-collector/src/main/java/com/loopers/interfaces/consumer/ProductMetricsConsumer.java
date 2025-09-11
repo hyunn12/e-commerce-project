@@ -18,7 +18,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CatalogEventConsumer {
+public class ProductMetricsConsumer {
 
     private final ProductMetricsService productMetricsService;
 

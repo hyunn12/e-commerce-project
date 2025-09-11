@@ -23,17 +23,17 @@ import static org.mockito.Mockito.verify;
 
 @Testcontainers
 @SpringBootTest
-class CatalogEventConsumerTest {
+class ProductMetricsConsumerTest {
 
     @Mock
     private final ProductMetricsService productMetricsService = mock(ProductMetricsService.class);
     private final Acknowledgment ack = mock(Acknowledgment.class);
 
-    private CatalogEventConsumer consumer;
+    private ProductMetricsConsumer consumer;
 
     @BeforeEach
     void setUp() {
-        consumer = new CatalogEventConsumer(productMetricsService);
+        consumer = new ProductMetricsConsumer(productMetricsService);
     }
 
     private ConsumerRecord<String, KafkaMessage<?>> recordOf(String type, Map<String, Object> payload) {
