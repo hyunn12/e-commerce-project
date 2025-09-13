@@ -1,4 +1,4 @@
-package com.loopers.domain;
+package com.loopers.domain.cache;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

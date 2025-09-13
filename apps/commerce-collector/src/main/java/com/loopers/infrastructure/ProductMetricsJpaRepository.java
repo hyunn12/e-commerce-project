@@ -1,7 +1,7 @@
 package com.loopers.infrastructure;
 
-import com.loopers.domain.ProductMetrics;
-import com.loopers.domain.ProductMetricsId;
+import com.loopers.domain.metrics.ProductMetrics;
+import com.loopers.domain.metrics.ProductMetricsId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,50 +14,27 @@ import java.util.Optional;
 @Repository
 public interface ProductMetricsJpaRepository extends JpaRepository<ProductMetrics, ProductMetricsId> {
 
-    @Modifying
-    @Query(value = """
-        INSERT INTO product_metrics (product_id, date, sales_count, like_count, view_count)
-        VALUES (:productId, CURDATE(), 0, 1, 0)
-        ON DUPLICATE KEY UPDATE like_count = like_count + 1
-        """, nativeQuery = true)
-    void increaseLikeCount(@Param("productId") Long productId);
-
-    @Modifying
-    @Query(value = """
-        INSERT INTO product_metrics (product_id, date, sales_count, like_count, view_count)
-        VALUES (:productId, CURDATE(), 0, 0, 0)
-        ON DUPLICATE KEY UPDATE like_count = GREATEST(like_count - 1, 0)
-        """, nativeQuery = true)
-    void decreaseLikeCount(@Param("productId") Long productId);
-
-    @Modifying
-    @Query(value = """
-        INSERT INTO product_metrics (product_id, date, sales_count, like_count, view_count)
-        VALUES (:productId, CURDATE(), :quantity, 0, 0)
-        ON DUPLICATE KEY UPDATE sales_count = sales_count + :quantity
-        """, nativeQuery = true)
-    void increaseSalesCount(@Param("productId") Long productId, @Param("quantity") int quantity);
-
-    @Modifying
-    @Query(value = """
-        INSERT INTO product_metrics (product_id, date, sales_count, like_count, view_count)
-        VALUES (:productId, CURDATE(), 0, 0, 0)
-        ON DUPLICATE KEY UPDATE sales_count = GREATEST(sales_count - :quantity, 0)
-        """, nativeQuery = true)
-    void decreaseSalesCount(@Param("productId") Long productId, @Param("quantity") int quantity);
-
-    @Modifying
-    @Query(value = """
-        INSERT INTO product_metrics (product_id, date, sales_count, like_count, view_count)
-        VALUES (:productId, CURDATE(), 0, 0, 1)
-        ON DUPLICATE KEY UPDATE view_count = view_count + 1
-        """, nativeQuery = true)
-    void increaseViewCount(@Param("productId") Long productId);
-
     Optional<ProductMetrics> findByIdProductIdAndIdDate(Long productId, LocalDate date);
 
-    boolean existsByIdProductIdAndIdDate(Long productId, LocalDate date);
-
-    @Query(value = "select curdate()", nativeQuery = true)
-    LocalDate currentDate();
+    @Modifying
+    @Query(value = """
+    INSERT INTO product_metrics (product_id, date, like_count, sales_count, view_count)
+    VALUES (
+        :productId,
+        CURDATE(),
+        GREATEST(:likeCount, 0),
+        GREATEST(:salesCount, 0),
+        GREATEST(:viewCount, 0)
+    )
+    ON DUPLICATE KEY UPDATE
+        like_count = GREATEST(like_count + :likeCount, 0),
+        sales_count = GREATEST(sales_count + :salesCount, 0),
+        view_count = GREATEST(view_count + :viewCount, 0)
+    """, nativeQuery = true)
+    void upsert(
+            @Param("productId") Long productId,
+            @Param("likeCount") int likeCount,
+            @Param("salesCount") int salesCount,
+            @Param("viewCount") int viewCount
+    );
 }

@@ -1,7 +1,7 @@
 package com.loopers.infrastructure;
 
-import com.loopers.domain.EventHandled;
-import com.loopers.domain.EventHandledRepository;
+import com.loopers.domain.handled.EventHandled;
+import com.loopers.domain.handled.EventHandledRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

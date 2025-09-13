@@ -1,6 +1,6 @@
 package com.loopers.infrastructure;
 
-import com.loopers.domain.EventLog;
+import com.loopers.domain.eventLog.EventLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

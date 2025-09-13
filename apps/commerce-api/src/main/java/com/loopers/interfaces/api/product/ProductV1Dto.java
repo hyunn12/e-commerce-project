@@ -45,7 +45,8 @@ public class ProductV1Dto {
                 String status,
                 String brandName,
                 String brandDesc,
-                int quantity
+                int quantity,
+                Long ranking
         ) {
             public static ProductResponse.Detail from(ProductInfo.Main info) {
                 return new ProductResponse.Detail(
@@ -56,7 +57,8 @@ public class ProductV1Dto {
                         info.getStatus(),
                         info.getBrandName(),
                         info.getBrandDesc(),
-                        info.getQuantity()
+                        info.getQuantity(),
+                        info.getRanking()
                 );
             }
         }

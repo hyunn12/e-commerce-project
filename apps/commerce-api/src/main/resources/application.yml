@@ -87,6 +87,9 @@ kafka:
     user: user-events
     cache: cache-events
 
+ranking:
+  ratio: 0.001
+
 ---
 spring:
   config:

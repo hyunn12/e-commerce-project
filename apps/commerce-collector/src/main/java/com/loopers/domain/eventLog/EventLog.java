@@ -1,5 +1,6 @@
-package com.loopers.domain;
+package com.loopers.domain.eventLog;
 
+import com.loopers.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

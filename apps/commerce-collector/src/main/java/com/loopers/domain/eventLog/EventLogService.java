@@ -1,4 +1,4 @@
-package com.loopers.domain;
+package com.loopers.domain.eventLog;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

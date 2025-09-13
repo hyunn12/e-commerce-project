@@ -1,6 +1,6 @@
 package com.loopers.interfaces.consumer;
 
-import com.loopers.domain.BrandCacheEvictService;
+import com.loopers.domain.cache.BrandCacheEvictService;
 import com.loopers.kafka.dto.KafkaMessage;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.DisplayName;
