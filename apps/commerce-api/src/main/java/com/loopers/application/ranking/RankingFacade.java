@@ -28,6 +28,12 @@ public class RankingFacade {
             case DAILY -> {
                 return getDailyRanking(command.getDate(), command.toPageable());
             }
+            case WEEKLY -> {
+                return getWeeklyRanking(command.getDate(), command.toPageable());
+            }
+            case MONTHLY -> {
+                return getMonthlyRanking(command.getDate(), command.toPageable());
+            }
             default -> throw new IllegalArgumentException("Unsupported ranking type: " + command.getType());
         }
     }
@@ -35,8 +41,25 @@ public class RankingFacade {
     @Transactional(readOnly = true)
     public RankingInfo.Summary getDailyRanking(String date, Pageable pageable) {
         List<RankingRaw> raws = rankingService.getDailyRankings(date, pageable);
-        long totalCount = rankingService.getTotalRankingCount(date);
+        long totalCount = rankingService.getTotalDailyRankingCount(date);
+        return convertToInfo(raws, pageable, totalCount);
+    }
 
+    @Transactional(readOnly = true)
+    public RankingInfo.Summary getWeeklyRanking(String date, Pageable pageable) {
+        List<RankingRaw> raws = rankingService.getWeeklyRankings(date, pageable);
+        long totalCount = rankingService.getTotalWeeklyRankingCount(date);
+        return convertToInfo(raws, pageable, totalCount);
+    }
+
+    @Transactional(readOnly = true)
+    public RankingInfo.Summary getMonthlyRanking(String date, Pageable pageable) {
+        List<RankingRaw> raws = rankingService.getMonthlyRankings(date, pageable);
+        long totalCount = rankingService.getTotalMonthlyRankingCount(date);
+        return convertToInfo(raws, pageable, totalCount);
+    }
+
+    private RankingInfo.Summary convertToInfo(List<RankingRaw> raws, Pageable pageable, long totalCount) {
         if (raws.isEmpty()) {
             return RankingInfo.Summary.empty(pageable);
         }
