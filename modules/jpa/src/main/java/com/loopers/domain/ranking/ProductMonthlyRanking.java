@@ -8,6 +8,7 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 
 @Builder
 @Getter
@@ -26,9 +27,6 @@ public class ProductMonthlyRanking extends BaseEntity {
     @Column(name = "year_month")
     private String yearMonth; // 형식: yyyyMM
 
-    @Column(name = "rank_position", nullable = false)
-    private Integer rankPosition;
-
     @Column(name = "total_score", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalScore;
 
@@ -41,15 +39,18 @@ public class ProductMonthlyRanking extends BaseEntity {
     @Column(name = "view_count", nullable = false)
     private Long viewCount = 0L;
 
-    public static ProductMonthlyRanking of(Long productId, String yearMonth, Integer rankPosition, BigDecimal totalScore, Long salesCount, Long likeCount, Long viewCount) {
+    @Column(name = "aggregated_at", nullable = false)
+    private ZonedDateTime aggregatedAt;
+
+    public static ProductMonthlyRanking of(Long productId, String yearMonth, BigDecimal totalScore, Long salesCount, Long likeCount, Long viewCount) {
         return ProductMonthlyRanking.builder()
                 .productId(productId)
                 .yearMonth(yearMonth)
-                .rankPosition(rankPosition)
                 .totalScore(totalScore)
                 .salesCount(salesCount)
                 .likeCount(likeCount)
                 .viewCount(viewCount)
+                .aggregatedAt(ZonedDateTime.now())
                 .build();
     }
 }
