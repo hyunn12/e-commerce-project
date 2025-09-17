@@ -13,6 +13,7 @@ public class RankingCommand {
     @AllArgsConstructor
     public static class Summary {
 
+        private RankingType type;
         private String date;
         @Builder.Default private int page = 0;
         @Builder.Default private int size = 20;

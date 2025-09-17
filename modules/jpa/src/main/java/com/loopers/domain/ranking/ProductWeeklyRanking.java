@@ -24,8 +24,8 @@ public class ProductWeeklyRanking extends BaseEntity {
     @Column(name = "product_id")
     private Long productId;
 
-    @Column(name = "year_week")
-    private String yearWeek; // 형식: 2025-W36
+    @Column(name = "`year_week`")
+    private String yearWeek; // 형식: 2025-W01
 
     @Column(name = "total_score", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalScore;

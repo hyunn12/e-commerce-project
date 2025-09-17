@@ -2,8 +2,10 @@ package com.loopers.interfaces.api.ranking;
 
 import com.loopers.application.ranking.RankingCommand;
 import com.loopers.application.ranking.RankingInfo;
+import com.loopers.application.ranking.RankingType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import java.util.List;
@@ -16,6 +18,8 @@ public class RankingV1Dto {
     public static class RankingRequest {
 
         public record Summary(
+                @NotNull
+                RankingType type,
                 @Pattern(regexp = "\\d{8}", message = "날짜는 yyyyMMdd 형식이어야 합니다.")
                 String date,
                 @Min(value = 0, message = MESSAGE_PAGINATION_PAGE)
@@ -26,6 +30,7 @@ public class RankingV1Dto {
         ) {
             public RankingCommand.Summary toCommand() {
                 return RankingCommand.Summary.builder()
+                        .type(type)
                         .date(date)
                         .page(page)
                         .size(size)

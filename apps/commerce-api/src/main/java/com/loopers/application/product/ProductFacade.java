@@ -2,7 +2,6 @@ package com.loopers.application.product;
 
 import com.loopers.application.brand.BrandCacheService;
 import com.loopers.application.brand.BrandInfo;
-import com.loopers.application.ranking.RankingService;
 import com.loopers.domain.brand.Brand;
 import com.loopers.domain.brand.BrandService;
 import com.loopers.domain.event.ProductEventPublisher;
@@ -13,6 +12,7 @@ import com.loopers.domain.product.Product;
 import com.loopers.domain.product.ProductService;
 import com.loopers.domain.product.ProductSortType;
 import com.loopers.domain.product.Stock;
+import com.loopers.domain.ranking.RankingService;
 import com.loopers.support.error.CoreException;
 import com.loopers.support.error.ErrorType;
 import lombok.RequiredArgsConstructor;
@@ -75,6 +75,7 @@ public class ProductFacade {
         return ProductInfo.Summary.from(products, brands);
     }
 
+    @Transactional(readOnly = true)
     public ProductInfo.Main getDetail(ProductCommand.Detail command) {
         Product product = productService.getDetail(command.getProductId());
         if (product == null) {
@@ -93,8 +94,8 @@ public class ProductFacade {
 
         productEventPublisher.publish(ProductViewEvent.of(command.getProductId(), command.getUserId()));
 
-        String key = rankingService.buildRankingKey(LocalDate.now());
-        Long rank = rankingService.getProductRanking(product.getId(), key);
+        String today = LocalDate.now().toString();
+        Long rank = rankingService.getProductRank(product.getId(), today);
 
         return ProductInfo.Main.from(product, brand, stock, rank);
     }
