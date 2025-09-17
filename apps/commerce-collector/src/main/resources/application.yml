@@ -44,6 +44,14 @@ ranking:
     like: 0.3
     sales: 0.6
 
+batch:
+  reader:
+    product-metrics:
+      method-name: findByUpdatedAtBetween
+      page-size: 1000
+      sort-field: id
+      sort-direction: ASC
+
 ---
 spring:
   config:
