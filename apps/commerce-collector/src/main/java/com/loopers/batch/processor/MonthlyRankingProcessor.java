@@ -1,7 +1,7 @@
 package com.loopers.batch.processor;
 
 import com.loopers.batch.dto.ProductRankingAggregateResult;
-import com.loopers.domain.ranking.ProductWeeklyRanking;
+import com.loopers.domain.ranking.ProductMonthlyRanking;
 import com.loopers.domain.ranking.util.RankingCalculator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ItemProcessor;
@@ -12,15 +12,15 @@ import java.math.BigDecimal;
 
 @Component
 @RequiredArgsConstructor
-public class WeeklyRankingProcessor implements ItemProcessor<ProductRankingAggregateResult, ProductWeeklyRanking> {
+public class MonthlyRankingProcessor implements ItemProcessor<ProductRankingAggregateResult, ProductMonthlyRanking> {
 
     private final RankingCalculator rankingCalculator;
 
-    @Value("#{jobParameters['yearWeek']}")
-    private String yearWeek;
+    @Value("#{jobParameters['yearMonth']}")
+    private String yearMonth;
 
     @Override
-    public ProductWeeklyRanking process(ProductRankingAggregateResult item) {
+    public ProductMonthlyRanking process(ProductRankingAggregateResult item) {
 
         BigDecimal totalScore = rankingCalculator.calculateScore(
                 item.getTotalViewCount(),
@@ -28,9 +28,9 @@ public class WeeklyRankingProcessor implements ItemProcessor<ProductRankingAggre
                 item.getTotalSalesCount()
         );
 
-        return ProductWeeklyRanking.of(
+        return ProductMonthlyRanking.of(
                 item.getProductId(),
-                yearWeek,
+                yearMonth,
                 totalScore,
                 item.getTotalSalesCount(),
                 item.getTotalLikeCount(),

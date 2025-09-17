@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class WeeklyRankingAggregateResult {
+public class ProductRankingAggregateResult {
 
     private Long productId;
     private Long totalSalesCount;

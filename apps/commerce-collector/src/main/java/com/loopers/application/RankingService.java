@@ -19,6 +19,7 @@ public class RankingService {
 
     private final JobLauncher jobLauncher;
     private final Job weeklyRankingJob;
+    private final Job monthlyRankingJob;
     private final PeriodCalculator periodCalculator;
 
     public void runWeeklyJob() {
@@ -50,6 +51,39 @@ public class RankingService {
 
         if (jobExecution.getStatus().isUnsuccessful()) {
             log.error("Weekly Product Ranking Job Failed: yearWeek={}", yearWeek);
+            jobExecution.getAllFailureExceptions().forEach(throwable ->
+                    log.error("Job failure exception: ", throwable)
+            );
+        }
+    }
+
+    public void runMonthlyJob() {
+        try {
+            // 지난 달 yearMonth
+            LocalDate lastMonth = LocalDate.now().minusMonths(1);
+            String yearMonth = periodCalculator.getYearMonth(lastMonth); // yyyyMM
+
+            runMonthlyJobWithYearMonth(yearMonth);
+        } catch (Exception e) {
+            log.error("Error Running Monthly Product Ranking Job", e);
+            throw new IllegalStateException("Error Running Monthly Product Ranking Job", e);
+        }
+    }
+
+    private void runMonthlyJobWithYearMonth(String yearMonth) throws Exception {
+        LocalDate startDate = periodCalculator.getMonthStartDate(yearMonth);
+        LocalDate endDate = periodCalculator.getMonthEndDate(yearMonth);
+
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("yearMonth", yearMonth)
+                .addString("startDate", startDate.toString())
+                .addString("endDate", endDate.toString())
+                .toJobParameters();
+
+        JobExecution jobExecution = jobLauncher.run(monthlyRankingJob, jobParameters);
+
+        if (jobExecution.getStatus().isUnsuccessful()) {
+            log.error("Monthly Product Ranking Job Failed: yearWeek={}", yearMonth);
             jobExecution.getAllFailureExceptions().forEach(throwable ->
                     log.error("Job failure exception: ", throwable)
             );

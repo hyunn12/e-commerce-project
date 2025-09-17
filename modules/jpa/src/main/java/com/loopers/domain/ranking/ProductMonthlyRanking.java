@@ -25,7 +25,7 @@ public class ProductMonthlyRanking extends BaseEntity {
     private Long productId;
 
     @Column(name = "year_month")
-    private String yearMonth; // 형식: yyyyMM
+    private String yearMonth; // 형식: 2025-09
 
     @Column(name = "total_score", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalScore;

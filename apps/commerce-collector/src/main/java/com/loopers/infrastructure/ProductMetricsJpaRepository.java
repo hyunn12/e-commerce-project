@@ -1,6 +1,6 @@
 package com.loopers.infrastructure;
 
-import com.loopers.batch.dto.WeeklyRankingAggregateResult;
+import com.loopers.batch.dto.ProductRankingAggregateResult;
 import com.loopers.domain.metrics.ProductMetrics;
 import com.loopers.domain.metrics.ProductMetricsId;
 import org.springframework.data.domain.Page;
@@ -21,7 +21,7 @@ public interface ProductMetricsJpaRepository extends JpaRepository<ProductMetric
     Optional<ProductMetrics> findByIdProductIdAndIdDate(Long productId, LocalDate date);
 
     @Query("""
-        SELECT new com.loopers.batch.dto.WeeklyRankingAggregateResult(
+        SELECT new com.loopers.batch.dto.ProductRankingAggregateResult(
             pm.id.productId,
             SUM(pm.salesCount),
             SUM(pm.likeCount),
@@ -31,7 +31,7 @@ public interface ProductMetricsJpaRepository extends JpaRepository<ProductMetric
         WHERE pm.updatedAt BETWEEN :startDateTime AND :endDateTime
         GROUP BY pm.id.productId
         """)
-    Page<WeeklyRankingAggregateResult> findAggregatedByUpdatedAtBetween(
+    Page<ProductRankingAggregateResult> findAggregatedByUpdatedAtBetween(
             @Param("startDateTime") ZonedDateTime startDateTime,
             @Param("endDateTime") ZonedDateTime endDateTime,
             Pageable pageable

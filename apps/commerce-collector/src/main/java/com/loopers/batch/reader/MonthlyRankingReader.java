@@ -20,13 +20,13 @@ import java.util.Map;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class WeeklyRankingReader {
+public class MonthlyRankingReader {
 
     private final ProductMetricsJpaRepository productMetricsJpaRepository;
 
     @Bean
     @StepScope
-    public RepositoryItemReader<ProductRankingAggregateResult> weeklyRankingReader(
+    public RepositoryItemReader<ProductRankingAggregateResult> monthlyRankingReader(
             @Value("#{jobParameters['startDate']}") String startDateParam,
             @Value("#{jobParameters['endDate']}") String endDateParam
     ) {
@@ -42,7 +42,7 @@ public class WeeklyRankingReader {
         reader.setArguments(Arrays.asList(startDateTime, endDateTime));
         reader.setPageSize(1000);
         reader.setSaveState(false);
-        reader.setName("weeklyRankingReader");
+        reader.setName("monthlyRankingReader");
 
         // 정렬
         Map<String, Sort.Direction> sorts = new HashMap<>();

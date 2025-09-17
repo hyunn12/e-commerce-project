@@ -4,6 +4,4 @@ import com.loopers.domain.ranking.ProductWeeklyRanking;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProductWeeklyRankingJpaRepository extends JpaRepository<ProductWeeklyRanking, Long> {
-
-    void deleteByYearWeek(String yearWeek);
 }

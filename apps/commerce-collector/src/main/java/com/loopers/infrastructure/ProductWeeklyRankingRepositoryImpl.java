@@ -17,9 +17,4 @@ public class ProductWeeklyRankingRepositoryImpl implements ProductWeeklyRankingR
     public void saveAll(List<ProductWeeklyRanking> items) {
         productWeeklyRankingJpaRepository.saveAll(items);
     }
-
-    @Override
-    public void deleteByYearWeek(String yearWeek) {
-        productWeeklyRankingJpaRepository.deleteByYearWeek(yearWeek);
-    }
 }
