@@ -13,7 +13,7 @@ public class WeeklyRankingScheduler {
 
     private final RankingService rankingService;
 
-    @Scheduled(cron = "0 0 1 * * MON") // 매 주 월요일 오전 1시
+    @Scheduled(cron = "0 0 1 * * *") // 매일 오전 1시
     public void runWeeklyRankingJob() {
         rankingService.runWeeklyJob();
     }

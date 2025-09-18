@@ -24,9 +24,8 @@ public class RankingService {
 
     public void runWeeklyJob() {
         try {
-            // 지난 주 yearWeek
-            LocalDate lastWeek = LocalDate.now().minusWeeks(1);
-            String yearWeek = periodCalculator.getYearWeek(lastWeek);
+            LocalDate yesterday = LocalDate.now().minusDays(1);
+            String yearWeek = periodCalculator.getYearWeek(yesterday);
 
             runWeeklyJobWithYearWeek(yearWeek);
         } catch (Exception e) {
@@ -59,9 +58,8 @@ public class RankingService {
 
     public void runMonthlyJob() {
         try {
-            // 지난 달 yearMonth
-            LocalDate lastMonth = LocalDate.now().minusMonths(1);
-            String yearMonth = periodCalculator.getYearMonth(lastMonth); // yyyyMM
+            LocalDate yesterday = LocalDate.now().minusDays(1);
+            String yearMonth = periodCalculator.getYearMonth(yesterday);
 
             runMonthlyJobWithYearMonth(yearMonth);
         } catch (Exception e) {

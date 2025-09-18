@@ -13,7 +13,7 @@ public class MonthlyRankingScheduler {
 
     private final RankingService rankingService;
 
-    @Scheduled(cron = "0 0 1 1 * ?") // 매 월 1일 오전 1시
+    @Scheduled(cron = "0 0 1 * * *") // 매일 오전 1시
     public void runMonthlyRankingJob() {
         rankingService.runMonthlyJob();
     }
