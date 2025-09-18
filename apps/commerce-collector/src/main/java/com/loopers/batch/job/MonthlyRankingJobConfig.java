@@ -19,7 +19,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class MonthlyRankingJob {
+public class MonthlyRankingJobConfig {
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -34,9 +34,9 @@ public class MonthlyRankingJob {
                 .build();
     }
 
-    @Bean
+    @Bean("monthlyAggregateStep")
     public Step aggregateStep() {
-        return new StepBuilder("aggregateStep", jobRepository)
+        return new StepBuilder("monthlyAggregateStep", jobRepository)
                 .<ProductRankingAggregateResult, ProductMonthlyRanking>chunk(1000, transactionManager)
                 .reader(monthlyRankingReader)
                 .processor(monthlyRankingProcessor)
