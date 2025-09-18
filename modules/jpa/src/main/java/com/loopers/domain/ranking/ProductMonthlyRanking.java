@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 @Entity
 @Table(
         name = "mv_product_rank_monthly",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"product_id", "yearMonth"})
+        uniqueConstraints = @UniqueConstraint(columnNames = {"product_id", "`yearMonth`"})
 )
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

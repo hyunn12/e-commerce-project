@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RankingService {
+public class RankingJobService {
 
     private final JobLauncher jobLauncher;
     private final Job weeklyRankingJob;
