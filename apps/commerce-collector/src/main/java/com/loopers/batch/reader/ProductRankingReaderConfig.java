@@ -46,7 +46,7 @@ public class ProductRankingReaderConfig {
 
         // 정렬
         Map<String, Sort.Direction> sorts = new HashMap<>();
-        sorts.put("productId", Sort.Direction.ASC);
+        sorts.put("id.productId", Sort.Direction.ASC);
         reader.setSort(sorts);
 
         return reader;
